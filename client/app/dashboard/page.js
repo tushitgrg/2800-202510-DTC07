@@ -1,9 +1,13 @@
 import React from 'react'
 import { getUser } from '@/lib/auth'
 const page =async () => {
-    let userid = await getUser()
+    let user = await getUser()
   return (
-    <div>You are logged in ig {userid}</div>
+    <div><p>
+      You are logged in  Mr {user.name} {user.email} 
+      </p>
+      <img src={user.avatar}></img>
+      </div>
   )
 }
 

@@ -8,7 +8,7 @@ export async function getUser() {
   if (!token) return null;
 
   try {
-    return jwt.decode(token).id;
+    return jwt.decode(token);
   } catch {
     return null;
   }
