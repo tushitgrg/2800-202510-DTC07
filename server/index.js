@@ -13,7 +13,7 @@ require('./utils/db');
 const app = express();
 
 app.use(session({
-  secret: 'SESSION_SECRET',
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: true,
 }));
