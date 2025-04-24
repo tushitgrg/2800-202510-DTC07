@@ -1,11 +1,39 @@
-const express = require('express')
-const app = express()
-const port = 3000
+const express = require('express');
+const session = require('express-session');
+const passport = require('passport');
+const path = require('path')
+const mime = require('mime');
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
+const authRoutes = require('./auth');
+const passportConfig = require('./google_auth');
+
+
+
+
+const app = express();
+
+app.use(session({
+  secret: 'SESSION_SECRET',
+  resave: false,
+  saveUninitialized: true,
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+passportConfig(passport);
+
+app.use('/', authRoutes);
+app.get('/', (req, res)=>{
+  res.send("ho")
 })
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+app.get('/dashboard', (req, res)=>{
+  if(!req.user){
+    res.redirect('/auth/google')
+    return
+  }
+  res.json(req.user)
 })
+
+app.listen(3001, () => {
+  console.log('Server started on port 3001');
+});
