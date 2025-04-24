@@ -1,3 +1,5 @@
+const { default: userModel } = require('../models/userModel');
+
 require('dotenv').config()
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
@@ -11,7 +13,19 @@ module.exports = function(passport) {
     async (accessToken, refreshToken, profile, done) => {
       try {
         console.log(profile)
-        done(null, profile);
+        let user = await userModel.findOne({
+          email: profile.emails[0].value
+        })
+        if(!user){
+           user = await userModel.create({
+            name: profile.displayName,
+            email: profile.emails[0].value,
+            avatar: profile.photos[0].value
+          })
+        }
+       
+        console.log(user)
+        done(null, user);
       } catch (error) {
         done(error, null);
       }
@@ -19,12 +33,15 @@ module.exports = function(passport) {
   ));
 
   passport.serializeUser((user, done) => {
-    done(null, user);
+    done(null, user._id);
   });
 
   passport.deserializeUser(async (id, done) => {
     try {
-      done(null, id);
+      let user = await userModel.findOne({
+        _id: id
+      })
+      done(null, user);
     } catch (error) {
       done(error, null);
     }

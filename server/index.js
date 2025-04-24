@@ -4,10 +4,10 @@ const passport = require('passport');
 const path = require('path')
 const mime = require('mime');
 
-const authRoutes = require('./auth');
-const passportConfig = require('./google_auth');
+const authRoutes = require('./controllers/authController');
+const passportConfig = require('./utils/google_auth');
 
-
+require('./utils/db');
 
 
 const app = express();
