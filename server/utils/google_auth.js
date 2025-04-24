@@ -38,9 +38,7 @@ module.exports = function(passport) {
 
   passport.deserializeUser(async (id, done) => {
     try {
-      let user = await userModel.findOne({
-        _id: id
-      })
+      const user = await userModel.findById(id)
       done(null, user);
     } catch (error) {
       done(error, null);

@@ -1,7 +1,8 @@
 const express = require('express');
 const passport = require('passport');
-
+require('dotenv').config()
 const router = express.Router();
+const jwt = require('jsonwebtoken')
 router.get('/auth/google', passport.authenticate('google', {
     scope: ['profile', 'email'],
   }));
@@ -10,7 +11,7 @@ router.get('/auth/google/callback', passport.authenticate('google', {
     failureRedirect: '/',
   }), (req, res) => {
     const user = req.user
-    res.cookie('user', user, {
+    res.cookie('access_token', jwt.sign({id:user._id}, process.env.JWT_SECRET, {})    , {
         httpOnly : true,                          // JS can’t read it (XSS protection)
         secure   : false, // HTTPS only in production
         sameSite : 'lax',                         // CSRF protection (or 'strict' / 'none')

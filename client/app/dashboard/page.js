@@ -1,9 +1,9 @@
 import React from 'react'
 import { getUser } from '@/lib/auth'
 const page =async () => {
-    console.log(await getUser())
+    let userid = await getUser()
   return (
-    <div>You are logged in ig</div>
+    <div>You are logged in ig {userid}</div>
   )
 }
 

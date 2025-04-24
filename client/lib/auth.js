@@ -4,12 +4,11 @@ import jwt from "jsonwebtoken";
 
 export async function getUser() {
   const store = await cookies();
-  const token = store.get("user")?.value;
-  console.log(token)
+  const token = store.get("access_token")?.value;
   if (!token) return null;
 
   try {
-    return jwt.decode(token);
+    return jwt.decode(token).id;
   } catch {
     return null;
   }
