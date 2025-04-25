@@ -23,7 +23,7 @@ passportConfig(passport);
 
 app.use('/', authRoutes);
 app.get('/', (req, res)=>{
-  res.send("ho")
+  res.json(req.user)
 })
 
 app.get('/dashboard', (req, res)=>{
