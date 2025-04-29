@@ -1,4 +1,6 @@
-const { default: userModel } = require('../models/userModel');
+// const { default: userModel } = require('../models/userModel');
+const userModel = require("../models/userModel");
+
 
 require('dotenv').config()
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
