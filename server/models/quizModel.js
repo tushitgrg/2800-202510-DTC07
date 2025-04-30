@@ -1,12 +1,12 @@
 // import mongoose from 'mongoose';
 const mongoose = require("mongoose");
 
-const quizSchema = new mongoose.Schema({
+const quizCollectionSchema = new mongoose.Schema({
     title: {
         type: String,
         required: true
     },
-    questions: [{
+    quizzes: [{  // renamed 'questions' → 'quizzes' to reflect it's a set
         question: {
             type: String,
             required: true
@@ -25,6 +25,6 @@ const quizSchema = new mongoose.Schema({
     }]  // added tags
 }, { _id: true, timestamps: true });
 
-const quizModel = mongoose.model('quiz', quizSchema);
+const quizCollectionModel = mongoose.model('quizCollection', quizCollectionSchema);
 // export default userModel
-module.exports = quizModel;
+module.exports = quizCollectionModel;
