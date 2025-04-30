@@ -8,8 +8,6 @@ const summarySchema = new mongoose.Schema({
     content: { 
         type: String, 
         required: true },
-    subject: { String,
-        required: true },
 }, { _id: true, timestamps: true });
 
 const summaryModel = mongoose.model('summary', summarySchema);
