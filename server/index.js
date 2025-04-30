@@ -7,6 +7,8 @@ const mime = require('mime');
 const authRoutes = require('./controllers/authController');
 const passportConfig = require('./utils/google_auth');
 
+const quizRoutes = require('./routes/quizRoutes');
+
 require('./utils/db');
 
 
@@ -33,6 +35,9 @@ app.get('/dashboard', (req, res)=>{
   }
   res.json(req.user)
 })
+
+app.use('/quiz', quizRoutes)
+
 
 app.listen(3001, () => {
   console.log('Server started on port 3001');

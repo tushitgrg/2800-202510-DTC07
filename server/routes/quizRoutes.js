@@ -1,3 +1,6 @@
+const multer = require('multer');
+const upload = multer({storage: multer.memoryStorage()})
+
 const express = require("express");
 const router = express.Router();
 const {
@@ -6,8 +9,8 @@ const {
   deleteQuiz,
 } = require("../controllers/quizController");
 
-router.post("/", createQuiz); // POST /api/quiz
-router.get("/:id", getQuiz); // GET /api/quiz/:id
-router.delete("/:id", deleteQuiz); // DELETE /api/quiz/:id
+router.post("/", upload.single("pdf"), createQuiz); // POST /quiz
+router.get("/:id", getQuiz); // GET /quiz/:id
+router.delete("/:id", deleteQuiz); // DELETE /quiz/:id
 
 module.exports = router;
