@@ -8,6 +8,7 @@ const summarySchema = new mongoose.Schema({
     content: { 
         type: String, 
         required: true },
+    tags: [{ type: String }]
 }, { _id: true, timestamps: true });
 
 const summaryModel = mongoose.model('summary', summarySchema);
