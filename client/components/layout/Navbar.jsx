@@ -13,6 +13,12 @@ import { Button } from "@/components/ui/button"
 
 
 const Navbar = () => {
+    const menuItems = [
+        { href: "#features", label: "Features" },
+        { href: "#testimonials", label: "Testimonials" },
+        { href: "#faq", label: "FAQ" },
+        { href: "#", label: "Log in", className: "mt-4" },
+      ]
     const container = {
         hidden: { opacity: 0 },
         show: {
@@ -65,30 +71,14 @@ const Navbar = () => {
         <span className="text-2xl">Scholiast</span>
       </div>
       <nav className="hidden md:flex gap-8">
-        <Link
-          href="#features"
+       {menuItems.filter((i)=>!i.className).map((i)=> <Link
+          href={i.href}
+          key={`k${i.label}`}
           className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
         >
-          Features
-        </Link>
-        <Link
-          href="#testimonials"
-          className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-        >
-          Testimonials
-        </Link>
-        <Link
-          href="#pricing"
-          className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-        >
-          Pricing
-        </Link>
-        <Link
-          href="#faq"
-          className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-        >
-          FAQ
-        </Link>
+          {i.label}
+        </Link>)}
+      
       </nav>
       <div className="hidden md:flex gap-4 items-center">
         <Link
@@ -97,7 +87,7 @@ const Navbar = () => {
         >
           Log in
         </Link>
-        <Button className="rounded-full">
+        <Button className="rounded-full hover:cursor-pointer">
           Get Started
           <ChevronRight className="ml-1 size-4" />
         </Button>
@@ -185,13 +175,7 @@ const Navbar = () => {
       
               </motion.div>
 
-              {[
-                { href: "#features", label: "Features" },
-                { href: "#testimonials", label: "Testimonials" },
-                { href: "#pricing", label: "Pricing" },
-                { href: "#faq", label: "FAQ" },
-                { href: "#", label: "Log in", className: "mt-4" },
-              ].map((link, i) => (
+              {menuItems.map((link, i) => (
                 <motion.div key={i} variants={item} className={link.className || ""} style={{ width: "100%" }}>
                   <Link
                     href={link.href}

@@ -1,6 +1,6 @@
 "use client"
 
-import {  useRef,  } from "react"
+import {  useRef, useState, useEffect } from "react"
 
 import { motion, useScroll, useTransform } from "framer-motion"
 import {
@@ -20,10 +20,14 @@ import { Badge } from "@/components/ui/badge"
 
 
 const HeroSection = () => {
+
     const { scrollYProgress } = useScroll()
     const heroOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0])
     const heroScale = useTransform(scrollYProgress, [0, 0.2], [1, 0.95])
     const heroRef = useRef(null)
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => setMounted(true), []);
+  if(!mounted) return <div></div>
   return (
     <section
     className="relative w-full min-h-[90vh] flex items-center justify-center overflow-hidden"
