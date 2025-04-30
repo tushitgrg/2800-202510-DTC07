@@ -24,5 +24,12 @@ const createQuiz = async (req, res) => {
     res.status(500).json({ error: "Failed to process quiz!" });
   }
 };
+const getQuiz = async (req, res) => {
+    res.send("get")
+}
+const deleteQuiz = async (req, res) => {
+res.send("delete")
+}
+
 
 module.exports = { createQuiz, getQuiz, deleteQuiz };
