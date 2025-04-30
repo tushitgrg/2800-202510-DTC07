@@ -253,7 +253,7 @@ const HeroSection = () => {
               ease: "linear",
             }}
           />
-          <span className="relative z-10 font-medium">Start Free Trial</span>
+          <span className="relative z-10 font-medium">Start Now!</span>
           <ArrowRight className="ml-2 size-5 relative z-10" />
         </Button>
         <Button
@@ -283,7 +283,7 @@ const HeroSection = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8, delay: 1.4 }}
       >
-        {["No credit card required", "14-day free trial", "Cancel anytime", "24/7 support"].map((feature, i) => (
+        {["Upload or Paste Any Material", "Auto-Generate Learning Aids", "Study Smarter, Not Harder"].map((feature, i) => (
           <div key={i} className="flex items-center gap-1.5">
             <Check className="size-4 text-primary" />
             <span>{feature}</span>

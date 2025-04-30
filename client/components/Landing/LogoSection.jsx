@@ -3,13 +3,14 @@ import { motion } from "framer-motion"
 
 
 const LogoSection = () => {
+    let images = ["https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/BCIT_logo.svg/1200px-BCIT_logo.svg.png"]
   return (
     <section className="w-full py-12 border-y border-white/10 bg-black/50">
     <div className="container px-4 md:px-6">
       <div className="flex flex-col items-center justify-center space-y-4 text-center">
         <p className="text-sm font-medium text-muted-foreground">Trusted by students at top universities</p>
         <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12 lg:gap-16">
-          {[1, 2, 3, 4, 5].map((i) => (
+          {images.map((i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, y: 20 }}
@@ -17,9 +18,7 @@ const LogoSection = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
             >
-              <div className="h-8 w-24 bg-white/10 rounded-md flex items-center justify-center text-white/30 text-xs">
-                LOGO {i}
-              </div>
+              <img src={i} alt="" className="w-32"/>
             </motion.div>
           ))}
         </div>

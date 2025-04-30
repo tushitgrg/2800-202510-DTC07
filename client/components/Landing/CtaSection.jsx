@@ -32,7 +32,7 @@ const CtaSection = () => {
         </p>
         <div className="flex flex-col sm:flex-row gap-4 mt-4">
           <Button size="lg" variant="secondary" className="rounded-full h-12 px-8 text-base">
-            Start Free Trial
+            Start Now!
             <ArrowRight className="ml-2 size-4" />
           </Button>
           <Button
@@ -43,9 +43,6 @@ const CtaSection = () => {
             See Demo
           </Button>
         </div>
-        <p className="text-sm text-primary-foreground/80 mt-4">
-          No credit card required. 14-day free trial. Cancel anytime.
-        </p>
       </motion.div>
     </div>
   </section>
