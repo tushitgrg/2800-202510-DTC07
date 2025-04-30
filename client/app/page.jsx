@@ -1,10 +1,21 @@
-"use client"
-import Image from "next/image";
+import HeroSection from "@/components/Landing/HeroSection"
+import LogoSection from "@/components/Landing/LogoSection"
+import FeaturesSection from "@/components/Landing/FeaturesSection"
+import WorksSection from "@/components/Landing/WorksSection"
+import TestinomialSection from "@/components/Landing/TestinomialSection"
+import FaqSection from "@/components/Landing/faqSection"
+import CtaSection from "@/components/Landing/CtaSection"
 
-export default function Home() {
+export default function LandingPage() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-     <button onClick={()=>window.location.href = "http://localhost:3001/auth/google"}>Logiiin</button>
-    </div>
-  );
+    <main className="flex-1 mt-20">
+      <HeroSection />
+      <LogoSection />
+      <FeaturesSection />
+      <WorksSection />
+      <TestinomialSection />
+      <FaqSection />
+      <CtaSection />
+    </main>
+  )
 }
