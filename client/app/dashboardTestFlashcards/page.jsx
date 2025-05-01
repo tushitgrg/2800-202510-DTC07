@@ -18,7 +18,7 @@ const testFlashcards = [
 
 export default function DashboardTestPage() {
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center p-6">
+    <div className="min-h-screen w-full flex flex-col justify-center items-center p-6">
       <Flashcards cards={testFlashcards} />
     </div>
   );

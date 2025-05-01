@@ -23,7 +23,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 // Individual Flashcard component
 const FlashcardItem = ({ front, back, flipped, onFlip, index, total }) => {
   return (
-    <div 
+    <div
       className="relative w-full max-w-md h-64 perspective cursor-pointer"
       onClick={onFlip}
     >
