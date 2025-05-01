@@ -1,6 +1,6 @@
 "use client";
 
-import Flashcards from "@/components/flashcards/Flashcards";
+import Flashcards from "@/components/flashcards/Flashcard";
 
 // Sample flashcard data
 const testFlashcards = [

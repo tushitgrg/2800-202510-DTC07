@@ -21,12 +21,17 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 // ];
 
 // Individual Flashcard component
-const FlashcardItem = ({ front, back, flipped, onFlip }) => {
+const FlashcardItem = ({ front, back, flipped, onFlip, index, total }) => {
   return (
-    <div
+    <div 
       className="relative w-full max-w-md h-64 perspective cursor-pointer"
       onClick={onFlip}
     >
+      {/* Counter */}
+      <div className="absolute top-2 left-1/2 transform -translate-x-1/2 text-sm text-muted-foreground z-10">
+        {index + 1} / {total}
+      </div>
+
       <motion.div
         className="w-full h-full relative"
         animate={{ rotateY: flipped ? 180 : 0 }}
@@ -35,16 +40,16 @@ const FlashcardItem = ({ front, back, flipped, onFlip }) => {
       >
         {/* Front */}
         <Card
-          className="absolute w-full h-full flex items-center justify-center text-center p-4"
-          style={{ backfaceVisibility: "hidden" }}
+          className="absolute w-full h-full flex items-center justify-center text-center"
+          style={{ backfaceVisibility: "hidden", position: "absolute" }}
         >
           <div className="text-lg font-semibold">{front}</div>
         </Card>
 
         {/* Back */}
         <Card
-          className="absolute w-full h-full flex items-center justify-center text-center p-4"
-          style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
+          className="absolute w-full h-full flex items-center justify-center text-center"
+          style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)", position: "absolute" }}
         >
           <div className="text-lg font-semibold">{back}</div>
         </Card>
@@ -82,27 +87,25 @@ export default function Flashcards({ cards }) {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto">
-      {/* Counter */}
-      <div className="text-center text-sm text-gray-500 mb-4">
-        Card {currentIndex + 1} of {cards.length}
-      </div>
-
+    <div className="relative w-full max-w-md">
       {/* Flashcard */}
       <FlashcardItem
         front={currentCard.front}
         back={currentCard.back}
         flipped={isFlipped}
         onFlip={handleFlip}
+        index={currentIndex}
+        total={cards.length}
       />
 
       {/* Navigation */}
-      <div className="flex justify-between mt-6">
+      <div className="w-full max-w-md flex justify-between mt-4">
         <Button
           onClick={handleBack}
           disabled={currentIndex === 0}
           variant="outline"
           size="icon"
+          className="opacity-100"
         >
           <ChevronLeft className="h-6 w-6" />
         </Button>
@@ -112,6 +115,7 @@ export default function Flashcards({ cards }) {
           disabled={currentIndex === cards.length - 1}
           variant="outline"
           size="icon"
+          className="opacity-100"
         >
           <ChevronRight className="h-6 w-6" />
         </Button>
