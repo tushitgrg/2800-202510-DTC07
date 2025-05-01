@@ -5,7 +5,8 @@ const passport = require('passport');
 const authRoutes = require('./controllers/authController');
 const passportConfig = require('./utils/google_auth');
 
-const quizRoutes = require('./routes/quizRoutes');
+const quizRoutes = require("./routes/quizRoutes");
+const flashcardRoutes = require("./routes/flashcardRoutes");
 
 require('./utils/db');
 
@@ -35,6 +36,7 @@ app.get('/dashboard', (req, res)=>{
 })
 
 app.use('/quiz', quizRoutes)
+app.use("/flashcard", flashcardRoutes);
 
 
 app.listen(3001, () => {
