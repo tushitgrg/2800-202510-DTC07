@@ -33,6 +33,7 @@ const FlashcardItem = ({ front, back, flipped, onFlip, index, total }) => {
       </div>
 
       <motion.div
+        key={index} // Add key to force reset animation on card change
         className="w-full h-full relative"
         animate={{ rotateY: flipped ? 180 : 0 }}
         transition={{ duration: 0.6 }}
