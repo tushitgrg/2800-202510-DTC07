@@ -1,4 +1,4 @@
-"use client";
+"use client"; // This page is an example of how to implement the flashcard component to the dashboard page
 
 import { useState } from "react";
 import Flashcard from "@/components/flashcards/Flashcard";
