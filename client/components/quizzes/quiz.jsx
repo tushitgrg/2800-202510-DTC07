@@ -15,128 +15,149 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-export default function Quiz({
-  questions,
-  currentIndex,
-  onIndexChange,
-  userAnswers,
-  onAnswerSelect,
-  showResults = false,
-  onComplete,
-  onRestart
-}) {
+// This component assumes that you have a list of questions in the following format:
+//   {
+//     id: "1",
+//     question: "What does HTML stand for?",
+//     choices: ["HyperText Markup Language", "HighText Machine Language", "Home Tool Markup Language"],
+//     answer: "HyperText Markup Language"
+//   },
+//   {
+//     id: "2",
+//     question: "Which language is used for styling web pages?",
+//     choices: ["HTML", "JQuery", "CSS", "XML"],
+//     answer: "CSS"
+//   },
+//   {
+//     id: "3",
+//     question: "Which is not a JavaScript framework?",
+//     choices: ["React", "Angular", "Vue", "Django"],
+//     answer: "Django"
+//   },
+//   {
+//     id: "4",
+//     question: "What does CSS stand for?",
+//     choices: ["Cascading Style Sheets", "Colorful Style Sheets", "Computer Style Sheets"],
+//     answer: "Cascading Style Sheets"
+//   },
+//   {
+//     id: "5",
+//     question: "Which HTML attribute is used to define inline styles?",
+//     choices: ["class", "style", "font", "styles"],
+//     answer: "style"
+//   }
+// ];
+
+export default function Quiz({ questions, onComplete }) {
+  // Simplified state management
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [userAnswers, setUserAnswers] = useState(Array(questions.length).fill(null));
+  const [showResults, setShowResults] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
+  // Get current question and answer
   const current = questions[currentIndex];
   const currentAnswer = userAnswers[currentIndex];
 
+  // Handle answer selection
   const handleSelect = (choice) => {
-    if (currentAnswer !== null) return;
-    onAnswerSelect(currentIndex, choice);
+    if (currentAnswer !== null) return; // Prevent changing answer after selection
+    const newAnswers = [...userAnswers];
+    newAnswers[currentIndex] = choice;
+    setUserAnswers(newAnswers);
   };
 
-  const hasUnansweredQuestions = () => {
-    return userAnswers.some(answer => answer === null);
-  };
-
+  // Handle navigation
   const handleNext = () => {
     if (currentIndex < questions.length - 1) {
-      onIndexChange(currentIndex + 1);
+      setCurrentIndex(currentIndex + 1);
     } else {
-      // on the last question, check if need to confirm submission
-      if (hasUnansweredQuestions()) {
+      // Check for unanswered questions before final submission
+      if (userAnswers.includes(null)) {
         setShowConfirmDialog(true);
       } else {
-        onComplete();
+        submitQuiz();
       }
     }
   };
 
   const handleBack = () => {
     if (currentIndex > 0) {
-      onIndexChange(currentIndex - 1);
+      setCurrentIndex(currentIndex - 1);
     }
   };
 
-  const handleConfirmSubmit = () => {
-    // mark all empty answers as wrong
-    const markUnansweredAsWrong = () => {
-      const updatedAnswers = userAnswers.map((answer, index) => {
-        if (answer === null) {
-          // pick any wrong answer to mark it incorrect
-          const correctAnswer = questions[index].answer;
-          const incorrectAnswer = questions[index].choices.find(choice => choice !== correctAnswer);
-          return incorrectAnswer || questions[index].choices[0];
-        }
-        return answer;
-      });
+  // Submit quiz and calculate score
+  const submitQuiz = () => {
+    // Fill in unanswered questions with an incorrect choice
+    const finalAnswers = userAnswers.map((answer, index) => {
+      if (answer === null) {
+        const correctAnswer = questions[index].answer;
+        const incorrectChoice = questions[index].choices.find(choice => choice !== correctAnswer);
+        return incorrectChoice || questions[index].choices[0];
+      }
+      return answer;
+    });
 
-      updatedAnswers.forEach((answer, index) => {
-        if (userAnswers[index] === null) {
-          onAnswerSelect(index, answer);
-        }
-      });
-    };
-
-    markUnansweredAsWrong();
+    setUserAnswers(finalAnswers);
+    setShowResults(true);
     setShowConfirmDialog(false);
-    onComplete();
+    onComplete?.();
   };
 
+  // Calculate score
   const calculateScore = () => {
     return userAnswers.reduce((score, answer, i) => {
       return score + (answer === questions[i].answer ? 1 : 0);
     }, 0);
   };
 
+  // Get button style based on answer
   const getButtonStyle = (choice) => {
     if (currentAnswer === null) return {};
 
     if (choice === currentAnswer && choice === current.answer) {
-      return { backgroundColor: '#10b981', borderColor: '#10b981', color: 'white' };
+      return { backgroundColor: '#10b981', color: 'white' };
     }
-
     if (choice === currentAnswer && choice !== current.answer) {
-      return { backgroundColor: '#ef4444', borderColor: '#ef4444', color: 'white' };
+      return { backgroundColor: '#ef4444', color: 'white' };
     }
-
     if (choice !== currentAnswer && choice === current.answer) {
-      return { backgroundColor: '#10b981', borderColor: '#10b981', color: 'white' };
+      return { backgroundColor: '#10b981', color: 'white' };
     }
-
     return {};
   };
 
+  // Get feedback message
   const getFeedback = () => {
     if (currentAnswer === null) return null;
 
-    if (currentAnswer === current.answer) {
-      return (
-        <div className="mb-3 font-medium text-center text-green-600">
-          Correct!
-        </div>
-      );
-    } else {
-      return (
-        <div className="mb-3 font-medium text-center text-red-600">
-          Wrong!
-        </div>
-      );
-    }
+    return (
+      <div className={`mb-3 font-medium text-center ${
+        currentAnswer === current.answer ? 'text-green-600' : 'text-red-600'
+      }`}>
+        {currentAnswer === current.answer ? 'Correct!' : 'Wrong!'}
+      </div>
+    );
   };
 
+  // Restart quiz
+  const handleRestart = () => {
+    setUserAnswers(Array(questions.length).fill(null));
+    setCurrentIndex(0);
+    setShowResults(false);
+  };
+
+  // Results view
   if (showResults) {
     return (
       <Card className="w-full max-w-md">
         <CardContent className="p-6">
           <h2 className="text-2xl font-bold text-center mb-4">Quiz Completed!</h2>
           <p className="text-center text-lg mb-6">
-            Your score: <span className="font-bold text-primary">{calculateScore()}</span> out of {questions.length}
+            Your score: <span className="font-bold">{calculateScore()}</span> out of {questions.length}
           </p>
-          <Button
-            className="w-full"
-            onClick={onRestart}
-          >
+          <Button className="w-full" onClick={handleRestart}>
             Restart Quiz
           </Button>
         </CardContent>
@@ -144,20 +165,25 @@ export default function Quiz({
     );
   }
 
+  // Quiz view
   return (
     <div className="w-full max-w-md">
-      <div className="mb-2 text-sm text-muted-foreground text-center">
+      {/* Progress indicator */}
+      <div className="mb-2 text-sm text-gray-500 text-center">
         Question {currentIndex + 1} / {questions.length}
       </div>
 
+      {/* Question card */}
       <Card className="mb-4">
         <CardContent className="p-6 text-center font-semibold text-lg">
           {current.question}
         </CardContent>
       </Card>
 
+      {/* Feedback */}
       {getFeedback()}
 
+      {/* Answer choices */}
       <div className="space-y-2 mb-4">
         {current.choices.map((choice, i) => (
           <Button
@@ -173,6 +199,7 @@ export default function Quiz({
         ))}
       </div>
 
+      {/* Navigation */}
       <div className="w-full flex justify-between mt-4">
         <Button
           onClick={handleBack}
@@ -192,7 +219,7 @@ export default function Quiz({
         </Button>
       </div>
 
-      {/* Confirmation dialog for submitting the quiz */}
+      {/* Confirmation dialog */}
       <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -203,7 +230,7 @@ export default function Quiz({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmSubmit}>
+            <AlertDialogAction onClick={submitQuiz}>
               Submit Anyway
             </AlertDialogAction>
           </AlertDialogFooter>

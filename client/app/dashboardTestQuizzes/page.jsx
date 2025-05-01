@@ -1,10 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import Quiz from "@/components/quizzes/Quiz";
 
-
-// Sample quiz data, assuming this is the format of quiz data from db
+// Sample quiz data
 const testQuizzes = [
   {
     id: "1",
@@ -38,38 +36,11 @@ const testQuizzes = [
   }
 ];
 
-
-
-// how to us the quiz component:
+// Simplified usage
 export default function DashboardTestQuizzesPage() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [userAnswers, setUserAnswers] = useState(Array(testQuizzes.length).fill(null));
-  const [showResults, setShowResults] = useState(false);
-
-  const handleAnswerSelect = (index, choice) => {
-    const newAnswers = [...userAnswers];
-    newAnswers[index] = choice;
-    setUserAnswers(newAnswers);
-  };
-
-  const handleRestart = () => {
-    setUserAnswers(Array(testQuizzes.length).fill(null));
-    setCurrentIndex(0);
-    setShowResults(false);
-  };
-
   return (
     <div className="min-h-screen flex flex-col justify-center items-center p-6">
-      <Quiz
-        questions={testQuizzes}
-        currentIndex={currentIndex}
-        onIndexChange={setCurrentIndex}
-        userAnswers={userAnswers}
-        onAnswerSelect={handleAnswerSelect}
-        showResults={showResults}
-        onComplete={() => setShowResults(true)}
-        onRestart={handleRestart}
-      />
+      <Quiz questions={testQuizzes}/>
     </div>
   );
 }
