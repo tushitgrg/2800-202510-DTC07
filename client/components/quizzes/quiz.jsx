@@ -1,8 +1,19 @@
 "use client";
 
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function Quiz({
   questions,
@@ -14,6 +25,8 @@ export default function Quiz({
   onComplete,
   onRestart
 }) {
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+
   const current = questions[currentIndex];
   const currentAnswer = userAnswers[currentIndex];
 
@@ -22,11 +35,20 @@ export default function Quiz({
     onAnswerSelect(currentIndex, choice);
   };
 
+  const hasUnansweredQuestions = () => {
+    return userAnswers.some(answer => answer === null);
+  };
+
   const handleNext = () => {
     if (currentIndex < questions.length - 1) {
       onIndexChange(currentIndex + 1);
-    } else if (allQuestionsAnswered()) {
-      onComplete();
+    } else {
+      // on the last question, check if need to confirm submission
+      if (hasUnansweredQuestions()) {
+        setShowConfirmDialog(true);
+      } else {
+        onComplete();
+      }
     }
   };
 
@@ -36,8 +58,29 @@ export default function Quiz({
     }
   };
 
-  const allQuestionsAnswered = () => {
-    return userAnswers.every(answer => answer !== null);
+  const handleConfirmSubmit = () => {
+    // mark all empty answers as wrong
+    const markUnansweredAsWrong = () => {
+      const updatedAnswers = userAnswers.map((answer, index) => {
+        if (answer === null) {
+          // pick any wrong answer to mark it incorrect
+          const correctAnswer = questions[index].answer;
+          const incorrectAnswer = questions[index].choices.find(choice => choice !== correctAnswer);
+          return incorrectAnswer || questions[index].choices[0];
+        }
+        return answer;
+      });
+
+      updatedAnswers.forEach((answer, index) => {
+        if (userAnswers[index] === null) {
+          onAnswerSelect(index, answer);
+        }
+      });
+    };
+
+    markUnansweredAsWrong();
+    setShowConfirmDialog(false);
+    onComplete();
   };
 
   const calculateScore = () => {
@@ -50,27 +93,23 @@ export default function Quiz({
     if (currentAnswer === null) return {};
 
     if (choice === currentAnswer && choice === current.answer) {
-      // Correct answer selected
       return { backgroundColor: '#10b981', borderColor: '#10b981', color: 'white' };
     }
 
     if (choice === currentAnswer && choice !== current.answer) {
-      // Wrong answer selected
       return { backgroundColor: '#ef4444', borderColor: '#ef4444', color: 'white' };
     }
 
     if (choice !== currentAnswer && choice === current.answer) {
-      // Show correct answer
       return { backgroundColor: '#10b981', borderColor: '#10b981', color: 'white' };
     }
 
     return {};
   };
 
-  // Determine feedback message
   const getFeedback = () => {
     if (currentAnswer === null) return null;
-    
+
     if (currentAnswer === current.answer) {
       return (
         <div className="mb-3 font-medium text-center text-green-600">
@@ -86,25 +125,24 @@ export default function Quiz({
     }
   };
 
-  // Show results screen if completed
   if (showResults) {
     return (
-      <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold text-center mb-4">Quiz Completed!</h2>
-        <p className="text-center text-lg mb-6">
-          Your score: <span className="font-bold">{calculateScore()}</span> out of {questions.length}
-        </p>
-        <Button 
-          className="w-full" 
-          onClick={onRestart}
-        >
-          Restart Quiz
-        </Button>
-      </div>
+      <Card className="w-full max-w-md">
+        <CardContent className="p-6">
+          <h2 className="text-2xl font-bold text-center mb-4">Quiz Completed!</h2>
+          <p className="text-center text-lg mb-6">
+            Your score: <span className="font-bold text-primary">{calculateScore()}</span> out of {questions.length}
+          </p>
+          <Button
+            className="w-full"
+            onClick={onRestart}
+          >
+            Restart Quiz
+          </Button>
+        </CardContent>
+      </Card>
     );
   }
-
-  const showNextButton = currentIndex < questions.length - 1 || (currentIndex === questions.length - 1 && currentAnswer !== null);
 
   return (
     <div className="w-full max-w-md">
@@ -117,10 +155,9 @@ export default function Quiz({
           {current.question}
         </CardContent>
       </Card>
-      
-      {/* Feedback message */}
+
       {getFeedback()}
-      
+
       <div className="space-y-2 mb-4">
         {current.choices.map((choice, i) => (
           <Button
@@ -148,13 +185,30 @@ export default function Quiz({
 
         <Button
           onClick={handleNext}
-          disabled={!showNextButton}
           variant="outline"
           size="icon"
         >
           <ChevronRight className="h-6 w-6" />
         </Button>
       </div>
+
+      {/* Confirmation dialog for submitting the quiz */}
+      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Submit Quiz?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You have unanswered questions. If you submit now, these questions will be marked as wrong. Are you sure you want to submit?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmSubmit}>
+              Submit Anyway
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
