@@ -1,11 +1,12 @@
 const express = require('express');
 const session = require('express-session');
 const passport = require('passport');
-const path = require('path')
-const mime = require('mime');
 
 const authRoutes = require('./controllers/authController');
 const passportConfig = require('./utils/google_auth');
+
+const quizRoutes = require("./routes/quizRoutes");
+const flashcardRoutes = require("./routes/flashcardRoutes");
 
 require('./utils/db');
 
@@ -33,6 +34,10 @@ app.get('/dashboard', (req, res)=>{
   }
   res.json(req.user)
 })
+
+app.use('/quiz', quizRoutes)
+app.use("/flashcard", flashcardRoutes);
+
 
 app.listen(3001, () => {
   console.log('Server started on port 3001');
