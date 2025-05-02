@@ -1,6 +1,7 @@
 import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ChevronLeft } from "lucide-react";
 
 export default async function SummaryPage({ params }) {
   // Get the id from the URL parameters
@@ -28,16 +29,12 @@ export default async function SummaryPage({ params }) {
         </h1>
 
         <div className="flex justify-between">
-          <div className="flex-none">
-            <Badge className="min-w-max">
-              {note.tag}
-            </Badge>
+          <div className="flex flex-col gap-2">
+            <Badge className={""}>{note.tag}</Badge>
+            <Badge>Created on: {formattedDate}</Badge>
           </div>
-          <Button className={"flex-none"}>
-            Share
-          </Button>
+            <Button className={""}>Share</Button>
         </div>
-        <Badge>Created on: {formattedDate}</Badge>
 
         <div className="text-black text-xs bg-gray-400 mt-4 p-2">
           {note.description}

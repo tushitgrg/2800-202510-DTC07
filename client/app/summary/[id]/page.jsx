@@ -1,4 +1,4 @@
-import SummaryPage from "@/components/SummaryPage";
+import SummaryPage from "@/components/summary/summaryPage";
 
 export default async function Page() {
   const tempData = {
@@ -7,5 +7,5 @@ export default async function Page() {
     date: new Date(),
     tag: "COMP 1712"
   }
-  return <SummaryPage params={{note: tempData}} />;
+  return <SummaryPage params={{ note: tempData }} />;
 }
