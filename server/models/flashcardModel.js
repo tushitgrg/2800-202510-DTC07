@@ -2,15 +2,13 @@
 const mongoose = require("mongoose");
 
 const flashcardSetSchema = new mongoose.Schema({
-    title: { type: String, required: true },
-    tags: [{ type: String }],
     cards: [
         {
             front: { type: String, required: true },
             back: { type: String, required: true }
         }
-    ]
-}, { _id: true, timestamps: true });
+    ]}, { _id: true, timestamps: true }
+);
 
 const flashcardSetModel = mongoose.model('flashcardSet', flashcardSetSchema);
 module.exports = flashcardSetModel;
