@@ -33,7 +33,7 @@ export default async function SummaryPage({ params }) {
             <Badge className={""}>{note.tag}</Badge>
             <Badge>Created on: {formattedDate}</Badge>
           </div>
-            <Button className={""}>Share</Button>
+          <Button className={""}>Share</Button>
         </div>
 
         <div className="text-black text-xs bg-gray-400 mt-4 p-2">
