@@ -1,4 +1,4 @@
-const flashcardSetModel = require("../models/flashcardModel")
+const flashcardSetModel = require("../models/flashcardModel");
 
 const addFlashcardEntry = async (flashcard) => {
   // Create and save new flashcard

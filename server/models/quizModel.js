@@ -2,10 +2,6 @@
 const mongoose = require("mongoose");
 
 const quizCollectionSchema = new mongoose.Schema({
-    title: {
-        type: String,
-        required: true
-    },
     quizzes: [{  // renamed 'questions' → 'quizzes' to reflect it's a set
         question: {
             type: String,
@@ -20,9 +16,6 @@ const quizCollectionSchema = new mongoose.Schema({
             required: true
         }
     }],
-    tags: [{
-        type: String
-    }]  // added tags
 }, { _id: true, timestamps: true });
 
 const quizCollectionModel = mongoose.model('quizCollection', quizCollectionSchema);
