@@ -1,7 +1,7 @@
 const quizCollectionModel = require("../models/quizModel");
 
 const addQuizEntry = async (quiz) => {
-  // Create abd save new quiz
+  // Create and save new quiz
   const newQuiz = await quizCollectionModel.create(quiz);
 
   // Return the id of the quiz
