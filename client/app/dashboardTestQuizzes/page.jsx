@@ -33,13 +33,43 @@ const testQuizzes = [
     question: "Which HTML attribute is used to define inline styles?",
     choices: ["class", "style", "font", "styles"],
     answer: "style"
+  },
+  {
+    id: "6",
+    question: "Which is the correct CSS syntax?",
+    choices: ["body:color=black;", "body {color: black;}", "{body;color:black;}", "body {color: black;}"],
+    answer: "body {color: black;}"
+  },
+  {
+    id: "7",
+    question: "Which property is used to change the background color?",
+    choices: ["bgcolor", "color", "background-color", "background"],
+    answer: "background-color"
+  },
+  {
+    id: "8",
+    question: "How do you add a comment in CSS?",
+    choices: ["// this is a comment", "<!-- this is a comment -->", "/* this is a comment */"],
+    answer: "/* this is a comment */"
+  },
+  {
+    id: "9",
+    question: "Which HTML element is used to define the title of a document?",
+    choices: ["<head>", "<title>", "<meta>", "<h1>", "<h1>", "<h1>", "<h1>", "<h1>", "<h1>", "<h1>", "<h1>", "<h1>", "<h1>", "<h1>", "<h1>", "<h1>", "<h1>", "<h1>"],
+    answer: "<title>"
+  },
+  {
+    id: "10",
+    question: "Testing super long question Testing super long question Testing super long question Testing super long question Testing super long question Testing super long question Testing super long question Testing super long question Testing super long question Testing super long question Testing super long question Testing super long question Testing super long question Testing super long question Testing super long question Testing super long question Testing super long question Testing super long question Testing super long question Testing super long question Testing super long question Testing super long question Testing super long question Testing super long question Testing super long question Testing super long question Testing super long question ",
+    choices: ["Defines an alternative text for the image", "Testing super long answer Testing super long answer Testing super long answer Testing super long answer Testing super long answer Testing super long answer Testing super long answer Testing super long answer Testing super long answer Testing super long answer Testing super long answer Testing super long answer Testing super long answer Testing super long answer Testing super long answer Testing super long answer Testing super long answer Testing super long answer Testing super long answer Testing super long answer Testing super long answer ", "Defines the alignment of the image", "Defines the size of the image"],
+    answer: "Defines an alternative text for the image"
   }
 ];
 
 // Simplified usage
 export default function DashboardTestQuizzesPage() {
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center p-6">
+    <div className="min-h-screen flex flex-col w-full justify-center items-center p-6">
       <Quiz questions={testQuizzes}/>
     </div>
   );
