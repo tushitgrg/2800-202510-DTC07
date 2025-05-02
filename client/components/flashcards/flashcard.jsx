@@ -1,31 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-// This component assumes that you have flashcards in the following format:
-// const testFlashcards = [
-//   { id: "1", front: "What is HTML?", back: "HyperText Markup Language" },
-//   { id: "2", front: "What is CSS?", back: "Cascading Style Sheets" },
-//   { id: "3", front: "What is JS?", back: "JavaScript" },
-//   { id: "4", front: "What is React?", back: "A JavaScript library for building user interfaces" },
-//   { id: "5", front: "What is Node.js?", back: "JavaScript runtime built on Chrome's V8 engine" },
-//   { id: "6", front: "What is Express?", back: "Web framework for Node.js" },
-//   { id: "7", front: "What is MongoDB?", back: "NoSQL database" },
-//   { id: "8", front: "What is SQL?", back: "Structured Query Language" },
-//   { id: "9", front: "What is Git?", back: "Version control system" },
-//   { id: "10", front: "What is GitHub?", back: "Platform for version control and collaboration" },
-// ];
-
-// Individual Flashcard component
+// Flashcard component
 const FlashcardItem = ({ front, back, flipped, onFlip, index, total }) => {
+  const [cardHeight, setCardHeight] = useState("16rem"); // Default height
+  const frontContentRef = useRef(null);
+
+  // Calculate height based on front content
+  useEffect(() => {
+    if (frontContentRef.current) {
+      const contentHeight = frontContentRef.current.scrollHeight;
+      const height = Math.max(contentHeight, 256);
+      setCardHeight(`${height + 16}px`);
+    }
+  }, [front]);
+
   return (
     <div
-      className="relative w-full max-w-md h-64 perspective cursor-pointer"
+      className="relative w-full max-w-md perspective cursor-pointer"
       onClick={onFlip}
+      style={{ height: cardHeight }}
     >
       {/* Counter */}
       <div className="absolute top-2 left-1/2 transform -translate-x-1/2 text-sm text-muted-foreground z-10">
@@ -41,25 +40,35 @@ const FlashcardItem = ({ front, back, flipped, onFlip, index, total }) => {
       >
         {/* Front */}
         <Card
-          className="absolute w-full h-full flex items-center justify-center text-center"
+          className="absolute w-full h-full bg-slate-950 border-slate-900"
           style={{ backfaceVisibility: "hidden", position: "absolute" }}
         >
-          <div className="text-lg font-semibold">{front}</div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div
+              ref={frontContentRef}
+              className="w-full text-center p-6 text-lg font-semibold"
+            >
+              {front}
+            </div>
+          </div>
         </Card>
 
-        {/* Back */}
+        {/* Back with dark scrollbar */}
         <Card
-          className="absolute w-full h-full flex items-center justify-center text-center"
+          className="absolute w-full h-full bg-slate-900 border-slate-950"
           style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)", position: "absolute" }}
         >
-          <div className="text-lg font-semibold">{back}</div>
+          <div className="absolute inset-0 overflow-auto dark-scrollbar">
+            <div className="min-h-full flex items-center justify-center text-center p-6">
+              <div className="text-lg font-semibold">{back}</div>
+            </div>
+          </div>
         </Card>
       </motion.div>
     </div>
   );
 };
 
-// Main Flashcards component that manages the set
 export default function Flashcards({ cards }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
@@ -74,7 +83,6 @@ export default function Flashcards({ cards }) {
       setIsFlipped(false);
     }
   };
-
   const handleBack = () => {
     if (currentIndex > 0) {
       setCurrentIndex(currentIndex - 1);

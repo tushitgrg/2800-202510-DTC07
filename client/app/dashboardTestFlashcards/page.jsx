@@ -13,7 +13,7 @@ const testFlashcards = [
   { id: "7", front: "What is MongoDB?", back: "NoSQL database" },
   { id: "8", front: "What is SQL?", back: "Structured Query Language" },
   { id: "9", front: "What is Git?", back: "Version control system" },
-  { id: "10", front: "What is GitHub?", back: "Platform for version control and collaboration" },
+  { id: "10", front: "What is GitHub?What is GitHub?What is GitHub?What is GitHub?What is GitHub?What is GitHub?What is GitHub?What is GitHub?What is GitHub?What is GitHub?What is GitHub?What is GitHub?What is GitHub?What is GitHub?What is GitHub?What is GitHub?What is GitHub?What is GitHub?What is GitHub?What is GitHub?What is GitHub?What is GitHub?What is GitHub?What is GitHub?What is GitHub?What is GitHub?What is GitHub?What is GitHub?What is GitHub?What is GitHub?What is GitHub?What is GitHub?What is GitHub?What is GitHub?What is GitHub?What is GitHub?What is GitHub?", back: "Platform for version control and collaborationPlatform for version control and collaborationPlatform for version control and collaborationPlatform for version control and collaborationPlatform for version control and collaborationPlatform for version control and collaborationPlatform for version control and collaborationPlatform for version control and collaborationPlatform for version control and collaborationPlatform for version control and collaborationPlatform for version control and collaborationPlatform for version control and collaborationPlatform for version control and collaborationPlatform for version control and collaborationPlatform for version control and collaborationPlatform for version control and collaborationPlatform for version control and collaboration" },
 ];
 
 export default function DashboardTestPage() {
