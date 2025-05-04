@@ -44,7 +44,6 @@ const AboutUs = () => {
                     text="Studying should not feel like a constant uphill battle. As students ourselves, we have experienced the frustration of messy notes, overwhelming PDFs, and the uncertainty of what or how to review. Scholiast was created out of that challenge. It is an AI-powered study companion that turns your own materials into interactive flashcards, quizzes, and summaries. The goal is to help you study faster, stay focused, and truly retain what you learn. Scholiast is built with empathy and designed to be the learning tool we always wished existed. Now, we are sharing it with others who need it too."
                 />
 
-
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -56,7 +55,7 @@ const AboutUs = () => {
                         Who We Are
                     </Badge>
 
-                    <div className="w-full max-w-xl mt-10 relative flex justify-center">
+                    <div className="w-full sm:max-w-md md:max-w-xl mt-10 relative flex justify-center">
                         <Carousel className="w-full">
                             <CarouselContent>
                                 {teamCards.map((member, index) => (
@@ -87,4 +86,5 @@ const AboutUs = () => {
 }
 
 export default AboutUs
+
 
