@@ -13,9 +13,11 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
 import { generateFlashcardPrompt, generateQuizPrompt, generateSummaryPrompt } from "@/lib/prompts"
+import { useRouter } from 'next/navigation'
 
 
 export default function CreatePage() {
+  const router = useRouter()
   const [currentStep, setCurrentStep] = useState("upload")
   // Update the useState for contentType to be an array
   const [selectedContentTypes, setSelectedContentTypes] = useState([])
@@ -112,13 +114,19 @@ export default function CreatePage() {
       if(selectedContentTypes.includes("summary")){
         apiBody.append("summaryPrompt",generateSummaryPrompt(summarySettings))
       }
-
-      const resp = await fetch('http://localhost:3001/resources', {
-        method: "POST",
-        body: apiBody,
-         credentials: 'include'
-      })
-      console.log((await resp.json()))
+try{
+  const resp = await fetch('http://localhost:3001/resources', {
+    method: "POST",
+    body: apiBody,
+     credentials: 'include'
+  })
+  const data= await resp.json()
+  router.push(`/resource/${data.resourceID}`)
+}catch{
+  alert("Errrror") //change this to a toast
+}
+      
+  
       
     }
   }

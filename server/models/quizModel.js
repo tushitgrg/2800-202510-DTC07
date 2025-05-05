@@ -15,7 +15,7 @@ const quizCollectionSchema = new mongoose.Schema(
             required: true,
           },
         ],
-        correctAnswer: {
+        answer: {
           type: String,
           required: true,
         },

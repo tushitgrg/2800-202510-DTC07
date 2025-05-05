@@ -86,8 +86,8 @@ export default function Quiz({ questions, onComplete }) {
     const finalAnswers = userAnswers.map((answer, index) => {
       if (answer === null) {
         const correctAnswer = questions[index].answer;
-        const incorrectChoice = questions[index].choices.find(choice => choice !== correctAnswer);
-        return incorrectChoice || questions[index].choices[0];
+        const incorrectChoice = questions[index].options.find(choice => choice !== correctAnswer);
+        return incorrectChoice || questions[index].options[0];
       }
       return answer;
     });
@@ -198,7 +198,7 @@ export default function Quiz({ questions, onComplete }) {
 
       {/* Answer choices */}
       <div className="space-y-2 mb-4">
-        {current.choices.map((choice, i) => (
+        {current.options.map((choice, i) => (
           <Button
             key={i}
             onClick={() => handleSelect(choice)}

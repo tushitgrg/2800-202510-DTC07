@@ -4,17 +4,17 @@ You are an expert quiz generator.
 Return a single JSON object that **MUST** conform exactly to this schema
 
 {
-  "quizzes": [
+  "questions": [
     {
       "question": String,
       "options":  [String],   // 2–6 options
-      "correctAnswer": String // must match one of the options
+      "answer": String // must match one of the options
     }
   ]
 }
 
 Requirements:
-1. Create **${s.questionCount}** quiz items inside "quizzes".
+1. Create **${s.questionCount}** quiz items inside "questions".
 2. Allowed question types: ${s.questionTypes.join(", ")}.
 3. Overall difficulty level: “${s.difficulty}”.
 4. **Do not** include explanations, markdown code fences, or extra fields.
