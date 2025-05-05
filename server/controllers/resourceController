@@ -11,6 +11,9 @@ const getResources = async function (req, res) {
 const getResourceById = async function (req, res) {
   const { quizPrompt, flashcardPrompt, summaryPrompt } = req.body;
 };
+
+
+//POST request handler for creating a resource
 const addResource = async function (req, res) {
   const { quizPrompt, flashcardPrompt, summaryPrompt } = req.body;
   if (!req.file) {
@@ -35,6 +38,30 @@ const addResource = async function (req, res) {
       await Resource.findByIdAndUpdate(newResource._id, { quizID: quizId });
     } catch (err) {
       res.status(500).error("Failed to create quiz: ", err);
+    }
+  }
+
+  if (flashcardPrompt) {
+    try {
+      const flashcard = await getGeminiOutput(file, flashcardPrompt);
+      const flashcardId = await addFlashcardEntry(flashcard);
+      await Resource.findByIdAndUpdate(newResource._id, {
+        flashcardID: flashcardId,
+      });
+    } catch (err) {
+      res.status(500).error("Failed to create flashcard: ", err);
+    }
+  }
+
+  if (summaryPrompt) {
+    try {
+      const summary = await getGeminiOutput(file, summaryPrompt);
+      const summaryId = await addSummaryEntry(summary);
+      await Resource.findByIdAndUpdate(newResource._id, {
+        summaryID: summaryId,
+      });
+    } catch (err) {
+      res.status(500).error("Failed to create summary: ", err);
     }
   }
 };
