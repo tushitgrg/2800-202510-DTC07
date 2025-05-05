@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
 import { generateFlashcardPrompt, generateQuizPrompt, generateSummaryPrompt } from "@/lib/prompts"
 import { useRouter } from 'next/navigation'
+import { Input } from "@/components/ui/input"
 
 
 export default function CreatePage() {
@@ -27,7 +28,7 @@ export default function CreatePage() {
   const [uploadProgress, setUploadProgress] = useState(0)
   const [isUploading, setIsUploading] = useState(false)
   const fileInputRef = useRef(null)
-
+const [titleText, settitleText] = useState("")
   // Quiz settings
   const [quizSettings, setQuizSettings] = useState({
     questionCount: 10,
@@ -105,6 +106,7 @@ export default function CreatePage() {
       setCurrentStep("processing")
       let apiBody = new FormData()
       apiBody.append('pdf', file)
+      apiBody.append('title', titleText)
       if(selectedContentTypes.includes("quiz")){
         apiBody.append("quizPrompt",  generateQuizPrompt(quizSettings)) 
       }
@@ -492,8 +494,10 @@ try{
                 </motion.div>
 
                 <motion.div variants={itemVariants}>
+                 
                   <Card className="border-border/40">
                     <CardContent className="p-6 pt-6 space-y-8">
+                    <Input type={'text'} placeholder={"Add a title (optional)"} value={titleText} onChange={(e)=>settitleText(e.currentTarget.value)}/>
                       {selectedContentTypes.map((type, index) => (
                         <div key={type}>
                           {index > 0 && <div className="border-t border-border/40 my-6"></div>}
