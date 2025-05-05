@@ -10,9 +10,39 @@ const Quiz = require("../models/quizModel");
 const Flashcard = require("../models/flashcardModel");
 const Summary = require("../models/summaryModel");
 
+const fetchResource = async (resourceID) => {
+  const resource = await Resource.findById(resourceID);
+  if (!resource) return null;
+
+  const { quizID, flashcardID, summaryID } = resource;
+
+  return {
+    _id: resource._id,
+    quiz: quizID ? await Quiz.findById(quizID) : null,
+    flashcard: flashcardID ? await Flashcard.findById(flashcardID) : null,
+    summary: summaryID ? await Summary.findById(summaryID) : null,
+  };
+};
+
+// GET request handler for all resources under the current user
 const getResources = async function (req, res) {
   const userId = req.user._id;
+  try {
+    const user = await User.findById(userId);
+    const userResources = user.resources;
+    const result = await Promise.all(
+      userResources.map((resourceID) => {
+        fetchResource(resourceID);
+      })
+    );
+    res.status(200).json(result);
+  } catch (err) {
+    console.error("Failed to fetch user resources:", err);
+    res.status(500).json({ error: "Failed to fetch resources" });
+  }
 };
+
+//GET request handler by resource ID
 const getResourceById = async function (req, res) {
   const resourceId = req.params.id;
 
