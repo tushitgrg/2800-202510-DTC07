@@ -3,7 +3,7 @@ import LogoSection from "@/components/Landing/LogoSection"
 import FeaturesSection from "@/components/Landing/FeaturesSection"
 import WorksSection from "@/components/Landing/WorksSection"
 import TestinomialSection from "@/components/Landing/TestinomialSection"
-import FaqSection from "@/components/Landing/faqSection"
+import FaqSection from "@/components/Landing/FaqSection"
 import CtaSection from "@/components/Landing/CtaSection"
 
 export default function LandingPage() {
