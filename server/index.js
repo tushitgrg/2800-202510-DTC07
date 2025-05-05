@@ -7,11 +7,14 @@ const passportConfig = require('./utils/google_auth');
 
 const quizRoutes = require("./routes/quizRoutes");
 const flashcardRoutes = require("./routes/flashcardRoutes");
+const resourceRoutes = require('./routes/resourceRoutes')
 
 require('./utils/db');
 
 
 const app = express();
+
+app.use(express.json())
 
 app.use(session({
   secret: process.env.SESSION_SECRET,
@@ -35,8 +38,9 @@ app.get('/dashboard', (req, res)=>{
   res.json(req.user)
 })
 
-app.use('/quiz', quizRoutes)
-app.use("/flashcard", flashcardRoutes);
+app.use("/resources", resourceRoutes);
+// app.use('/quiz', quizRoutes)
+// app.use("/flashcard", flashcardRoutes);
 
 
 app.listen(3001, () => {
