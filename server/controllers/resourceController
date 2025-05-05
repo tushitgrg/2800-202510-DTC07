@@ -1,17 +1,19 @@
 const { processFile } = require("../utils/fileHandler");
 const { getGeminiOutput } = require("../utils/geminiClient");
-const { createQuiz, getQuiz, deleteQuiz } = require("./quizController");
 const addQuizEntry = require("../utils/addQuizEntry");
+const addFlashcardEntry = require("../utils/addFlashcardEntry");
+const addSummaryEntry = require("../utils/addSummaryEntry");
 
+
+const User = require('../models/userModel')
 const Resource = require("../models/resourceModel");
 
 const getResources = async function (req, res) {
-  const { quizPrompt, flashcardPrompt, summaryPrompt } = req.body;
+  const User = req.session;
 };
 const getResourceById = async function (req, res) {
-  const { quizPrompt, flashcardPrompt, summaryPrompt } = req.body;
+  const resourceId = req.params.id;
 };
-
 
 //POST request handler for creating a resource
 const addResource = async function (req, res) {
@@ -25,7 +27,7 @@ const addResource = async function (req, res) {
   if (!file) {
     return res.status(500).json({ error: "Failed to process file" });
   }
-  const newResource = Resource.create({
+  const newResource = await Resource.create({
     quizID: null,
     flashcardID: null,
     summaryID: null,
@@ -37,7 +39,8 @@ const addResource = async function (req, res) {
       const quizId = await addQuizEntry(quiz);
       await Resource.findByIdAndUpdate(newResource._id, { quizID: quizId });
     } catch (err) {
-      res.status(500).error("Failed to create quiz: ", err);
+      console.error("Failed to create quiz:", err);
+      return res.status(500).json({ error: "Failed to create quiz." });
     }
   }
 
@@ -49,7 +52,8 @@ const addResource = async function (req, res) {
         flashcardID: flashcardId,
       });
     } catch (err) {
-      res.status(500).error("Failed to create flashcard: ", err);
+      console.error("Failed to create flashcard:", err);
+      return res.status(500).json({ error: "Failed to create flashcard." });
     }
   }
 
@@ -61,9 +65,14 @@ const addResource = async function (req, res) {
         summaryID: summaryId,
       });
     } catch (err) {
-      res.status(500).error("Failed to create summary: ", err);
+      console.error("Failed to create summary:", err);
+      return res.status(500).json({ error: "Failed to create summary." });
     }
   }
+  res.status(201).json({
+    msg: `Succes fully created resource with id:${newResource._id}`,
+    resourceID: newResource._id,
+  });
 };
 
 module.exports = { getResources, getResourceById, addResource };
