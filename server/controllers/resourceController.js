@@ -31,9 +31,7 @@ const getResources = async function (req, res) {
     const user = await User.findById(userId);
     const userResources = user.resources;
     const result = await Promise.all(
-      userResources.map((resourceID) => {
-        fetchResource(resourceID);
-      })
+      userResources.map((resourceID) => fetchResource(resourceID))
     );
     res.status(200).json(result);
   } catch (err) {
@@ -131,7 +129,7 @@ const addResource = async function (req, res) {
   user.resources.push(newResource._id);
   await user.save();
   res.status(201).json({
-    msg: `Succes fully created resource with id:${newResource._id}`,
+    msg: `Succesfully created resource with id:${newResource._id}`,
     resourceID: newResource._id,
   });
 };
