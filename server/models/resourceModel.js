@@ -1,7 +1,11 @@
 const mongoose = require("mongoose");
-const resourceSchema = new mongoose.Schema({
-  quizID: { type: mongoose.Schema.Types.ObjectId, ref: "Quiz" },
-  flashcardID: { type: mongoose.Schema.Types.ObjectId, ref: "Flashcard" },
-  summaryID: { type: mongoose.Schema.Types.ObjectId, ref: "Summary" },
-});
+const resourceSchema = new mongoose.Schema(
+  {
+    title: String,
+    quizID: { type: mongoose.Schema.Types.ObjectId, ref: "Quiz" },
+    flashcardID: { type: mongoose.Schema.Types.ObjectId, ref: "Flashcard" },
+    summaryID: { type: mongoose.Schema.Types.ObjectId, ref: "Summary" },
+  },
+  { timestamps: true }
+);
 module.exports = mongoose.model("Resource", resourceSchema);

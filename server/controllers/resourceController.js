@@ -14,10 +14,12 @@ const fetchResource = async (resourceID) => {
   const resource = await Resource.findById(resourceID);
   if (!resource) return null;
 
-  const { quizID, flashcardID, summaryID } = resource;
+  const { quizID, flashcardID, summaryID, title, createdAt } = resource;
 
   return {
     _id: resource._id,
+    title: title,
+    createdAt: createdAt,
     quiz: quizID ? await Quiz.findById(quizID) : null,
     flashcard: flashcardID ? await Flashcard.findById(flashcardID) : null,
     summary: summaryID ? await Summary.findById(summaryID) : null,
@@ -50,7 +52,9 @@ const getResourceById = async function (req, res) {
     if (!resource) {
       return res.status(404).json({ error: "Resource not found" });
     }
-    const { quizID, flashcardID, summaryID } = resource;
+    const { quizID, flashcardID, summaryID, title, createdAt } = resource;
+    response.title = title;
+    response.createdAt = createdAt;
     if (quizID) {
       const quiz = await Quiz.findById(quizID);
       response.quiz = quiz;
@@ -73,7 +77,7 @@ const getResourceById = async function (req, res) {
 //POST request handler for creating a resource
 const addResource = async function (req, res) {
   const userId = req.user._id;
-  const { quizPrompt, flashcardPrompt, summaryPrompt } = req.body;
+  const { title, quizPrompt, flashcardPrompt, summaryPrompt } = req.body;
   if (!req.file) {
     return res.status(400).json({ error: "No file uploaded" });
   }
@@ -84,6 +88,7 @@ const addResource = async function (req, res) {
     return res.status(500).json({ error: "Failed to process file" });
   }
   const newResource = await Resource.create({
+    title: title,
     quizID: null,
     flashcardID: null,
     summaryID: null,
@@ -129,7 +134,7 @@ const addResource = async function (req, res) {
   user.resources.push(newResource._id);
   await user.save();
   res.status(201).json({
-    msg: `Succesfully created resource with id:${newResource._id}`,
+    msg: `Successfully created resource with id:${newResource._id}`,
     resourceID: newResource._id,
   });
 };
