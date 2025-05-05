@@ -1,23 +1,33 @@
 // import mongoose from 'mongoose';
 const mongoose = require("mongoose");
 
-const quizCollectionSchema = new mongoose.Schema({
-    quizzes: [{  // renamed 'questions' → 'quizzes' to reflect it's a set
+const quizCollectionSchema = new mongoose.Schema(
+  {
+    questions: [
+      {
         question: {
-            type: String,
-            required: true
+          type: String,
+          required: true,
         },
-        options: [{
+        options: [
+          {
             type: String,
-            required: true
-        }],
+            required: true,
+          },
+        ],
         correctAnswer: {
-            type: String,
-            required: true
-        }
-    }],
-}, { _id: true, timestamps: true });
+          type: String,
+          required: true,
+        },
+      },
+    ],
+  },
+  { _id: true, timestamps: true }
+);
 
-const quizCollectionModel = mongoose.model('quizCollection', quizCollectionSchema);
+const quizCollectionModel = mongoose.model(
+  "quizCollection",
+  quizCollectionSchema
+);
 // export default userModel
 module.exports = quizCollectionModel;
