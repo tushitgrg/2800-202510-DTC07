@@ -1,18 +1,9 @@
-import React from 'react'
-const page = () => {
+import AboutUs from "@/components/aboutUs/aboutUs"
+
+export default function AboutPage() {
     return (
-        <div>
-            Team Name: DTC-07
-            Team Members:
-            <ul>
-                <li> Emanuel Molla </li>
-                <li> Woojin Song </li>
-                <li> Jimmy Cho </li>
-                <li> Tracy Chung </li>
-                <li> Tushit Garg </li>
-            </ul>
-        </div>
+        <main className="flex-1 mt-20">
+            <AboutUs />
+        </main>
     )
 }
-
-export default page
