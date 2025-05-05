@@ -1,0 +1,11 @@
+const getResources = async function (req, res) {
+  const { quizPrompt, flashcardPrompt, summaryPrompt } = req.body;
+};
+const getResourceById = async function (req, res) {
+  const { quizPrompt, flashcardPrompt, summaryPrompt } = req.body;
+};
+const addResource = async function (req, res) {
+  const { quizPrompt, flashcardPrompt, summaryPrompt } = req.body;
+};
+
+module.exports = { getResources, getResourceById, addResource };
