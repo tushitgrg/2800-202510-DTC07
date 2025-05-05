@@ -1,3 +1,10 @@
+const { processFile } = require("../utils/fileHandler");
+const { getGeminiOutput } = require("../utils/geminiClient");
+const { createQuiz, getQuiz, deleteQuiz } = require("./quizController");
+const addQuizEntry = require("../utils/addQuizEntry");
+
+const Resource = require("../models/resourceModel");
+
 const getResources = async function (req, res) {
   const { quizPrompt, flashcardPrompt, summaryPrompt } = req.body;
 };
@@ -6,6 +13,30 @@ const getResourceById = async function (req, res) {
 };
 const addResource = async function (req, res) {
   const { quizPrompt, flashcardPrompt, summaryPrompt } = req.body;
+  if (!req.file) {
+    return res.status(400).json({ error: "No file uploaded" });
+  }
+
+  const file = await processFile(req.file);
+
+  if (!file) {
+    return res.status(500).json({ error: "Failed to process file" });
+  }
+  const newResource = Resource.create({
+    quizID: null,
+    flashcardID: null,
+    summaryID: null,
+  });
+
+  if (quizPrompt) {
+    try {
+      const quiz = await getGeminiOutput(file, quizPrompt);
+      const quizId = await addQuizEntry(quiz);
+      await Resource.findByIdAndUpdate(newResource._id, { quizID: quizId });
+    } catch (err) {
+      res.status(500).error("Failed to create quiz: ", err);
+    }
+  }
 };
 
 module.exports = { getResources, getResourceById, addResource };
