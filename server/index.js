@@ -1,18 +1,22 @@
 const express = require('express');
 const session = require('express-session');
 const passport = require('passport');
-
+const cors = require('cors')
 const authRoutes = require('./controllers/authController');
 const passportConfig = require('./utils/google_auth');
 
 const quizRoutes = require("./routes/quizRoutes");
 const flashcardRoutes = require("./routes/flashcardRoutes");
 const resourceRoutes = require('./routes/resourceRoutes')
-
+const MongoStore = require('connect-mongo')
 require('./utils/db');
 
 
 const app = express();
+app.use(cors({
+  origin: 'http://localhost:3000', // frontend origin
+  credentials: true,               // allow cookies to be sent
+}))
 
 app.use(express.json())
 
@@ -20,6 +24,9 @@ app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: true,
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGO_URI
+  })
 }));
 app.use(passport.initialize());
 app.use(passport.session());

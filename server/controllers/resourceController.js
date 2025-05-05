@@ -28,6 +28,7 @@ const fetchResource = async (resourceID) => {
 
 // GET request handler for all resources under the current user
 const getResources = async function (req, res) {
+  
   const userId = req.user._id;
   try {
     const user = await User.findById(userId);

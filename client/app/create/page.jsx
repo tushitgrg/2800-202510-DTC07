@@ -92,7 +92,7 @@ export default function CreatePage() {
     setFile(null)
   }
 
-  const handleNext = () => {
+  const handleNext =async () => {
     if (currentStep === "upload") {
       if (!file) return
       setCurrentStep("select")
@@ -101,22 +101,25 @@ export default function CreatePage() {
       setCurrentStep("settings")
     } else if (currentStep === "settings") {
       setCurrentStep("processing")
-      let apiBody = {
-        quiz: null,
-        flashcards: null,
-        summary: null
-      }
+      let apiBody = new FormData()
+      apiBody.append('pdf', file)
       if(selectedContentTypes.includes("quiz")){
-        apiBody.quiz = generateQuizPrompt(quizSettings)
+        apiBody.append("quizPrompt",  generateQuizPrompt(quizSettings)) 
       }
       if(selectedContentTypes.includes("flashcards")){
-        apiBody.flashcards = generateFlashcardPrompt(flashcardSettings)
+        apiBody.append("flashcardPrompt", generateFlashcardPrompt(flashcardSettings))
       }
       if(selectedContentTypes.includes("summary")){
-        apiBody.summary = generateSummaryPrompt(summarySettings)
+        apiBody.append("summaryPrompt",generateSummaryPrompt(summarySettings))
       }
-      console.log(apiBody)
-      // Backend request will go there
+
+      const resp = await fetch('http://localhost:3001/resources', {
+        method: "POST",
+        body: apiBody,
+         credentials: 'include'
+      })
+      console.log((await resp.json()))
+      
     }
   }
 
