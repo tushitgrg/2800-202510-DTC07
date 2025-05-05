@@ -4,19 +4,47 @@ const addQuizEntry = require("../utils/addQuizEntry");
 const addFlashcardEntry = require("../utils/addFlashcardEntry");
 const addSummaryEntry = require("../utils/addSummaryEntry");
 
-
-const User = require('../models/userModel')
+const User = require("../models/userModel");
 const Resource = require("../models/resourceModel");
+const Quiz = require("../models/quizModel");
+const Flashcard = require("../models/flashcardModel");
+const Summary = require("../models/summaryModel");
 
 const getResources = async function (req, res) {
-  const User = req.session;
+  const userId = req.user._id;
 };
 const getResourceById = async function (req, res) {
   const resourceId = req.params.id;
+
+  const response = {};
+  try {
+    const resource = await Resource.findById(resourceId);
+    if (!resource) {
+      return res.status(404).json({ error: "Resource not found" });
+    }
+    const { quizID, flashcardID, summaryID } = resource;
+    if (quizID) {
+      const quiz = await Quiz.findById(quizID);
+      response.quiz = quiz;
+    }
+    if (flashcardID) {
+      const flashcard = await Flashcard.findById(flashcardID);
+      response.flashcard = flashcard;
+    }
+    if (summaryID) {
+      const summary = await Summary.findById(summaryID);
+      response.summary = summary;
+    }
+    res.status(200).json(response);
+  } catch (error) {
+    console.error("Internal server error: ", error);
+    res.status(500).json({ error: "Failed to retrieve resource" });
+  }
 };
 
 //POST request handler for creating a resource
 const addResource = async function (req, res) {
+  const userId = req.user._id;
   const { quizPrompt, flashcardPrompt, summaryPrompt } = req.body;
   if (!req.file) {
     return res.status(400).json({ error: "No file uploaded" });
@@ -69,6 +97,9 @@ const addResource = async function (req, res) {
       return res.status(500).json({ error: "Failed to create summary." });
     }
   }
+  const user = await User.findById(userId);
+  user.resources.push(newResource._id);
+  await user.save();
   res.status(201).json({
     msg: `Succes fully created resource with id:${newResource._id}`,
     resourceID: newResource._id,
