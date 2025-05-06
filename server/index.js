@@ -1,55 +1,57 @@
-const express = require('express');
-const session = require('express-session');
-const passport = require('passport');
-const cors = require('cors')
-const authRoutes = require('./controllers/authController');
-const passportConfig = require('./utils/google_auth');
+const express = require("express");
+const session = require("express-session");
+const passport = require("passport");
+const cors = require("cors");
 
-const quizRoutes = require("./routes/quizRoutes");
-const flashcardRoutes = require("./routes/flashcardRoutes");
-const resourceRoutes = require('./routes/resourceRoutes')
-const MongoStore = require('connect-mongo')
-require('./utils/db');
-
+const passportConfig = require("./utils/google_auth");
+const authRoutes = require("./controllers/authController");
+const resourceRoutes = require("./routes/resourceRoutes");
+const MongoStore = require("connect-mongo");
+const isAuthenticated = require("./controllers/authMiddleware");
+require("./utils/db");
 
 const app = express();
-app.use(cors({
-  origin: 'http://localhost:3000', // frontend origin
-  credentials: true,               // allow cookies to be sent
-}))
-
-app.use(express.json())
-
-app.use(session({
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: true,
-  store: MongoStore.create({
-    mongoUrl: process.env.MONGO_URI
+app.use(
+  cors({
+    origin: "http://localhost:3000", // frontend origin
+    credentials: true, // allow cookies to be sent
   })
-}));
+);
+
+app.use(express.json());
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGO_URI,
+    }),
+  })
+);
 app.use(passport.initialize());
 app.use(passport.session());
 passportConfig(passport);
 
-app.use('/', authRoutes);
-app.get('/', (req, res)=>{
-  res.json(req.user)
-})
+app.use("/", authRoutes);
+app.use(isAuthenticated);
+app.get("/", (req, res) => {
+  res.json(req.user);
+});
 
-app.get('/dashboard', (req, res)=>{
-  if(!req.user){
-    res.redirect('/auth/google')
-    return
+app.get("/dashboard", (req, res) => {
+  if (!req.user) {
+    res.redirect("/auth/google");
+    return;
   }
-  res.json(req.user)
-})
+  res.json(req.user);
+});
 
 app.use("/resources", resourceRoutes);
 // app.use('/quiz', quizRoutes)
 // app.use("/flashcard", flashcardRoutes);
 
-
 app.listen(3001, () => {
-  console.log('Server started on port 3001');
+  console.log("Server started on port 3001");
 });
