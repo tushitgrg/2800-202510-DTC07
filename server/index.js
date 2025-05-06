@@ -52,6 +52,10 @@ app.use("/resources", resourceRoutes);
 // app.use('/quiz', quizRoutes)
 // app.use("/flashcard", flashcardRoutes);
 
-app.listen(3001, () => {
-  console.log("Server started on port 3001");
-});
+if (process.env.VERCEL !== '1') {
+  app.listen(3001, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;
