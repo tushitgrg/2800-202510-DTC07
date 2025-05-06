@@ -31,7 +31,10 @@ const AboutUs = () => {
                 {badge}
             </Badge>
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight">{title}</h2>
-            <p className="max-w-[800px] text-muted-foreground md:text-lg">{text}</p>
+            <p className="max-w-prose text-muted-foreground text-sm sm:text-base leading-relaxed px-4 sm:px-0">
+                {text}
+            </p>
+
         </motion.div>
     )
 
@@ -56,8 +59,8 @@ const AboutUs = () => {
                         Who We Are
                     </Badge>
 
-                    <div className="w-full max-w-xl mt-10 relative flex justify-center">
-                        <Carousel className="w-full">
+                    <div className="relative w-full px-4 sm:px-0">
+                        <Carousel className="w-full max-w-sm sm:max-w-xl mx-auto">
                             <CarouselContent>
                                 {teamCards.map((member, index) => (
                                     <CarouselItem key={index} className="basis-full flex justify-center">
