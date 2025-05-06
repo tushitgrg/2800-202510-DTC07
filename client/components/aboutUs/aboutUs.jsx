@@ -16,7 +16,7 @@ const AboutUs = () => {
         { name: "Woojin Song", role: "Our Best Scrum Master & Spokesman", icon: <UserCircle2 className="size-6" />, description: "When you hear “wait a minute,” you know you’ve messed something up. The ultimate translator for non-native speakers, a lifesaver for all docs and grammar. Online nearly 24/7." },
         { name: "Emanuel Molla", role: "Our Backend Developer", icon: <Target className="size-6" />, description: "Solves all our Git issues, APIs, and database mysteries. We suspect he’s a robot. He only stands up when it’s time to fix something critical. Rumor has it, his headset is directly routed into the backend." },
         { name: "Jimmy Cho", role: "Our Frontend Developer", icon: <Users className="size-6" />, description: "Low energy consumption. Just feed him iced coffee, smoke, and alcohol, then watch him create world-class UX/UI. Favorite line: “Good for you.” You better find him before 10 PM. After that, good luck. A low-key party king." },
-        { name: "Tracy Chung", role: "Our Placeholder", icon: <Code2 className="size-6" />, description: "The 5th Group mate, because every great team needs five." },
+        { name: "Tracy Chung", role: "Our Placeholder", icon: <Code2 className="size-6" />, description: "The 5th Group mate, because every team needs five members." },
     ]
 
     const SectionHeader = ({ badge, title, text }) => (
@@ -79,8 +79,8 @@ const AboutUs = () => {
                                     </CarouselItem>
                                 ))}
                             </CarouselContent>
-                            <CarouselPrevious />
-                            <CarouselNext />
+                            <CarouselPrevious className="ml-10" />
+                            <CarouselNext className="mr-10" />
                         </Carousel>
                     </div>
                 </motion.div>
