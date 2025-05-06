@@ -58,7 +58,8 @@ Return a JSON object matching this schema
 
 Instructions:
 1. Write a **${s.length}‑length** summary (short / medium / long).
-2. Focus especially on: ${s.focusAreas.join(", ")}.
-3. Use concise, academic language; bullet points are welcome.
-4. Place the entire summary in the "content" field.
-5. Respond with **only** the JSON object—no markdown fences, no extra keys.`.trim();
+2. Use concise, academic language; bullet points are welcome.
+3. Place the entire summary in the "content" field.
+4. Respond with **only** the JSON object—no markdown fences, no extra keys.
+5. You must use markdown for the content string to style the text.
+`.trim();

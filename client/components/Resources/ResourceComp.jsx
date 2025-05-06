@@ -6,6 +6,7 @@ import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import Quiz from "@/components/quizzes/quiz";
 import Flashcards from "@/components/flashcards/flashcard";
+import Markdown from 'react-markdown';
 
 const ResourceComp = ({resourceData}) => {
     const hasQuiz = !!resourceData.quiz;
@@ -55,7 +56,8 @@ const ResourceComp = ({resourceData}) => {
         {hasSummary && (
           <TabsContent value="summary" className="py-4">
             <div className="bg-slate-800 rounded-lg p-6 shadow-md">
-              <p className="text-white">{resourceData.summary.content}</p>
+                <Markdown>{resourceData.summary.content}</Markdown>
+              {/* <p className="text-white">{JSON.stringify(resourceData.summary.content)}</p> */}
             </div>
           </TabsContent>
         )}
