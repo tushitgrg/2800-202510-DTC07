@@ -6,9 +6,8 @@ const page = async ({params}) => {
  
   try{
     const {id} = await params
-    const response = await fetch(`http://localhost:3001/resources/${id}`)
-    data = await response.json()
-    return  <MainResources resourceData={data}/>
+  
+    return  <MainResources id={id}/>
   }catch{
     return redirect('/not-found')
   }
