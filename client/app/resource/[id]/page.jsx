@@ -14,7 +14,7 @@ const page = async ({params}) => {
   }catch{
     return redirect('/not-found')
   }
-
+console.log("Emanuelllllllllllllllllllllllllllll")
 console.log(data)
 
   return (
