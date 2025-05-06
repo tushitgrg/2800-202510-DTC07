@@ -58,13 +58,8 @@ const AboutUs = () => {
                         Who We Are
                     </Badge>
 
-<<<<<<< HEAD
-                    <div className="w-full sm:max-w-md md:max-w-xl mt-10 relative flex justify-center">
-                        <Carousel className="w-full">
-=======
                     <div className="relative w-full px-4 sm:px-0">
                         <Carousel className="w-full max-w-sm sm:max-w-xl mx-auto">
->>>>>>> Tracy_chung_about_Us_page
                             <CarouselContent>
                                 {teamCards.map((member, index) => (
                                     <CarouselItem key={index} className="basis-full flex justify-center">
