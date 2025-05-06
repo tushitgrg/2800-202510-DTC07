@@ -5,8 +5,8 @@ import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
-import Quiz from "@/components/quizzes/Quiz";
-import Flashcards from "@/components/flashcards/Flashcard";
+import Quiz from "@/components/quizzes/quiz";
+import Flashcards from "@/components/flashcards/flashcard";
 
 export default function MainResources({ resourceData }) {
 
