@@ -12,11 +12,11 @@ import { Users, Target, UserCircle2, Code2, Lightbulb } from "lucide-react"
 
 const AboutUs = () => {
     const teamCards = [
-        { name: "Tushit Garg", role: "placeholder", icon: <Lightbulb className="size-6" /> },
-        { name: "Woojin Song", role: "placeholder", icon: <Code2 className="size-6" /> },
-        { name: "Emanuel Molla", role: "placeholder", icon: <Target className="size-6" /> },
-        { name: "Jimmy Cho", role: "placeholder", icon: <Users className="size-6" /> },
-        { name: "Tracy Chung", role: "placeholder", icon: <UserCircle2 className="size-6" /> },
+        { name: "Tushit Garg", role: "Our Captain", icon: <Lightbulb className="size-6" />, description:"A slightly small genius teenager who’s not quite of legal drinking age, but probably has 5+ years of dev experience. Always “busy” for no apparent reason... kids these days." },
+        { name: "Woojin Song", role: "Our Best Scrum Master & Spokesman", icon: <UserCircle2 className="size-6" />, description: "When you hear “wait a minute,” you know you’ve messed something up. The ultimate translator for non-native speakers, a lifesaver for all docs and grammar. Online nearly 24/7." },
+        { name: "Emanuel Molla", role: "Our Backend Developer", icon: <Target className="size-6" />, description: "Solves all our Git issues, APIs, and database mysteries. We suspect he’s a robot. He only stands up when it’s time to fix something critical. Rumor has it, his headset is directly routed into the backend." },
+        { name: "Jimmy Cho", role: "Our Frontend Developer", icon: <Users className="size-6" />, description: "Low energy consumption. Just feed him iced coffee, smoke, and alcohol, then watch him create world-class UX/UI. Favorite line: “Good for you.” You better find him before 10 PM. After that, good luck. A low-key party king." },
+        { name: "Tracy Chung", role: "Our Placeholder", icon: <Code2 className="size-6" />, description: "The 5th Group mate, because every team needs five members." },
     ]
 
     const SectionHeader = ({ badge, title, text }) => (
@@ -30,14 +30,17 @@ const AboutUs = () => {
             <Badge className="rounded-full px-4 py-1.5 text-sm font-medium" variant="secondary">
                 {badge}
             </Badge>
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">{title}</h2>
-            <p className="max-w-[800px] text-muted-foreground md:text-lg">{text}</p>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight pt-4">{title}</h2>
+            <p className="max-w-prose text-muted-foreground text-sm sm:text-base leading-relaxed px-4 sm:px-0">
+                {text}
+            </p>
+
         </motion.div>
     )
 
     return (
-        <section id="about" className="w-full py-20 md:py-32 bg-background">
-            <div className="container px-4 md:px-6 space-y-20">
+        <section id="about" className="w-full py-5 md:py-32 bg-background">
+            <div className="container px-8 md:px-8 space-y-10">
                 <SectionHeader
                     badge="About Us"
                     title="Why We Built Scholiast"
@@ -55,12 +58,17 @@ const AboutUs = () => {
                         Who We Are
                     </Badge>
 
+<<<<<<< HEAD
                     <div className="w-full sm:max-w-md md:max-w-xl mt-10 relative flex justify-center">
                         <Carousel className="w-full">
+=======
+                    <div className="relative w-full px-4 sm:px-0">
+                        <Carousel className="w-full max-w-sm sm:max-w-xl mx-auto">
+>>>>>>> Tracy_chung_about_Us_page
                             <CarouselContent>
                                 {teamCards.map((member, index) => (
                                     <CarouselItem key={index} className="basis-full flex justify-center">
-                                        <div className="w-full max-w-sm rounded-xl border border-border/40 bg-muted/10 p-6 backdrop-blur shadow-md hover:-translate-y-1 transition-transform duration-300 text-center">
+                                        <div className="w-full max-w-sm rounded-xl border border-border/40 bg-muted/10 p-3 backdrop-blur shadow-md hover:-translate-y-1 transition-transform duration-300 text-center">
                                             <div className="flex flex-col items-center space-y-2 mb-4">
                                                 <div className="p-2 bg-primary/10 text-primary rounded-full">
                                                     {member.icon}
@@ -70,13 +78,13 @@ const AboutUs = () => {
                                                     <p className="text-sm text-muted-foreground">{member.role}</p>
                                                 </div>
                                             </div>
-                                            <div className="text-muted-foreground text-sm">[ placeholder ]</div>
+                                            <div className="text-muted-foreground text-sm">{member.description}</div>
                                         </div>
                                     </CarouselItem>
                                 ))}
                             </CarouselContent>
-                            <CarouselPrevious />
-                            <CarouselNext />
+                            <CarouselPrevious className="ml-10" />
+                            <CarouselNext className="mr-10" />
                         </Carousel>
                     </div>
                 </motion.div>
