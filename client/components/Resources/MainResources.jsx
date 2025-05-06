@@ -1,13 +1,8 @@
 "use client";
 
-import { use, useEffect } from "react";
+import { useEffect } from "react";
 import { useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChevronLeft } from "lucide-react";
-import Link from "next/link";
-import Quiz from "@/components/quizzes/quiz";
-import Flashcards from "@/components/flashcards/flashcard";
-import { date } from "zod";
+
 import ResourceComp from "./ResourceComp";
 import { useRouter } from "next/navigation";
 
