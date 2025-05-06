@@ -16,7 +16,7 @@ export default function ProfileCard() {
   const [school, setSchool] = useState("BCIT");
 
   // Tracks whether profile is in editing mode (false is read only mode)
-  const [isEditing, setIsEditing] = useState(false); 
+  const [isEditing, setIsEditing] = useState(false);
   // Stores the original profile data for reverting changes (with cancel button)
   const [backup, setBackup] = useState({
     displayName: "",
@@ -48,7 +48,10 @@ export default function ProfileCard() {
 
   return (
     <Card className="max-w-md mx-auto mt-10 shadow-lg">
-      <CardHeader>
+      <CardHeader className="flex flex-col items-center space-y-3">
+        <div className="w-16 h-16 rounded-full bg-gray-400 flex items-center justify-center text-white text-xl">
+          👤
+        </div>
         <CardTitle>User Profile</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -58,6 +61,7 @@ export default function ProfileCard() {
             id="displayName"
             value={displayName}
             disabled={!isEditing}
+            className="rounded-full mt-1"
             onChange={(e) => setDisplayName(e.target.value)}
           />
         </div>
@@ -69,6 +73,7 @@ export default function ProfileCard() {
               id="firstName"
               value={firstName}
               disabled={!isEditing}
+              className="rounded-full mt-1"
               onChange={(e) => setFirstName(e.target.value)}
             />
           </div>
@@ -78,6 +83,7 @@ export default function ProfileCard() {
               id="lastName"
               value={lastName}
               disabled={!isEditing}
+              className="rounded-full mt-1"
               onChange={(e) => setLastName(e.target.value)}
             />
           </div>
@@ -90,6 +96,7 @@ export default function ProfileCard() {
             type="email"
             value={email}
             disabled={!isEditing}
+            className="rounded-full mt-1"
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
@@ -100,6 +107,7 @@ export default function ProfileCard() {
             id="school"
             value={school}
             disabled={!isEditing}
+            className="rounded-full mt-1"
             onChange={(e) => setSchool(e.target.value)}
           />
         </div>
@@ -113,7 +121,7 @@ export default function ProfileCard() {
             <Button >Save</Button> {/* ADD PROPER SAVE HANDLING with onClick={handleSave} */}
           </>
         ) : (
-          <Button onClick={handleEdit}>Edit</Button>
+          <Button onClick={handleEdit} className="rounded-full">Edit</Button>
         )}
       </CardFooter>
     </Card>
