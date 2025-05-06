@@ -3,24 +3,15 @@ import { redirect } from 'next/navigation'
 import React from 'react'
 
 const page = async ({params}) => {
-  const {id} = await params
-  if(!id){
-    return redirect('/not-found')
-  }
-  let data = {}
+ 
   try{
+    const {id} = await params
     const response = await fetch(`http://localhost:3001/resources/${id}`)
     data = await response.json()
+    return  <MainResources resourceData={data}/>
   }catch{
     return redirect('/not-found')
   }
-
-console.log(data)
-
-  return (
-
-   <MainResources resourceData={data}/>
-  )
 }
 
 export default page
