@@ -10,14 +10,13 @@ import {
 
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import AuthButton from "./AuthButton"
 
 
 const Navbar = () => {
     const menuItems = [
-        { href: "#features", label: "Features" },
-        { href: "#testimonials", label: "Testimonials" },
-        { href: "#faq", label: "FAQ" },
-        { href: "#", label: "Log in", className: "mt-4" },
+        { href: "/dashboard", label: "Dashboard" },
+        { href: "/about", label: "About Us" },
       ]
     const container = {
         hidden: { opacity: 0 },
@@ -66,10 +65,10 @@ const Navbar = () => {
     }`}
   >
     <div className="container flex h-16 items-center justify-between">
-      <div className="flex items-center gap-2 font-bold">
+      <a className="flex items-center gap-2 font-bold" href="/">
        <img src="/header-icon.svg" className="w-10 h-10"/>
         <span className="text-2xl">Scholiast</span>
-      </div>
+      </a>
       <nav className="hidden md:flex gap-8">
        {menuItems.filter((i)=>!i.className).map((i)=> <Link
           href={i.href}
@@ -81,16 +80,8 @@ const Navbar = () => {
       
       </nav>
       <div className="hidden md:flex gap-4 items-center">
-        <Link
-          href="#"
-          className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-        >
-          Log in
-        </Link>
-        <Button className="rounded-full hover:cursor-pointer">
-          Get Started
-          <ChevronRight className="ml-1 size-4" />
-        </Button>
+      
+       <AuthButton/>
       </div>
       <div className="flex items-center md:hidden">
         <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
@@ -168,13 +159,15 @@ const Navbar = () => {
               animate="show"
               className="flex flex-col items-center justify-center gap-8 text-center w-full max-w-sm px-4"
             >
-              <motion.div variants={item} className="flex items-center gap-2 font-bold text-2xl mb-8">
+              <a href="/">
+              <motion.div variants={item} className="flex items-center gap-2 font-bold text-2xl mb-8" >
              
        <img src="/header-icon.svg" className="w-10 h-10"/>
         <span className="text-2xl">Scholiast</span>
       
               </motion.div>
 
+              </a>
               {menuItems.map((link, i) => (
                 <motion.div key={i} variants={item} className={link.className || ""} style={{ width: "100%" }}>
                   <Link
@@ -188,10 +181,8 @@ const Navbar = () => {
               ))}
 
               <motion.div variants={item} className="mt-6 w-full">
-                <Button className="rounded-full text-lg px-8 py-6 w-full" onClick={() => setMobileMenuOpen(false)}>
-                  Get Started
-                  <ChevronRight className="ml-1 size-5" />
-                </Button>
+                <AuthButton className="w-full text-lg px-8 py-6"/> 
+             
               </motion.div>
             </motion.div>
           </div>

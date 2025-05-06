@@ -39,7 +39,7 @@ const AboutUs = () => {
     )
 
     return (
-        <section id="about" className="w-full py-5 md:py-32 bg-background">
+        <section id="about" className="w-full py-5 md:py-32 ">
             <div className="container px-8 md:px-8 space-y-10">
                 <SectionHeader
                     badge="About Us"
