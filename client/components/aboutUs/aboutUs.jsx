@@ -30,7 +30,7 @@ const AboutUs = () => {
             <Badge className="rounded-full px-4 py-1.5 text-sm font-medium" variant="secondary">
                 {badge}
             </Badge>
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">{title}</h2>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight pt-4">{title}</h2>
             <p className="max-w-prose text-muted-foreground text-sm sm:text-base leading-relaxed px-4 sm:px-0">
                 {text}
             </p>
@@ -39,8 +39,8 @@ const AboutUs = () => {
     )
 
     return (
-        <section id="about" className="w-full py-20 md:py-32 bg-background">
-            <div className="container px-4 md:px-6 space-y-20">
+        <section id="about" className="w-full py-5 md:py-32 bg-background">
+            <div className="container px-8 md:px-8 space-y-10">
                 <SectionHeader
                     badge="About Us"
                     title="Why We Built Scholiast"
@@ -64,7 +64,7 @@ const AboutUs = () => {
                             <CarouselContent>
                                 {teamCards.map((member, index) => (
                                     <CarouselItem key={index} className="basis-full flex justify-center">
-                                        <div className="w-full max-w-sm rounded-xl border border-border/40 bg-muted/10 p-6 backdrop-blur shadow-md hover:-translate-y-1 transition-transform duration-300 text-center">
+                                        <div className="w-full max-w-sm rounded-xl border border-border/40 bg-muted/10 p-3 backdrop-blur shadow-md hover:-translate-y-1 transition-transform duration-300 text-center">
                                             <div className="flex flex-col items-center space-y-2 mb-4">
                                                 <div className="p-2 bg-primary/10 text-primary rounded-full">
                                                     {member.icon}
