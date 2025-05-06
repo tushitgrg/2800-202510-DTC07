@@ -12,11 +12,11 @@ import { Users, Target, UserCircle2, Code2, Lightbulb } from "lucide-react"
 
 const AboutUs = () => {
     const teamCards = [
-        { name: "Tushit Garg", role: "placeholder", icon: <Lightbulb className="size-6" /> },
-        { name: "Woojin Song", role: "placeholder", icon: <Code2 className="size-6" /> },
-        { name: "Emanuel Molla", role: "placeholder", icon: <Target className="size-6" /> },
-        { name: "Jimmy Cho", role: "placeholder", icon: <Users className="size-6" /> },
-        { name: "Tracy Chung", role: "placeholder", icon: <UserCircle2 className="size-6" /> },
+        { name: "Tushit Garg", role: "Our Captain", icon: <Lightbulb className="size-6" />, description:"A slightly small genius teenager who’s not quite of legal drinking age, but probably has 5+ years of dev experience. Always “busy” for no apparent reason... kids these days." },
+        { name: "Woojin Song", role: "Our Best Scrum Master & Spokesman", icon: <UserCircle2 className="size-6" />, description: "When you hear “wait a minute,” you know you’ve messed something up. The ultimate translator for non-native speakers, a lifesaver for all docs and grammar. Online nearly 24/7." },
+        { name: "Emanuel Molla", role: "Our Backend Developer", icon: <Target className="size-6" />, description: "Solves all our Git issues, APIs, and database mysteries. We suspect he’s a robot. He only stands up when it’s time to fix something critical. Rumor has it, his headset is directly routed into the backend." },
+        { name: "Jimmy Cho", role: "Our Frontend Developer", icon: <Users className="size-6" />, description: "Low energy consumption. Just feed him iced coffee, smoke, and alcohol, then watch him create world-class UX/UI. Favorite line: “Good for you.” You better find him before 10 PM. After that, good luck. A low-key party king." },
+        { name: "Tracy Chung", role: "Our Placeholder", icon: <Code2 className="size-6" />, description: "The 5th Group mate, because every great team needs five." },
     ]
 
     const SectionHeader = ({ badge, title, text }) => (
@@ -74,7 +74,7 @@ const AboutUs = () => {
                                                     <p className="text-sm text-muted-foreground">{member.role}</p>
                                                 </div>
                                             </div>
-                                            <div className="text-muted-foreground text-sm">[ placeholder ]</div>
+                                            <div className="text-muted-foreground text-sm">{member.description}</div>
                                         </div>
                                     </CarouselItem>
                                 ))}
