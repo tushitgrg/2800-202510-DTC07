@@ -170,9 +170,32 @@ const addResource = async function (req, res) {
   });
 };
 
+const deleteResource = async function (req, res) {
+  const resourceId = req.params.id;
+  if (!resourceId) {
+    res.status(400).json({ error: "Resource ID is required" });
+  }
+  const user = await User.findById(req.user._id);
+  if (!user) {
+    res.status(404).json({ error: "User not found" });
+  }
+  try {
+    await Resource.findByIdAndDelete(resourceId);
+    await user.updateOne({ $pull: { resources: resourceId } });
+    res
+      .status(200)
+      .json({ msg: `Successfully deleted resource with ID: ${resourceId}` });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ error: err, msg: "Unable to delete the provided resource" });
+  }
+};
+
 module.exports = {
   getResources,
   getResourceInfo,
   getResourceById,
   addResource,
+  deleteResource,
 };
