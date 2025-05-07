@@ -117,42 +117,48 @@ const addResource = async function (req, res) {
     summaryID: null,
   });
 
-  if (quizPrompt) {
-    try {
-      const quiz = await getGeminiOutput(file, quizPrompt);
-      const quizId = await addQuizEntry(quiz);
-      await Resource.findByIdAndUpdate(newResource._id, { quizID: quizId });
-    } catch (err) {
-      console.error("Failed to create quiz:", err);
-      return res.status(500).json({ error: "Failed to create quiz." });
+  try {
+    const tasks = [];
+
+    if (quizPrompt) {
+      const quizTask = (async () => {
+        const quiz = await getGeminiOutput(file, quizPrompt);
+        const quizId = await addQuizEntry(quiz);
+        await Resource.findByIdAndUpdate(newResource._id, { quizID: quizId });
+      })();
+      tasks.push(quizTask);
     }
+
+    if (flashcardPrompt) {
+      const flashcardTask = (async () => {
+        const flashcard = await getGeminiOutput(file, flashcardPrompt);
+        const flashcardId = await addFlashcardEntry(flashcard);
+        await Resource.findByIdAndUpdate(newResource._id, {
+          flashcardID: flashcardId,
+        });
+      })();
+      tasks.push(flashcardTask);
+    }
+
+    if (summaryPrompt) {
+      const summaryTask = (async () => {
+        const summary = await getGeminiOutput(file, summaryPrompt);
+        const summaryId = await addSummaryEntry(summary);
+        await Resource.findByIdAndUpdate(newResource._id, {
+          summaryID: summaryId,
+        });
+      })();
+      tasks.push(summaryTask);
+    }
+
+    await Promise.all(tasks);
+  } catch (err) {
+    console.error("Failed to create resource data:", err);
+    res
+      .status(500)
+      .json({ error: "Failed to create one or more parts of the resource." });
   }
 
-  if (flashcardPrompt) {
-    try {
-      const flashcard = await getGeminiOutput(file, flashcardPrompt);
-      const flashcardId = await addFlashcardEntry(flashcard);
-      await Resource.findByIdAndUpdate(newResource._id, {
-        flashcardID: flashcardId,
-      });
-    } catch (err) {
-      console.error("Failed to create flashcard:", err);
-      return res.status(500).json({ error: "Failed to create flashcard." });
-    }
-  }
-
-  if (summaryPrompt) {
-    try {
-      const summary = await getGeminiOutput(file, summaryPrompt);
-      const summaryId = await addSummaryEntry(summary);
-      await Resource.findByIdAndUpdate(newResource._id, {
-        summaryID: summaryId,
-      });
-    } catch (err) {
-      console.error("Failed to create summary:", err);
-      return res.status(500).json({ error: "Failed to create summary." });
-    }
-  }
   const user = await User.findById(userId);
   user.resources.push(newResource._id);
   await user.save();

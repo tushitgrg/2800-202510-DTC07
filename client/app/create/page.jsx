@@ -100,7 +100,7 @@ const [progressV, setprogressV] = useState(0)
           }
           return v + 1;
         });
-      }, 50);
+      }, 150);
   
       return () => clearInterval(interval);
     }
