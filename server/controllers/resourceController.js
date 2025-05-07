@@ -39,8 +39,6 @@ const getResourceInfo = async function (req, res) {
         info._id = resourceID;
         info.title = resource.title;
         info.createdAt = resource.createdAt;
-
-        // const {resourceID, title, createdAt } = resource;
         return info;
       })
     );
