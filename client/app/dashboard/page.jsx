@@ -28,7 +28,7 @@ export default function DashboardPage() {
         });
         if (!response.ok) throw new Error('Failed to fetch resources');
         const data = await response.json();
-        console.log('Resources data:', data); // Log to check data structure
+        console.log('Resources data:', data);
         setResources(data);
       } catch (error) {
         console.error('Error fetching resources:', error);
@@ -56,21 +56,23 @@ export default function DashboardPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ title: editValue }),
+        body: JSON.stringify({
+          newTitle: editValue,
+          newTags: [] // tag functionality later
+        }),
       });
 
       if (!response.ok) {
         throw new Error('Failed to update resource');
       }
 
-      // Update the local state - make sure to use the same ID field consistently
       setResources(resources.map(resource =>
         resource.id === editingId ? { ...resource, title: editValue } : resource
       ));
       setEditingId(null);
     } catch (error) {
       console.error('Error updating resource:', error);
-      // Still update UI for better UX
+
       setResources(resources.map(resource =>
         resource.id === editingId ? { ...resource, title: editValue } : resource
       ));
@@ -85,7 +87,6 @@ export default function DashboardPage() {
   const handleDelete = async (id) => {
     if (confirm("Are you sure you want to delete this resource?")) {
       try {
-        // Call your API to delete the resource - fix the URL
         const response = await fetch(`http://localhost:3001/resources/${id}`, {
           method: 'DELETE',
           credentials: 'include',
@@ -127,7 +128,102 @@ export default function DashboardPage() {
     }
   };
 
-    return (
+  // Card content component to avoid duplicating code
+  const CardContent = ({ resource }) => (
+    <div className="block p-4 h-full">
+      <div className="flex justify-between items-center">
+        {editingId === resource.id ? (
+          <div className="flex flex-grow items-center gap-2">
+            <Input
+              value={editValue}
+              onChange={(e) => setEditValue(e.target.value)}
+              className="h-9"
+              autoFocus
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleSaveEdit();
+                } else if (e.key === 'Escape') {
+                  handleCancelEdit();
+                }
+              }}
+            />
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleSaveEdit();
+              }}
+              className="h-8 w-8 p-0"
+            >
+              <Check className="h-4 w-4 text-green-500" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleCancelEdit();
+              }}
+              className="h-8 w-8 p-0"
+            >
+              <X className="h-4 w-4 text-red-500" />
+            </Button>
+          </div>
+        ) : (
+          <h2 className="text-lg font-semibold">{resource.title}</h2>
+        )}
+
+        <div className="relative" onClick={e => e.stopPropagation()}>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0" style={{ cursor: 'pointer' }}>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={(e) => {
+                e.stopPropagation();
+                handleEdit(resource.id, resource.title);
+              }} style={{ cursor: 'pointer' }}>
+                <Edit className="mr-2 h-4 w-4" />
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={(e) => {
+                e.stopPropagation();
+                handleDelete(resource.id);
+              }} style={{ cursor: 'pointer' }}>
+                <Trash className="mr-2 h-4 w-4" />
+                Delete
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={(e) => {
+                e.stopPropagation();
+                handleShare(resource.id);
+              }} style={{ cursor: 'pointer' }}>
+                <Share className="mr-2 h-4 w-4" />
+                Share
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+
+      {/* Simple progress bar */}
+      <div className="mt-4 w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700 ">
+        <div
+          className="bg-blue-500 h-2 rounded-full"
+          style={{ width: "50%" }}
+        ></div>
+      </div>
+      <div className="flex w-full pt-2">
+        <span className="text-sm w-full text-right text-gray-500">
+          {formatDate(resource.createdAt || resource.date)}
+        </span>
+      </div>
+    </div>
+  );
+
+  return (
     <div className="flex flex-col w-full justify-center items-center p-6">
       {/* Header */}
       <div className="container">
@@ -146,84 +242,15 @@ export default function DashboardPage() {
               key={resource.id}
               className="border rounded-lg hover:shadow-md transition-shadow overflow-hidden"
             >
-            <Link href={`/resource/${resource.id}`}>
-              <div className="block p-4 h-full" >
-                <div className="flex justify-between items-center">
-                  {editingId === resource.id ? (
-                    <div className="flex flex-grow items-center gap-2">
-                      <Input
-                        value={editValue}
-                        onChange={(e) => setEditValue(e.target.value)}
-                        className="h-9"
-                        autoFocus
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            handleSaveEdit();
-                          } else if (e.key === 'Escape') {
-                            handleCancelEdit();
-                          }
-                        }}
-                      />
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={handleSaveEdit}
-                        className="h-8 w-8 p-0"
-                      >
-                        <Check className="h-4 w-4 text-green-500" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={handleCancelEdit}
-                        className="h-8 w-8 p-0"
-                      >
-                        <X className="h-4 w-4 text-red-500" />
-                      </Button>
-                    </div>
-                  ) : (
-                    <h2 className="text-lg font-semibold">{resource.title}</h2>
-                  )}
-
-                  <div className="relative" onClick={e => e.stopPropagation()}>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0" style={{ cursor: 'pointer' }}>
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleEdit(resource.id, resource.title)} style={{ cursor: 'pointer' }}>
-                          <Edit className="mr-2 h-4 w-4" />
-                          Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleDelete(resource.id)} style={{ cursor: 'pointer' }}>
-                          <Trash className="mr-2 h-4 w-4" />
-                          Delete
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleShare(resource.id)} style={{ cursor: 'pointer' }}>
-                          <Share className="mr-2 h-4 w-4" />
-                          Share
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </div>
-
-                  {/* Simple progress bar */}
-                  <div className="mt-4 w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
-                    <div
-                      className="bg-blue-500 h-2 rounded-full"
-                      style={{ width: "50%" }}
-                    ></div>
-                  </div>
-                  <div className="flex w-full pt-2">
-                    <span className="text-sm w-full text-right text-gray-500">
-                      {formatDate(resource.createdAt || resource.date)}
-                    </span>
-                  </div>
-                </div>
-              </Link>
+              {editingId === resource.id ? (
+                // When editing, don't wrap with Link
+                <CardContent resource={resource} />
+              ) : (
+                // When not editing, wrap with Link
+                <Link href={`/resource/${resource.id}`}>
+                  <CardContent resource={resource} />
+                </Link>
+              )}
             </div>
           ))}
         </div>
