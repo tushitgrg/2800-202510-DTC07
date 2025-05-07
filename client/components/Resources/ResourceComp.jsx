@@ -12,18 +12,18 @@ const ResourceComp = ({resourceData}) => {
     const hasQuiz = !!resourceData.quiz;
     const hasFlashcards = !!resourceData.flashcard;
     const hasSummary = !!resourceData.summary;
-  
+
     // Make tab on what's available
     let defaultTab = 'quiz';
     if (!hasQuiz && hasFlashcards) defaultTab = 'flashcard';
     else if (!hasQuiz && !hasFlashcards && hasSummary) defaultTab = 'summary';
-  
+
     const [activeTab, setActiveTab] = useState(defaultTab);
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
+    <div className="container mx-auto px-4 py-8 max-w-4xl w-screen">
       {/* Back button */}
-      <Link href="/dashboard" className="flex items-center text-sm text-gray-400 hover:text-white mb-6">
-        <ChevronLeft className="w-4 h-4 mr-1" />
+      <Link href="/dashboard" className="flex items-left text-sm text-gray-400 hover:text-white mb-6 w-fit">
+        <ChevronLeft className="w-5 h-5 mr-1" />
         Back to Dashboard
       </Link>
 
@@ -35,26 +35,29 @@ const ResourceComp = ({resourceData}) => {
 
       {/* Tabs for different content types */}
       <Tabs defaultValue={defaultTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-3 mb-6">
-          <TabsTrigger value="quiz" disabled={!hasQuiz}>Quiz</TabsTrigger>
-          <TabsTrigger value="flashcard" disabled={!hasFlashcards}>Flashcards</TabsTrigger>
-          <TabsTrigger value="summary" disabled={!hasSummary}>Summary</TabsTrigger>
+        <TabsList className={`grid w-full mb-6 ${
+          [hasQuiz, hasFlashcards, hasSummary].filter(Boolean).length === 1 ? 'grid-cols-1' :
+          [hasQuiz, hasFlashcards, hasSummary].filter(Boolean).length === 2 ? 'grid-cols-2' :
+          'grid-cols-3'}`} >
+          {hasQuiz && <TabsTrigger value="quiz">Quiz</TabsTrigger>}
+          {hasFlashcards && <TabsTrigger value="flashcard">Flashcards</TabsTrigger>}
+          {hasSummary && <TabsTrigger value="summary">Summary</TabsTrigger>}
         </TabsList>
 
         {hasQuiz && (
-          <TabsContent value="quiz" className="py-4">
-            <Quiz questions={resourceData.quiz.questions} />
+          <TabsContent value="quiz" className="py-4 flex justify-center">
+            <Quiz questions={resourceData.quiz.questions}/>
           </TabsContent>
         )}
 
         {hasFlashcards && (
-          <TabsContent value="flashcard" className="py-4">
+          <TabsContent value="flashcard" className="py-4 flex justify-center">
             <Flashcards cards={resourceData.flashcard.cards} />
           </TabsContent>
         )}
 
         {hasSummary && (
-          <TabsContent value="summary" className="py-4">
+          <TabsContent value="summary" className="py-4 flex justify-center">
             <div className="bg-slate-800 rounded-lg p-6 shadow-md">
                 <Markdown>{resourceData.summary.content}</Markdown>
               {/* <p className="text-white">{JSON.stringify(resourceData.summary.content)}</p> */}

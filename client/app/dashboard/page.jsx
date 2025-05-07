@@ -146,7 +146,8 @@ export default function DashboardPage() {
               key={resource.id}
               className="border rounded-lg hover:shadow-md transition-shadow overflow-hidden"
             >
-              <div className="block p-4">
+            <Link href={`/resource/${resource.id}`}>
+              <div className="block p-4 h-full" >
                 <div className="flex justify-between items-center">
                   {editingId === resource.id ? (
                     <div className="flex flex-grow items-center gap-2">
@@ -181,28 +182,26 @@ export default function DashboardPage() {
                       </Button>
                     </div>
                   ) : (
-                    <Link href={`/resource/${resource.id}`} className="block flex-grow">
-                      <h2 className="text-lg font-semibold">{resource.title}</h2>
-                    </Link>
+                    <h2 className="text-lg font-semibold">{resource.title}</h2>
                   )}
 
                   <div className="relative" onClick={e => e.stopPropagation()}>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0" style={{ cursor: 'pointer' }}>
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleEdit(resource.id, resource.title)}>
+                        <DropdownMenuItem onClick={() => handleEdit(resource.id, resource.title)} style={{ cursor: 'pointer' }}>
                           <Edit className="mr-2 h-4 w-4" />
                           Edit
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleDelete(resource.id)}>
+                        <DropdownMenuItem onClick={() => handleDelete(resource.id)} style={{ cursor: 'pointer' }}>
                           <Trash className="mr-2 h-4 w-4" />
                           Delete
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleShare(resource.id)}>
+                        <DropdownMenuItem onClick={() => handleShare(resource.id)} style={{ cursor: 'pointer' }}>
                           <Share className="mr-2 h-4 w-4" />
                           Share
                         </DropdownMenuItem>
@@ -211,7 +210,6 @@ export default function DashboardPage() {
                   </div>
                 </div>
 
-                <Link href={editingId === resource.id ? "#" : `/resource/${resource.id}`} className="block">
                   {/* Simple progress bar */}
                   <div className="mt-4 w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
                     <div
@@ -224,8 +222,8 @@ export default function DashboardPage() {
                       {formatDate(resource.createdAt || resource.date)}
                     </span>
                   </div>
-                </Link>
-              </div>
+                </div>
+              </Link>
             </div>
           ))}
         </div>
