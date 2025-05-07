@@ -192,10 +192,36 @@ const deleteResource = async function (req, res) {
   }
 };
 
+const updateResourceInfo = async function (req, res) {
+  const resourceId = req.params.id;
+  const { newTitle, newTags } = req.body;
+  if (newTags) {
+    updateUserTags(req.user._id, newTags);
+  }
+  if (!resourceId) {
+    res.status(400).json({ error: "Resource ID is required" });
+  }
+  try {
+    const updatedResource = await Resource.findByIdAndUpdate(
+      resourceId,
+      {
+        title: newTitle,
+        tags: newTags,
+      },
+      { new: true }
+    );
+    if (!updatedResource) {
+      return res.status(404).json({ error: "Resource not found" });
+    }
+    return res.status(200).json(updatedResource);
+  } catch (err) {}
+};
+
 module.exports = {
   getResources,
   getResourceInfo,
   getResourceById,
   addResource,
   deleteResource,
+  updateResourceInfo,
 };

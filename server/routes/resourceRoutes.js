@@ -8,10 +8,12 @@ const {
   getResourceInfo,
   addResource,
   deleteResource,
+  updateResourceInfo,
 } = require("../controllers/resourceController");
 router.get("/", getResources);
 router.get("/info", getResourceInfo);
 router.get("/:id", getResourceById);
 router.post("/", upload.single("pdf"), addResource);
 router.delete("/:id", deleteResource);
+router.put("/:id", updateResourceInfo);
 module.exports = router;
