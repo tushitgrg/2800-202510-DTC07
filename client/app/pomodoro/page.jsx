@@ -14,13 +14,7 @@ const weatherData = {
   temperature: 18,
   humidity: 85,
   windSpeed: 12,
-  // YouTube video sources for each weather condition
-  videos: {
-    sunny: "https://www.youtube.com/watch?v=vLIQn-RrCa8", // Sunny beach scene
-    rainy: "https://www.youtube.com/watch?v=mPZkdNFkNps", // Rainy window scene
-    cloudy: "https://www.youtube.com/watch?v=E5Ib4EuP4q8", // Cloudy sky timelapse
-    snowy: "https://www.youtube.com/watch?v=vz91QpgUjFc", // Snowy forest scene
-  },
+
 }
 
 export default function WeatherPomodoroPage() {

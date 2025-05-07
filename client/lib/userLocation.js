@@ -41,7 +41,7 @@ export async function fetchUserWeather() {
   const data = await res.json();
   // Generate object with relevant data 
   const userWeather = {
-    weather: data.weather[0].main,
+    weather: getSimpleWeather(data.weather[0].main),
     temp: data.main.temp,
     wind: data.wind.speed,
     country: data.sys.country,
@@ -49,4 +49,23 @@ export async function fetchUserWeather() {
   };
 
   return userWeather
+}
+
+function getSimpleWeather(condition) {
+  const normalized = condition.toLowerCase();
+
+  if (["snow"].includes(normalized)) {
+    return "snowy";
+  }
+
+  if (["clouds", "mist", "haze", "fog", "smoke", "dust", "sand", "ash"].includes(normalized)) {
+    return "cloudy";
+  }
+
+  if (["rain", "drizzle", "thunderstorm", "squall", "tornado"].includes(normalized)) {
+    return "rainy";
+  }
+
+
+  return "sunny";
 }
