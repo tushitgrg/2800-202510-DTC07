@@ -5,9 +5,11 @@ const upload = multer({storage: multer.memoryStorage()})
 const {
   getResources,
   getResourceById,
+  getResourceInfo,
   addResource,
 } = require("../controllers/resourceController");
 router.get("/", getResources);
+router.get("/info", getResourceInfo);
 router.get("/:id", getResourceById);
 router.post("/",upload.single("pdf"), addResource);
 module.exports = router;

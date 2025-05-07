@@ -26,6 +26,29 @@ const fetchResource = async (resourceID) => {
   };
 };
 
+const getResourceInfo = async function (req, res) {
+  const userId = req.user._id;
+  try {
+    const user = await User.findById(userId);
+    const userResources = user.resources;
+    const result = await Promise.all(
+      userResources.map(async (resourceID) => {
+        const resource = await Resource.findById(resourceID);
+        if (!resource) return null;
+        const info = {};
+        info._id = resourceID;
+        info.title = resource.title;
+        info.createdAt = resource.createdAt;
+        return info;
+      })
+    );
+    res.status(200).json(result);
+  } catch (err) {
+    console.error("Failed to fetch user resources:", err);
+    res.status(500).json({ error: "Failed to fetch resources" });
+  }
+};
+
 // GET request handler for all resources under the current user
 const getResources = async function (req, res) {
   const userId = req.user._id;
@@ -139,4 +162,9 @@ const addResource = async function (req, res) {
   });
 };
 
-module.exports = { getResources, getResourceById, addResource };
+module.exports = {
+  getResources,
+  getResourceInfo,
+  getResourceById,
+  addResource,
+};
