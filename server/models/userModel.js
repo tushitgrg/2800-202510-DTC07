@@ -22,6 +22,7 @@ const userSchema = new mongoose.Schema(
         ref: "Resource",
       },
     ],
+    previousTags: { type: Array, default: [] },
   },
   { timestamps: true }
 );

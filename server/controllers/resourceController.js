@@ -40,6 +40,7 @@ const getResourceInfo = async function (req, res) {
         info.id = resourceID;
         info.title = resource.title;
         info.createdAt = resource.createdAt;
+        info.tags = resource.tags || [];
         return info;
       })
     );
