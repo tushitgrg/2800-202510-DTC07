@@ -20,7 +20,7 @@ router.get('/auth/google/callback', passport.authenticate('google', {
         // domain: '.example.com',               // uncomment to share across sub-domains
       });
     
-    res.redirect('http://localhost:3000/dashboard');
+    res.redirect(`${process.env.CLIENT_URL}/dashboard`);
   });
   
 

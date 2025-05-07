@@ -2,7 +2,7 @@ const express = require("express");
 const session = require("express-session");
 const passport = require("passport");
 const cors = require("cors");
-
+require('dotenv').config()
 const passportConfig = require("./utils/google_auth");
 const authRoutes = require("./controllers/authController");
 const resourceRoutes = require("./routes/resourceRoutes");
@@ -13,7 +13,7 @@ require("./utils/db");
 const app = express();
 app.use(
   cors({
-    origin: "http://localhost:3000", // frontend origin
+    origin: process.env.CLIENT_URL, // frontend origin
     credentials: true, // allow cookies to be sent
   })
 );
