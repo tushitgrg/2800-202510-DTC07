@@ -128,22 +128,23 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="container mx-auto p-6 max-w-4xl">
+    <div className=" flex flex-col   justify-center items-center p-6 ">
       {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">DASHBOARD</h1>
+      <div className="container justify-center">
+      <div className="flex justify-between w-full  items-center mb-6">
+        <h1 className="text-2xl font-bold">Dashboard</h1>
         <Button onClick={handleCreateClick} style={{ cursor: 'pointer' }}>
           <Plus className="mr-2 h-4 w-4" />
-          CREATE
+          Create
         </Button>
       </div>
 
       {/* Resource cards */}
-      <div className="md:flex md:flex-wrap justify-center">
+      <div className="flex flex-col md:flex-wrap md:flex-row  w-full justify-center">
         {resources.map(resource => (
           <div
             key={resource.id}
-            className="border rounded-lg hover:shadow-md transition-shadow m-2 md:w-[47.5%] overflow-hidden"
+            className="border rounded-lg hover:shadow-md transition-shadow m-2 lg:w-[31.5%] w-full overflow-hidden"
           >
             <div className="block p-4">
               <div className="flex justify-between items-center">
@@ -227,6 +228,7 @@ export default function DashboardPage() {
             </div>
           </div>
         ))}
+      </div>
       </div>
     </div>
   );
