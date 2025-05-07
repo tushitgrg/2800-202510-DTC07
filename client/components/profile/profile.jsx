@@ -7,13 +7,13 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-export default function ProfileCard() {
+export default function ProfileCard({ googleUser = {} }) {
   // Initialize state variables with default values
-  const [displayName, setDisplayName] = useState("all_work_no_fun");
-  const [firstName, setFirstName] = useState("David");
-  const [lastName, setLastName] = useState("Hoe");
-  const [email, setEmail] = useState("headshot123@example.com");
-  const [school, setSchool] = useState("BCIT");
+  const [displayName, setDisplayName] = useState(googleUser.displayName || "Your display name");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState(googleUser.email || "");
+  const [school, setSchool] = useState("");
 
   // Tracks whether profile is in editing mode (false is read only mode)
   const [isEditing, setIsEditing] = useState(false);
@@ -95,7 +95,7 @@ export default function ProfileCard() {
             id="email"
             type="email"
             value={email}
-            disabled={!isEditing}
+            disabled
             className="rounded-full mt-1"
             onChange={(e) => setEmail(e.target.value)}
           />
