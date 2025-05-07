@@ -42,9 +42,31 @@ export default function ProfileCard({ googleUser = {} }) {
   };
 
   // set proper save handling -> send data to backend route?
-  // const handleSave = () => {
-  //   setIsEditing(false);
-  // };
+  const handleSave = async () => {
+    try {
+      const res = await fetch("/api/user/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          displayName: displayName || "no username",
+          firstName,
+          lastName,
+          email,
+          school,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        setIsEditing(false);
+      } else {
+        alert("Save failed: " + (data.error || "Unknown error"));
+      }
+    } catch (error) {
+      alert("Save failed: " + error.message);
+    }
+  };
 
   return (
     <Card className="max-w-md mx-auto mt-10 shadow-lg">
@@ -118,7 +140,7 @@ export default function ProfileCard({ googleUser = {} }) {
             <Button variant="outline" onClick={handleCancel}>
               Cancel
             </Button>
-            <Button >Save</Button> {/* ADD PROPER SAVE HANDLING with onClick={handleSave} */}
+            <Button onClick={handleSave}>Save</Button> {/* ADD PROPER SAVE HANDLING with onClick={handleSave} */}
           </>
         ) : (
           <Button onClick={handleEdit} className="rounded-full">Edit</Button>
