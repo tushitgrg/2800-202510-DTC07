@@ -29,7 +29,7 @@ export default function DashboardPage() {
         if (!response.ok) throw new Error('Failed to fetch resources');
         const data = await response.json();
         console.log('Resources data:', data);
-        setResources(data);
+        setResources(data.resources);
       } catch (error) {
         console.error('Error fetching resources:', error);
       }
@@ -237,7 +237,7 @@ export default function DashboardPage() {
 
         {/* Resource cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
-          {resources.map(resource => (
+          {resources && resources.map(resource => (
             <div
               key={resource.id}
               className="border rounded-lg hover:shadow-md transition-shadow overflow-hidden"
