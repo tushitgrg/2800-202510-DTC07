@@ -47,7 +47,7 @@ useEffect(()=>{
   return (
    <>
    {weatherData? <main className="relative h-screen w-screen overflow-hidden">
-      {/* Video Background - either YouTube or direct file */}
+
      <DirectVideoBackground weatherCondition={weatherData.weather}/>
    
       {/* Content Overlay */}
