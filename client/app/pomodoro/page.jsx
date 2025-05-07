@@ -60,7 +60,7 @@ useEffect(()=>{
             <div className="text-left text-lg opacity-80">
               <p className="capitalize">{weatherData.weather}</p>
               <p>Humidity: {weatherData.humidity}%</p>
-              <p>Wind: {weatherData.speed} km/h</p>
+              <p>Wind: {weatherData.wind} m/s</p>
             </div>
           </div>
        
