@@ -36,7 +36,7 @@ const getResourceInfo = async function (req, res) {
         const resource = await Resource.findById(resourceID);
         if (!resource) return null;
         const info = {};
-        info._id = resourceID;
+        info.id = resourceID;
         info.title = resource.title;
         info.createdAt = resource.createdAt;
         return info;
