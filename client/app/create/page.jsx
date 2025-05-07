@@ -1,7 +1,7 @@
 "use client"
 
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { ArrowLeft, ArrowRight, Upload, FileText, Brain, Lightbulb, Check, X, Sparkles, Zap, Clock } from "lucide-react"
@@ -29,6 +29,7 @@ export default function CreatePage() {
   const [isUploading, setIsUploading] = useState(false)
   const fileInputRef = useRef(null)
 const [titleText, settitleText] = useState("")
+const [progressV, setprogressV] = useState(0)
   // Quiz settings
   const [quizSettings, setQuizSettings] = useState({
     questionCount: 10,
@@ -89,7 +90,22 @@ const [titleText, settitleText] = useState("")
       }
     }
   }
-
+  useEffect(() => {
+    if (currentStep === "processing") {
+      const interval = setInterval(() => {
+        setprogressV((v) => {
+          if (v >= 95) {
+            clearInterval(interval);
+            return v;
+          }
+          return v + 1;
+        });
+      }, 50);
+  
+      return () => clearInterval(interval);
+    }
+  }, [currentStep]);
+  
 
   const removeFile = () => {
     setFile(null)
@@ -117,6 +133,9 @@ const [titleText, settitleText] = useState("")
         apiBody.append("summaryPrompt",generateSummaryPrompt(summarySettings))
       }
 try{
+
+  
+
   const resp = await fetch('http://localhost:3001/resources', {
     method: "POST",
     body: apiBody,
@@ -124,7 +143,8 @@ try{
   })
   const data= await resp.json()
   router.push(`/resource/${data.resourceID}`)
-}catch{
+}catch(e){
+  console.log(e)
   alert("Errrror") //change this to a toast
 }
       
@@ -331,15 +351,6 @@ try{
                       </div>
                     </div>
 
-                    {isUploading && (
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span>Uploading...</span>
-                          <span>{uploadProgress}%</span>
-                        </div>
-                        <Progress value={uploadProgress} className="h-2" />
-                      </div>
-                    )}
                   </motion.div>
                 )}
 
@@ -800,9 +811,9 @@ try{
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
                         <span>Analyzing content...</span>
-                        <span>75%</span>
+                        <span>{progressV}%</span>
                       </div>
-                      <Progress value={75} className="h-2" />
+                      <Progress value={progressV} className="h-2" />
                     </div>
 
                     <div className="flex flex-col gap-4 mt-8">
