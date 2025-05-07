@@ -10,6 +10,7 @@ const Resource = require("../models/resourceModel");
 const Quiz = require("../models/quizModel");
 const Flashcard = require("../models/flashcardModel");
 const Summary = require("../models/summaryModel");
+const { hasResource } = require("./sharedResourceMiddleware");
 
 const fetchResource = async (resourceID) => {
   const resource = await Resource.findById(resourceID);
@@ -73,7 +74,7 @@ const getResources = async function (req, res) {
 const getResourceById = async function (req, res) {
   const resourceId = req.params.id;
 
-  const response = {};
+  const response = { hasResource: req.hasResource };
   try {
     const resource = await Resource.findById(resourceId);
     if (!resource) {
