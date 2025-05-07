@@ -43,6 +43,7 @@ export async function fetchUserWeather() {
   const userWeather = {
     weather: getSimpleWeather(data.weather[0].main),
     temp: data.main.temp,
+    humidity: data.main.humidity,
     wind: data.wind.speed,
     country: data.sys.country,
     city: data.name

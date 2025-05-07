@@ -1,23 +1,27 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 
 import PomodoroTimer from "@/components/Pomodoro/PomodoroTimer"
 import DirectVideoBackground from "@/components/Pomodoro/VideoBackground"
+import { fetchUserWeather } from "@/lib/userLocation"
 
 
-// Hardcoded weather data
-const weatherData = {
-  location: "Tokyo, Japan",
-  condition: "rainy", // Options: sunny, rainy, cloudy, snowy
-  temperature: 18,
-  humidity: 85,
-  windSpeed: 12,
 
-}
 
 export default function WeatherPomodoroPage() {
+
+const [weatherData, setweatherData] = useState(null)
+
+const setData =async ()=>{
+setweatherData( await fetchUserWeather())
+}
+
+useEffect(()=>{
+  setData()
+}, [])
+
   const [timerActive, setTimerActive] = useState(false)
   const [timerMode, setTimerMode] = useState("work")
   const [timeRemaining, setTimeRemaining] = useState(25 * 60) // 25 minutes in seconds
@@ -41,21 +45,22 @@ export default function WeatherPomodoroPage() {
 
 
   return (
-    <main className="relative h-screen w-screen overflow-hidden">
+   <>
+   {weatherData? <main className="relative h-screen w-screen overflow-hidden">
       {/* Video Background - either YouTube or direct file */}
-     <DirectVideoBackground weatherCondition={weatherData.condition}/>
+     <DirectVideoBackground weatherCondition={weatherData.weather}/>
    
       {/* Content Overlay */}
       <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-white z-10">
         {/* Location and Weather Info */}
         <div className="text-center mt-8">
-          <h1 className="text-4xl font-bold tracking-tight">{weatherData.location}</h1>
+          <h1 className="text-4xl font-bold tracking-tight">{weatherData.city},{weatherData.country} </h1>
           <div className="flex items-center justify-center gap-2 mt-2">
-            <span className="text-6xl font-light">{weatherData.temperature}°</span>
+            <span className="text-6xl font-light">{weatherData.temp}°</span>
             <div className="text-left text-lg opacity-80">
-              <p className="capitalize">{weatherData.condition}</p>
+              <p className="capitalize">{weatherData.weather}</p>
               <p>Humidity: {weatherData.humidity}%</p>
-              <p>Wind: {weatherData.windSpeed} km/h</p>
+              <p>Wind: {weatherData.speed} km/h</p>
             </div>
           </div>
        
@@ -74,6 +79,8 @@ export default function WeatherPomodoroPage() {
 
        
       </div>
-    </main>
+    </main>:<div>Loading</div>}
+   
+   </>
   )
 }

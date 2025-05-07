@@ -3,8 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { cn } from "@/lib/utils"
 
-// Default video files if none are provided
-const DEFAULT_VIDEOS = {
+const videoFiles = {
   sunny: "/videos/sunny.mp4",
   rainy: "/videos/rainy.mp4",
   cloudy: "/videos/cloudy.mp4",
@@ -12,8 +11,7 @@ const DEFAULT_VIDEOS = {
 }
 
 export default function DirectVideoBackground({
-  weatherCondition,
-  videoFiles = DEFAULT_VIDEOS,
+  weatherCondition
 }) {
   const [isLoading, setIsLoading] = useState(true)
   const videoRef = useRef(null)
@@ -39,7 +37,7 @@ export default function DirectVideoBackground({
   useEffect(() => {
     if (!videoRef.current) return
 
-    const videoSrc = videoFiles[weatherCondition] || DEFAULT_VIDEOS[weatherCondition]
+    const videoSrc = videoFiles[weatherCondition]
 
     if (!videoSrc) {
       setIsLoading(false)
@@ -70,6 +68,9 @@ export default function DirectVideoBackground({
       }
     }
   }, [weatherCondition, videoFiles])
+
+
+  
 
   return (
     <div
