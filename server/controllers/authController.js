@@ -17,7 +17,7 @@ router.get('/auth/google/callback', passport.authenticate('google', {
         sameSite : process.env.VERCEL?'none':'lax',                         // CSRF protection (or 'strict' / 'none')
         maxAge   : 24 * 60 * 60 * 1000,           // 1 day in ms
         path     : '/',                           // send with every request to your origin
-        // domain: '.example.com',               // uncomment to share across sub-domains
+        domain: process.env.VERCEL ? '.scholiast.webios.link' : undefined
       });
     
     res.redirect(`${process.env.CLIENT_URL}/dashboard`);
