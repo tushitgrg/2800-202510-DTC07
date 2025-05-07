@@ -39,7 +39,7 @@ export default function Flashcards({ cards }) {
         total={cards.length}
       />
 
-      <div className="w-full max-w-md flex justify-between mt-4">
+      <div className="w-full flex justify-between mt-12">
         <Button
           onClick={prevCard}
           disabled={currentIndex === 0}
@@ -126,8 +126,8 @@ function FlashcardItem({ front, back, flipped, onFlip, index, total }) {
       onClick={onFlip}
     >
       {/* Card counter */}
-      <div className="absolute top-2 left-1/2 transform -translate-x-1/2 text-sm text-muted-foreground z-10">
-        {index + 1} / {total}
+      <div className="mt-1 mb-3 text-sm text-gray-500">
+        Flashcard {index + 1} / {total}
       </div>
 
       {/* Card container with flip animation */}
@@ -141,7 +141,7 @@ function FlashcardItem({ front, back, flipped, onFlip, index, total }) {
         {/* Front side */}
         <Card
           ref={frontCardRef}
-          className="absolute w-full h-full flex items-center justify-center text-center bg-slate-950 border-slate-900"
+          className="absolute w-full h-full flex items-center justify-center text-center bg-slate-900 border-slate-800"
           style={{ backfaceVisibility: "hidden" }}
         >
           <div
@@ -155,7 +155,7 @@ function FlashcardItem({ front, back, flipped, onFlip, index, total }) {
         {/* Back side */}
         <Card
           ref={backCardRef}
-          className="absolute w-full h-full flex items-center justify-center text-center bg-slate-800 border-slate-700"
+          className="absolute w-full h-full flex items-center justify-center text-center bg-slate-700 border-slate-600"
           style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
         >
           <div
