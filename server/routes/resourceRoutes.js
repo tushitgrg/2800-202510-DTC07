@@ -10,9 +10,10 @@ const {
   deleteResource,
   updateResourceInfo,
 } = require("../controllers/resourceController");
+const { hasResource } = require("../controllers/sharedResourceMiddleware");
 router.get("/", getResources);
 router.get("/info", getResourceInfo);
-router.get("/:id", getResourceById);
+router.get("/:id", hasResource, getResourceById);
 router.post("/", upload.single("pdf"), addResource);
 router.delete("/:id", deleteResource);
 router.put("/:id", updateResourceInfo);
