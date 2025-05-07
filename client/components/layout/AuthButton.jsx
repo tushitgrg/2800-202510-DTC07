@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { ChevronRight, LogOut } from 'lucide-react';
 import { getUserClient } from '@/lib/clientAuth';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '../ui/dropdown-menu';
+import { ServerUrl } from '@/lib/urls';
 
 
 const AuthButton = ({ className = "" }) => {
@@ -39,7 +40,7 @@ const AuthButton = ({ className = "" }) => {
                 </DropdownMenu>
 
             ) : (
-                <a href='http://localhost:3001/auth/google'>
+                <a href={`${ServerUrl}/auth/google`}>
                     <Button className={`rounded-full hover:cursor-pointer ${className}`}>
                         Get Started
                         <ChevronRight className="ml-1 size-4" />

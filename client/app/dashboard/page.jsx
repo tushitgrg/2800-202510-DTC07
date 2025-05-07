@@ -12,6 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ServerUrl } from "@/lib/urls";
 
 export default function DashboardPage() {
   const [resources, setResources] = useState([]);
@@ -23,7 +24,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchResources = async () => {
       try {
-        const response = await fetch(`http://localhost:3001/resources/info`, {
+        const response = await fetch(`${ServerUrl}/resources/info`, {
           credentials: 'include'
         });
         if (!response.ok) throw new Error('Failed to fetch resources');
@@ -50,7 +51,7 @@ export default function DashboardPage() {
     if (editValue.trim() === "") return;
 
     try {
-      const response = await fetch(`http://localhost:3001/resources/${editingId}`, {
+      const response = await fetch(`${ServerUrl}/resources/${editingId}`, {
         method: 'PUT',
         credentials: 'include',
         headers: {
@@ -87,7 +88,7 @@ export default function DashboardPage() {
   const handleDelete = async (id) => {
     if (confirm("Are you sure you want to delete this resource?")) {
       try {
-        const response = await fetch(`http://localhost:3001/resources/${id}`, {
+        const response = await fetch(`${ServerUrl}/resources/${id}`, {
           method: 'DELETE',
           credentials: 'include',
         });
