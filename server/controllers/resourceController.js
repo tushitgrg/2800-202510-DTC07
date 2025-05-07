@@ -42,7 +42,9 @@ const getResourceInfo = async function (req, res) {
         return info;
       })
     );
-    res.status(200).json(result);
+    res
+      .status(200)
+      .json({ resources: result, previouslyUsedTags: user.previousTags || [] });
   } catch (err) {
     console.error("Failed to fetch user resources:", err);
     res.status(500).json({ error: "Failed to fetch resources" });
