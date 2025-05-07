@@ -2,14 +2,15 @@
 
 import { useState } from "react"
 
-import VideoBackground from "@/components/Pomodoro/VideoBackground"
+
 import PomodoroTimer from "@/components/Pomodoro/PomodoroTimer"
+import DirectVideoBackground from "@/components/Pomodoro/VideoBackground"
 
 
 // Hardcoded weather data
 const weatherData = {
   location: "Tokyo, Japan",
-  condition: "snowy", // Options: sunny, rainy, cloudy, snowy
+  condition: "rainy", // Options: sunny, rainy, cloudy, snowy
   temperature: 18,
   humidity: 85,
   windSpeed: 12,
@@ -48,7 +49,7 @@ export default function WeatherPomodoroPage() {
   return (
     <main className="relative h-screen w-screen overflow-hidden">
       {/* Video Background - either YouTube or direct file */}
-      <VideoBackground weatherCondition={weatherData.condition} videoSources={weatherData.videos} />
+     <DirectVideoBackground weatherCondition={weatherData.condition}/>
    
       {/* Content Overlay */}
       <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-white z-10">
