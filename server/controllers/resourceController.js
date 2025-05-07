@@ -3,6 +3,7 @@ const { getGeminiOutput } = require("../utils/geminiClient");
 const addQuizEntry = require("../utils/addQuizEntry");
 const addFlashcardEntry = require("../utils/addFlashcardEntry");
 const addSummaryEntry = require("../utils/addSummaryEntry");
+const { updateUserTags } = require("../utils/tagUtils");
 
 const User = require("../models/userModel");
 const Resource = require("../models/resourceModel");
