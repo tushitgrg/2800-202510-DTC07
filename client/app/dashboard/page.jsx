@@ -127,108 +127,108 @@ export default function DashboardPage() {
     }
   };
 
-  return (
-    <div className=" flex flex-col   justify-center items-center p-6 ">
+    return (
+    <div className="flex flex-col w-full justify-center items-center p-6">
       {/* Header */}
-      <div className="container justify-center">
-      <div className="flex justify-between w-full  items-center mb-6">
-        <h1 className="text-2xl font-bold">Dashboard</h1>
-        <Button onClick={handleCreateClick} style={{ cursor: 'pointer' }}>
-          <Plus className="mr-2 h-4 w-4" />
-          Create
-        </Button>
-      </div>
+      <div className="container">
+        <div className="flex justify-between w-full items-center mb-6">
+          <h1 className="text-2xl font-bold">Dashboard</h1>
+          <Button onClick={handleCreateClick} style={{ cursor: 'pointer' }}>
+            <Plus className="mr-2 h-4 w-4" />
+            Create
+          </Button>
+        </div>
 
-      {/* Resource cards */}
-      <div className="flex flex-col md:flex-wrap md:flex-row  w-full justify-center">
-        {resources.map(resource => (
-          <div
-            key={resource.id}
-            className="border rounded-lg hover:shadow-md transition-shadow m-2 lg:w-[31.5%] w-full overflow-hidden"
-          >
-            <div className="block p-4">
-              <div className="flex justify-between items-center">
-                {editingId === resource.id ? (
-                  <div className="flex flex-grow items-center gap-2">
-                    <Input
-                      value={editValue}
-                      onChange={(e) => setEditValue(e.target.value)}
-                      className="h-9"
-                      autoFocus
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          handleSaveEdit();
-                        } else if (e.key === 'Escape') {
-                          handleCancelEdit();
-                        }
-                      }}
-                    />
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={handleSaveEdit}
-                      className="h-8 w-8 p-0"
-                    >
-                      <Check className="h-4 w-4 text-green-500" />
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={handleCancelEdit}
-                      className="h-8 w-8 p-0"
-                    >
-                      <X className="h-4 w-4 text-red-500" />
-                    </Button>
-                  </div>
-                ) : (
-                  <Link href={`/resource/${resource.id}`} className="block flex-grow">
-                    <h2 className="text-lg font-semibold">{resource.title}</h2>
-                  </Link>
-                )}
-
-                <div className="relative" onClick={e => e.stopPropagation()}>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                        <MoreHorizontal className="h-4 w-4" />
+        {/* Resource cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+          {resources.map(resource => (
+            <div
+              key={resource.id}
+              className="border rounded-lg hover:shadow-md transition-shadow overflow-hidden"
+            >
+              <div className="block p-4">
+                <div className="flex justify-between items-center">
+                  {editingId === resource.id ? (
+                    <div className="flex flex-grow items-center gap-2">
+                      <Input
+                        value={editValue}
+                        onChange={(e) => setEditValue(e.target.value)}
+                        className="h-9"
+                        autoFocus
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            handleSaveEdit();
+                          } else if (e.key === 'Escape') {
+                            handleCancelEdit();
+                          }
+                        }}
+                      />
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleSaveEdit}
+                        className="h-8 w-8 p-0"
+                      >
+                        <Check className="h-4 w-4 text-green-500" />
                       </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => handleEdit(resource.id, resource.title)}>
-                        <Edit className="mr-2 h-4 w-4" />
-                        Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleDelete(resource.id)}>
-                        <Trash className="mr-2 h-4 w-4" />
-                        Delete
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleShare(resource.id)}>
-                        <Share className="mr-2 h-4 w-4" />
-                        Share
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleCancelEdit}
+                        className="h-8 w-8 p-0"
+                      >
+                        <X className="h-4 w-4 text-red-500" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <Link href={`/resource/${resource.id}`} className="block flex-grow">
+                      <h2 className="text-lg font-semibold">{resource.title}</h2>
+                    </Link>
+                  )}
 
-              <Link href={editingId === resource.id ? "#" : `/resource/${resource.id}`} className="block">
-                {/* Simple progress bar */}
-                <div className="mt-4 w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
-                  <div
-                    className="bg-blue-500 h-2 rounded-full"
-                    style={{ width: "50%" }}
-                  ></div>
+                  <div className="relative" onClick={e => e.stopPropagation()}>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => handleEdit(resource.id, resource.title)}>
+                          <Edit className="mr-2 h-4 w-4" />
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleDelete(resource.id)}>
+                          <Trash className="mr-2 h-4 w-4" />
+                          Delete
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleShare(resource.id)}>
+                          <Share className="mr-2 h-4 w-4" />
+                          Share
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </div>
-                <div className="flex w-full pt-2">
-                  <span className="text-sm w-full text-right text-gray-500">
-                    {formatDate(resource.createdAt || resource.date)}
-                  </span>
-                </div>
-              </Link>
+
+                <Link href={editingId === resource.id ? "#" : `/resource/${resource.id}`} className="block">
+                  {/* Simple progress bar */}
+                  <div className="mt-4 w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
+                    <div
+                      className="bg-blue-500 h-2 rounded-full"
+                      style={{ width: "50%" }}
+                    ></div>
+                  </div>
+                  <div className="flex w-full pt-2">
+                    <span className="text-sm w-full text-right text-gray-500">
+                      {formatDate(resource.createdAt || resource.date)}
+                    </span>
+                  </div>
+                </Link>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
       </div>
     </div>
   );
