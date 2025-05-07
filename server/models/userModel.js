@@ -16,6 +16,9 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    firstName: String,  // optional, user could add on profile page
+    lastName: String,
+    school: String,
     resources: [
       {
         type: mongoose.Schema.Types.ObjectId,
