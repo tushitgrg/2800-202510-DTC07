@@ -121,7 +121,7 @@ export default function DashboardPage() {
 
         // Update the local state
         setResources(resources.filter(resource => resource.id !== id));
-        
+
         // Update allTags after resource removal
         updateAllTagsAfterResourceChange();
       } catch (error) {
@@ -143,7 +143,7 @@ export default function DashboardPage() {
     // Find the resource
     const resource = resources.find(r => r.id === resourceId);
     if (!resource) return;
-    
+
     // Make sure we don't add duplicate tags or exceed 3 tags
     const currentTags = resource.tags || [];
     if (currentTags.includes(tag) || currentTags.length >= 3) return;
@@ -158,9 +158,9 @@ export default function DashboardPage() {
       }
       return r;
     });
-    
+
     setResources(updatedResources);
-    
+
     // Add to all tags if new
     if (!allTags.includes(tag)) {
       setAllTags([...allTags, tag]);
@@ -181,13 +181,13 @@ export default function DashboardPage() {
       }
       return r;
     });
-    
+
     setResources(updatedResources);
-    
+
     // Update allTags if this was the last resource with this tag
     updateAllTagsAfterResourceChange(updatedResources);
   };
-  
+
   // Helper function to update allTags based on current resources
   const updateAllTagsAfterResourceChange = (currentResources = resources) => {
     const uniqueTags = Array.from(
