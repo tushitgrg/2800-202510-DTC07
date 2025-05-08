@@ -9,11 +9,11 @@ import { Button } from "@/components/ui/button";
 
 export default function ProfileCard({ googleUser = {} }) {
   // Initialize state variables with default values
-  const [displayName, setDisplayName] = useState(googleUser.displayName || "Your display name");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [displayName, setDisplayName] = useState(googleUser.name || "Your display name");
+  const [firstName, setFirstName] = useState(googleUser.firstName || "Enter first name");
+  const [lastName, setLastName] = useState(googleUser.lastName || "Enter last name");
   const [email, setEmail] = useState(googleUser.email || "");
-  const [school, setSchool] = useState("");
+  const [school, setSchool] = useState(googleUser.name || "Enter school");
 
   // Tracks whether profile is in editing mode (false is read only mode)
   const [isEditing, setIsEditing] = useState(false);
@@ -41,11 +41,11 @@ export default function ProfileCard({ googleUser = {} }) {
     setIsEditing(false);
   };
 
-  // set proper save handling -> send data to backend route?
+  // Send saved data to backend
   const handleSave = async () => {
     try {
       const res = await fetch("/api/user/update", {
-        method: "POST",
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           displayName: displayName || "no username",
@@ -140,7 +140,7 @@ export default function ProfileCard({ googleUser = {} }) {
             <Button variant="outline" onClick={handleCancel}>
               Cancel
             </Button>
-            <Button onClick={handleSave}>Save</Button> {/* ADD PROPER SAVE HANDLING with onClick={handleSave} */}
+            <Button onClick={handleSave}>Save</Button>
           </>
         ) : (
           <Button onClick={handleEdit} className="rounded-full">Edit</Button>

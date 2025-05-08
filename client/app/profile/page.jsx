@@ -2,7 +2,7 @@ import ProfileCard from "@/components/profile/profile";
 
 export default function profilePage() { //add fake google user
   const fakeGoogleUser = {
-    displayName: "Tracy Brain",
+    name: "Tracy Brain",
     email: "iq79@example.com",
   };
 
