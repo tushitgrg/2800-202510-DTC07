@@ -5,6 +5,7 @@ import PomodoroTimer from "@/components/Pomodoro/PomodoroTimer"
 import DirectVideoBackground from "@/components/Pomodoro/VideoBackground"
 import { fetchUserWeather } from "@/lib/userLocation"
 import MusicBackground from "@/components/Pomodoro/MusicBackground"
+import Loading from "@/components/Loading"
 
 export default function WeatherPomodoroPage() {
   // Initial state is null. After fetching weather data, it will hold { city, country, temp, weather, humidity, speed }
@@ -98,7 +99,7 @@ export default function WeatherPomodoroPage() {
           />
 
         </div>
-      </main> : <div>Loading</div>}
+      </main> : <Loading/>}
 
     </>
   )
