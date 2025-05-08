@@ -33,6 +33,17 @@ export default function DashboardPage() {
 
   // Load data when component mounts
   useEffect(() => {
+    const uniqueTags = Array.from(
+          new Set(
+            resources
+              .flatMap(resource => resource.tags || [])
+              .filter(tag => tag)
+          )
+        );
+    setAllTags(uniqueTags);
+  }, [resourceTags]);
+
+  useEffect(() => {
     const fetchResources = async () => {
       try {
         const response = await fetch(`${ServerUrl}/resources/info`, {
@@ -43,7 +54,19 @@ export default function DashboardPage() {
         console.log('Resources data:', data);
         setResources(data.resources);
 
-        const uniqueTags = data.previouslyUsedTags
+        const tagsMap = {};
+        data.resources.forEach(resource => {
+          tagsMap[resource.id] = resource.tags || [];
+        });
+        setResourceTags(tagsMap);
+
+        const uniqueTags = Array.from(
+          new Set(
+            data.resources
+              .flatMap(resource => resource.tags || [])
+              .filter(tag => tag)
+          )
+        );
         setAllTags(uniqueTags);
       } catch (error) {
         console.error('Error fetching resources:', error);
@@ -153,46 +176,46 @@ export default function DashboardPage() {
     setResourceTags(updatedTags);
   };
 
-  const handleDeleteGlobalTag = async (tagToDelete) => {
-    try {
-      const updatedResources = resources.map(resource => {
-        if ((resource.tags || []).includes(tagToDelete)) {
-          fetch(`${ServerUrl}/resources/${resource.id}`, {
-            method: 'PUT',
-            credentials: 'include',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              newTitle: resource.title,
-              newTags: (resource.tags || []).filter(tag => tag !== tagToDelete)
-            }),
-          }).catch(err => console.error(`Failed to update resource ${resource.id}:`, err));
-          return {
-            ...resource,
-            tags: (resource.tags || []).filter(tag => tag !== tagToDelete)
-          };
-        }
-        return resource;
-      });
+  // const handleDeleteGlobalTag = async (tagToDelete) => {
+  //   try {
+  //     const updatedResources = resources.map(resource => {
+  //       if ((resource.tags || []).includes(tagToDelete)) {
+  //         fetch(`${ServerUrl}/resources/${resource.id}`, {
+  //           method: 'PUT',
+  //           credentials: 'include',
+  //           headers: {
+  //             'Content-Type': 'application/json',
+  //           },
+  //           body: JSON.stringify({
+  //             newTitle: resource.title,
+  //             newTags: (resource.tags || []).filter(tag => tag !== tagToDelete)
+  //           }),
+  //         }).catch(err => console.error(`Failed to update resource ${resource.id}:`, err));
+  //         return {
+  //           ...resource,
+  //           tags: (resource.tags || []).filter(tag => tag !== tagToDelete)
+  //         };
+  //       }
+  //       return resource;
+  //     });
 
-      const updatedResourceTags = { ...resourceTags };
-      Object.keys(updatedResourceTags).forEach(resourceId => {
-        if (updatedResourceTags[resourceId].includes(tagToDelete)) {
-          updatedResourceTags[resourceId] = updatedResourceTags[resourceId].filter(tag => tag !== tagToDelete);
-        }
-      });
+  //     const updatedResourceTags = { ...resourceTags };
+  //     Object.keys(updatedResourceTags).forEach(resourceId => {
+  //       if (updatedResourceTags[resourceId].includes(tagToDelete)) {
+  //         updatedResourceTags[resourceId] = updatedResourceTags[resourceId].filter(tag => tag !== tagToDelete);
+  //       }
+  //     });
 
-      setResources(updatedResources);
-      setResourceTags(updatedResourceTags);
-      setAllTags(allTags.filter(tag => tag !== tagToDelete));
+  //     setResources(updatedResources);
+  //     setResourceTags(updatedResourceTags);
+  //     setAllTags(allTags.filter(tag => tag !== tagToDelete));
 
-      setOpenTagPopover(true);
-    } catch (error) {
-      console.error('Error deleting tag:', error);
-      alert('Failed to delete tag. Please try again.');
-    }
-  };
+  //     setOpenTagPopover(true);
+  //   } catch (error) {
+  //     console.error('Error deleting tag:', error);
+  //     alert('Failed to delete tag. Please try again.');
+  //   }
+  // };
 
   // Format date helper function
   const formatDate = (dateString) => {
@@ -307,6 +330,7 @@ export default function DashboardPage() {
                   onClick={(e) => {
                     e.stopPropagation();
                     handleRemoveTag(resource.id, tag);
+                    
                   }}
                   >
                   <X
@@ -368,18 +392,19 @@ export default function DashboardPage() {
                         {allTags
                           .filter(tag => tag.toLowerCase().includes(tagInputValue.toLowerCase()))
                           .map((tag) => (
-                            <div key={tag} className="flex justify-between">
+                            // <div className="flex justify-between">
                               <div
+                                key={tag}
                                 className="px-2 py-1.5 text-sm cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 rounded flex items-center"
                                 onClick={() => handleAddTag(resource.id, tag)}
                               >
                                 <TagIcon className="mr-2 h-4 w-4" />
                                 {tag}
-                              </div>
-                              <button className="pr-1" style={{ cursor: 'pointer' }} 
+                              {/* </div> */}
+                              {/* <button className="pr-1" style={{ cursor: 'pointer' }}
                               onClick={() => handleDeleteGlobalTag(tag)}>
                                 <X className="w-[50%] text-red-500"></X>
-                              </button>
+                              </button> */}
                             </div>
                           ))}
                       </div>
