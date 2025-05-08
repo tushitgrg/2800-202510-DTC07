@@ -19,9 +19,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { ServerUrl } from "@/lib/urls";
+import Loading from "@/components/Loading";
 
 export default function DashboardPage() {
-  const [resources, setResources] = useState([]);
+  const [resources, setResources] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [editValue, setEditValue] = useState("");
   const [allTags, setAllTags] = useState([]);
@@ -410,7 +411,8 @@ export default function DashboardPage() {
   );
 
   return (
-    <div className="flex flex-col w-full justify-center items-center p-6">
+    <>
+    {resources!=null ?<div className="flex flex-col w-full justify-center items-center p-6">
       {/* Header */}
       <div className="container">
         <div className="flex justify-between w-full items-center mb-6">
@@ -422,8 +424,9 @@ export default function DashboardPage() {
         </div>
 
         {/* Resource cards */}
+        
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
-          {resources && resources.map(resource => (
+          {resources.map(resource => (
             <div
               key={resource.id}
               className="border rounded-lg hover:shadow-md transition-shadow overflow-hidden"
@@ -441,6 +444,8 @@ export default function DashboardPage() {
           ))}
         </div>
       </div>
-    </div>
+    </div>: <Loading/>}
+    </>
+   
   );
 }

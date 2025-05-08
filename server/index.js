@@ -23,12 +23,23 @@ app.use(express.json());
 
 app.use(
   session({
+    name: 'connect.sid', // optional: sets the name of the cookie
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false, 
+
     store: MongoStore.create({
       mongoUrl: process.env.MONGO_URI,
+      ttl: 24 * 60 * 60, // 1 day in seconds
     }),
+
+    cookie: {
+      httpOnly: true,                         
+      secure: process.env.VERCEL ? true : false, // HTTPS only in production
+      sameSite: process.env.VERCEL ? 'none' : 'lax', // cross-site cookies for Vercel (if using frontend on different domain)
+      maxAge: 24 * 60 * 60 * 1000,              // 1 day
+      domain: process.env.VERCEL ? '.scholiast.webios.link' : undefined, // set your root domain in prod
+    }
   })
 );
 app.use(passport.initialize());
@@ -38,6 +49,7 @@ passportConfig(passport);
 app.use("/", authRoutes);
 app.use(isAuthenticated);
 app.get("/", (req, res) => {
+  console.log(req.user)
   res.json(req.user);
 });
 

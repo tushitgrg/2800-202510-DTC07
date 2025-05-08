@@ -6,6 +6,7 @@ import { useState } from "react";
 import ResourceComp from "./ResourceComp";
 import { useRouter } from "next/navigation";
 import { ServerUrl } from "@/lib/urls";
+import Loading from "../Loading";
 
 export default function MainResources({ id }) {
     const router = useRouter()
@@ -34,7 +35,7 @@ export default function MainResources({ id }) {
 
     return (
         <div>
-            {resourceData ? <ResourceComp resourceData={resourceData} /> : <div>Loading</div>}
+            {resourceData ? <ResourceComp resourceData={resourceData} /> : <Loading/>}
         </div>
     );
 }
