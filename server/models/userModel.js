@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    displayName: String,
     firstName: String,  // optional, user could add on profile page
     lastName: String,
     school: String,

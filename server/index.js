@@ -6,6 +6,7 @@ require('dotenv').config()
 const passportConfig = require("./utils/google_auth");
 const authRoutes = require("./controllers/authController");
 const resourceRoutes = require("./routes/resourceRoutes");
+const userRoutes = require("./routes/user");
 const MongoStore = require("connect-mongo");
 const isAuthenticated = require("./controllers/authMiddleware");
 require("./utils/db");
@@ -49,6 +50,7 @@ app.get("/dashboard", (req, res) => {
 });
 
 app.use("/resources", resourceRoutes);
+app.use("/api/user", userRoutes)
 // app.use('/quiz', quizRoutes)
 // app.use("/flashcard", flashcardRoutes);
 
