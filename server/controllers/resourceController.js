@@ -3,14 +3,12 @@ const { getGeminiOutput } = require("../utils/geminiClient");
 const addQuizEntry = require("../utils/addQuizEntry");
 const addFlashcardEntry = require("../utils/addFlashcardEntry");
 const addSummaryEntry = require("../utils/addSummaryEntry");
-const { updateUserTags } = require("../utils/tagUtils");
 
 const User = require("../models/userModel");
 const Resource = require("../models/resourceModel");
 const Quiz = require("../models/quizModel");
 const Flashcard = require("../models/flashcardModel");
 const Summary = require("../models/summaryModel");
-const { hasResource } = require("./sharedResourceMiddleware");
 
 const fetchResource = async (resourceID) => {
   const resource = await Resource.findById(resourceID);
@@ -45,9 +43,7 @@ const getResourceInfo = async function (req, res) {
         return info;
       })
     );
-    res
-      .status(200)
-      .json({ resources: result, previouslyUsedTags: user.previousTags || [] });
+    res.status(200).json({ resources: result });
   } catch (err) {
     console.error("Failed to fetch user resources:", err);
     res.status(500).json({ error: "Failed to fetch resources" });
@@ -198,9 +194,7 @@ const deleteResource = async function (req, res) {
 const updateResourceInfo = async function (req, res) {
   const resourceId = req.params.id;
   const { newTitle, newTags } = req.body;
-  if (newTags) {
-    updateUserTags(req.user._id, newTags);
-  }
+
   if (!resourceId) {
     res.status(400).json({ error: "Resource ID is required" });
   }
