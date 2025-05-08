@@ -3,7 +3,7 @@ const updateUserTags = async function (userId, newTags) {
   const user = await User.findByIdAndUpdate(
     userId,
     {
-      $addToSet: { previousTags: newTags },
+      $addToSet: { previousTags: { $each: newTags } },
     },
     { new: true }
   );
