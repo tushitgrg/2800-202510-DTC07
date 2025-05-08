@@ -22,7 +22,7 @@ router.get("/:id", hasResource, getResourceById);
 router.post("/", upload.single("pdf"), addResource);
 router.post("/:id/add", hasResource, addResourceById);
 
-router.delete("/:id", deleteResource);
+router.delete("/:id", hasResource, deleteResource);
 router.put("/:id", updateResourceInfo);
 
 module.exports = router;

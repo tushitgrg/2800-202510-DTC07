@@ -174,9 +174,15 @@ const deleteResource = async function (req, res) {
   if (!resourceId) {
     res.status(400).json({ error: "Resource ID is required" });
   }
+
   const user = await User.findById(req.user._id);
   if (!user) {
     res.status(404).json({ error: "User not found" });
+  }
+  if (!user.hasResource) {
+    return res
+      .status(403)
+      .json({ msg: "User has no authorization to delete this resource" });
   }
   try {
     await Resource.findByIdAndDelete(resourceId);
