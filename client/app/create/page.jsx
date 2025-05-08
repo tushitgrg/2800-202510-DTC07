@@ -15,6 +15,7 @@ import { Progress } from "@/components/ui/progress"
 import { generateFlashcardPrompt, generateQuizPrompt, generateSummaryPrompt } from "@/lib/prompts"
 import { useRouter } from 'next/navigation'
 import { Input } from "@/components/ui/input"
+import { ServerUrl } from "@/lib/urls"
 
 
 export default function CreatePage() {
@@ -136,7 +137,7 @@ try{
 
   
 
-  const resp = await fetch('http://localhost:3001/resources', {
+  const resp = await fetch(`${ServerUrl}/resources`, {
     method: "POST",
     body: apiBody,
      credentials: 'include'

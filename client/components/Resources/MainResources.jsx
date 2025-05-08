@@ -5,13 +5,14 @@ import { useState } from "react";
 
 import ResourceComp from "./ResourceComp";
 import { useRouter } from "next/navigation";
+import { ServerUrl } from "@/lib/urls";
 
 export default function MainResources({ id }) {
     const router = useRouter()
     const [resourceData, setresourceData] = useState(null)
     const getData = async () => {
         try {
-            const response = await fetch(`http://localhost:3001/resources/${id}`, {
+            const response = await fetch(`${ServerUrl}/resources/${id}`, {
                 credentials: 'include'
             })
 
