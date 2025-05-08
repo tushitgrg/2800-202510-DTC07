@@ -18,31 +18,18 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
 import { ServerUrl } from "@/lib/urls";
 
 export default function DashboardPage() {
   const [resources, setResources] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [editValue, setEditValue] = useState("");
-  const [resourceTags, setResourceTags] = useState({});
   const [allTags, setAllTags] = useState([]);
   const [tagInputValue, setTagInputValue] = useState('');
   const [openTagPopover, setOpenTagPopover] = useState(false);
   const router = useRouter();
 
-  // Load data when component mounts
-  useEffect(() => {
-    const uniqueTags = Array.from(
-          new Set(
-            resources
-              .flatMap(resource => resource.tags || [])
-              .filter(tag => tag)
-          )
-        );
-    setAllTags(uniqueTags);
-  }, [resourceTags]);
-
+  // Single useEffect for fetching data when component mounts
   useEffect(() => {
     const fetchResources = async () => {
       try {
@@ -54,12 +41,7 @@ export default function DashboardPage() {
         console.log('Resources data:', data);
         setResources(data.resources);
 
-        const tagsMap = {};
-        data.resources.forEach(resource => {
-          tagsMap[resource.id] = resource.tags || [];
-        });
-        setResourceTags(tagsMap);
-
+        // Extract unique tags from resources
         const uniqueTags = Array.from(
           new Set(
             data.resources
@@ -88,6 +70,9 @@ export default function DashboardPage() {
     if (editValue.trim() === "") return;
 
     try {
+      const updatedResource = resources.find(r => r.id === editingId);
+      if (!updatedResource) return;
+
       const response = await fetch(`${ServerUrl}/resources/${editingId}`, {
         method: 'PUT',
         credentials: 'include',
@@ -96,7 +81,7 @@ export default function DashboardPage() {
         },
         body: JSON.stringify({
           newTitle: editValue,
-          newTags: resourceTags[editingId] || []
+          newTags: updatedResource.tags || []
         }),
       });
 
@@ -105,15 +90,14 @@ export default function DashboardPage() {
       }
 
       setResources(resources.map(resource =>
-        resource.id === editingId ? { ...resource, title: editValue, tags: resourceTags[editingId] || [] } : resource
+        resource.id === editingId ? { ...resource, title: editValue } : resource
       ));
       setEditingId(null);
     } catch (error) {
       console.error('Error updating resource:', error);
-
       // Still update UI for better UX
       setResources(resources.map(resource =>
-        resource.id === editingId ? { ...resource, title: editValue, tags: resourceTags[editingId] || [] } : resource
+        resource.id === editingId ? { ...resource, title: editValue } : resource
       ));
       setEditingId(null);
     }
@@ -137,10 +121,14 @@ export default function DashboardPage() {
 
         // Update the local state
         setResources(resources.filter(resource => resource.id !== id));
+        
+        // Update allTags after resource removal
+        updateAllTagsAfterResourceChange();
       } catch (error) {
         console.error('Error deleting resource:', error);
         // Still update UI for better UX
         setResources(resources.filter(resource => resource.id !== id));
+        updateAllTagsAfterResourceChange();
       }
     }
   };
@@ -152,15 +140,27 @@ export default function DashboardPage() {
   };
 
   const handleAddTag = (resourceId, tag) => {
+    // Find the resource
+    const resource = resources.find(r => r.id === resourceId);
+    if (!resource) return;
+    
     // Make sure we don't add duplicate tags or exceed 3 tags
-    const currentTags = resourceTags[resourceId] || [];
+    const currentTags = resource.tags || [];
     if (currentTags.includes(tag) || currentTags.length >= 3) return;
 
-    // Update local state
-    const updatedTags = { ...resourceTags };
-    updatedTags[resourceId] = [...currentTags, tag];
-    setResourceTags(updatedTags);
-
+    // Update resources with new tag
+    const updatedResources = resources.map(r => {
+      if (r.id === resourceId) {
+        return {
+          ...r,
+          tags: [...currentTags, tag]
+        };
+      }
+      return r;
+    });
+    
+    setResources(updatedResources);
+    
     // Add to all tags if new
     if (!allTags.includes(tag)) {
       setAllTags([...allTags, tag]);
@@ -171,51 +171,34 @@ export default function DashboardPage() {
   };
 
   const handleRemoveTag = (resourceId, tagToRemove) => {
-    const updatedTags = { ...resourceTags };
-    updatedTags[resourceId] = (resourceTags[resourceId] || []).filter(tag => tag !== tagToRemove);
-    setResourceTags(updatedTags);
+    // Update resources by removing tag
+    const updatedResources = resources.map(r => {
+      if (r.id === resourceId) {
+        return {
+          ...r,
+          tags: (r.tags || []).filter(tag => tag !== tagToRemove)
+        };
+      }
+      return r;
+    });
+    
+    setResources(updatedResources);
+    
+    // Update allTags if this was the last resource with this tag
+    updateAllTagsAfterResourceChange(updatedResources);
   };
-
-  // const handleDeleteGlobalTag = async (tagToDelete) => {
-  //   try {
-  //     const updatedResources = resources.map(resource => {
-  //       if ((resource.tags || []).includes(tagToDelete)) {
-  //         fetch(`${ServerUrl}/resources/${resource.id}`, {
-  //           method: 'PUT',
-  //           credentials: 'include',
-  //           headers: {
-  //             'Content-Type': 'application/json',
-  //           },
-  //           body: JSON.stringify({
-  //             newTitle: resource.title,
-  //             newTags: (resource.tags || []).filter(tag => tag !== tagToDelete)
-  //           }),
-  //         }).catch(err => console.error(`Failed to update resource ${resource.id}:`, err));
-  //         return {
-  //           ...resource,
-  //           tags: (resource.tags || []).filter(tag => tag !== tagToDelete)
-  //         };
-  //       }
-  //       return resource;
-  //     });
-
-  //     const updatedResourceTags = { ...resourceTags };
-  //     Object.keys(updatedResourceTags).forEach(resourceId => {
-  //       if (updatedResourceTags[resourceId].includes(tagToDelete)) {
-  //         updatedResourceTags[resourceId] = updatedResourceTags[resourceId].filter(tag => tag !== tagToDelete);
-  //       }
-  //     });
-
-  //     setResources(updatedResources);
-  //     setResourceTags(updatedResourceTags);
-  //     setAllTags(allTags.filter(tag => tag !== tagToDelete));
-
-  //     setOpenTagPopover(true);
-  //   } catch (error) {
-  //     console.error('Error deleting tag:', error);
-  //     alert('Failed to delete tag. Please try again.');
-  //   }
-  // };
+  
+  // Helper function to update allTags based on current resources
+  const updateAllTagsAfterResourceChange = (currentResources = resources) => {
+    const uniqueTags = Array.from(
+      new Set(
+        currentResources
+          .flatMap(resource => resource.tags || [])
+          .filter(tag => tag)
+      )
+    );
+    setAllTags(uniqueTags);
+  };
 
   // Format date helper function
   const formatDate = (dateString) => {
@@ -316,7 +299,7 @@ export default function DashboardPage() {
 
         {/* Tag Management */}
         <div className="mt-2 flex flex-wrap gap-2">
-          {(resourceTags[resource.id] || []).map((tag, idx) => (
+          {(resource.tags || []).map((tag, idx) => (
             <Badge
               key={`${resource.id}-tag-${idx}`}
               className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300"
@@ -330,20 +313,18 @@ export default function DashboardPage() {
                   onClick={(e) => {
                     e.stopPropagation();
                     handleRemoveTag(resource.id, tag);
-                    
                   }}
-                  >
+                >
                   <X
-                  className="ml-1 h-3 w-3 text-red-500 cursor-pointer"
-                />
+                    className="ml-1 h-3 w-3 text-red-500 cursor-pointer"
+                  />
                 </button>
-
               )}
             </Badge>
           ))}
 
           {/* Add Tag Button - Only visible in edit mode */}
-          {editingId === resource.id && (resourceTags[resource.id] || []).length < 3 && (
+          {editingId === resource.id && (resource.tags || []).length < 3 && (
             <Popover open={openTagPopover} onOpenChange={setOpenTagPopover}>
               <PopoverTrigger asChild onClick={e => e.stopPropagation()}>
                 <Badge variant="outline" className="cursor-pointer border-dashed">
@@ -392,19 +373,13 @@ export default function DashboardPage() {
                         {allTags
                           .filter(tag => tag.toLowerCase().includes(tagInputValue.toLowerCase()))
                           .map((tag) => (
-                            // <div className="flex justify-between">
-                              <div
-                                key={tag}
-                                className="px-2 py-1.5 text-sm cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 rounded flex items-center"
-                                onClick={() => handleAddTag(resource.id, tag)}
-                              >
-                                <TagIcon className="mr-2 h-4 w-4" />
-                                {tag}
-                              {/* </div> */}
-                              {/* <button className="pr-1" style={{ cursor: 'pointer' }}
-                              onClick={() => handleDeleteGlobalTag(tag)}>
-                                <X className="w-[50%] text-red-500"></X>
-                              </button> */}
+                            <div
+                              key={tag}
+                              className="px-2 py-1.5 text-sm cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 rounded flex items-center"
+                              onClick={() => handleAddTag(resource.id, tag)}
+                            >
+                              <TagIcon className="mr-2 h-4 w-4" />
+                              {tag}
                             </div>
                           ))}
                       </div>
