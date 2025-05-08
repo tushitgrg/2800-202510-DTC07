@@ -6,6 +6,7 @@ const cors = require("cors");
 const passportConfig = require("./utils/google_auth");
 const authRoutes = require("./controllers/authController");
 const resourceRoutes = require("./routes/resourceRoutes");
+const userRoutes = require("./routes/user");
 const MongoStore = require("connect-mongo");
 const isAuthenticated = require("./controllers/authMiddleware");
 require("./utils/db");
@@ -51,6 +52,8 @@ app.get("/dashboard", (req, res) => {
 app.use("/resources", resourceRoutes);
 // app.use('/quiz', quizRoutes)
 // app.use("/flashcard", flashcardRoutes);
+
+app.use("/api/user", userRoutes)
 
 app.listen(3001, () => {
   console.log("Server started on port 3001");

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import React from "react";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -26,6 +26,34 @@ export default function ProfileCard({ googleUser = {} }) {
     school: "",
   });
 
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (!email) return;
+
+      try {
+        const res = await fetch(`http://localhost:3001/api/user/${email}`, {
+          credentials: "include",
+        });
+
+        if (res.ok) {
+          const user = await res.json();
+          setDisplayName(
+            user.displayName !== undefined
+              ? user.displayName
+              : user.name || "no username"
+          );
+          setFirstName(user.firstName || "");
+          setLastName(user.lastName || "");
+          setSchool(user.school || "");
+        }
+      } catch (err) {
+        console.error("Failed to fetch user:", err);
+      }
+    };
+
+    fetchUser();
+  }, [email]);
+
   const handleEdit = () => {
     setBackup({ displayName, firstName, lastName, email, school }); // Save previous values in backup object
     setIsEditing(true); // Editing mode "On" 
@@ -44,8 +72,9 @@ export default function ProfileCard({ googleUser = {} }) {
   // Send saved data to backend
   const handleSave = async () => {
     try {
-      const res = await fetch("/api/user/update", {
+      const res = await fetch("http://localhost:3001/api/user/update", {
         method: "PUT",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           displayName: displayName || "no username",
@@ -55,6 +84,13 @@ export default function ProfileCard({ googleUser = {} }) {
           school,
         }),
       });
+
+
+      if (!res.ok) {
+        const text = await res.text();
+        alert("Save failed: " + text);
+        return;
+      }
 
       const data = await res.json();
 
