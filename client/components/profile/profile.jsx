@@ -6,6 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/componen
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { ServerUrl } from "@/lib/urls";
 
 export default function ProfileCard({ googleUser = {} }) {
   // Initialize state variables with default values
@@ -31,7 +32,7 @@ export default function ProfileCard({ googleUser = {} }) {
       if (!email) return;
 
       try {
-        const res = await fetch(`http://localhost:3001/api/user/${email}`, {
+        const res = await fetch(`${ServerUrl}/api/user/${email}`, {
           credentials: "include",
         });
 
@@ -72,7 +73,7 @@ export default function ProfileCard({ googleUser = {} }) {
   // Send saved data to backend
   const handleSave = async () => {
     try {
-      const res = await fetch("http://localhost:3001/api/user/update", {
+      const res = await fetch(`${ServerUrl}/api/user/update`, {
         method: "PUT",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

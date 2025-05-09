@@ -68,7 +68,7 @@ app.use("/api/user", userRoutes)
 
 if (process.env.VERCEL !== '1') {
   app.listen(3001, () => {
-    console.log(`Server running on http://localhost:3001`);
+    console.log(`Server running on 3001`);
   });
 }
 
