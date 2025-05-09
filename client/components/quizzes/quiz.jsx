@@ -16,13 +16,13 @@ import {
 } from "@/components/ui/alert-dialog";
 
 export default function Quiz({ questions, onComplete }) {
-  // Simplified state management
+  // state management
   const [currentIndex, setCurrentIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState(Array(questions.length).fill(null));
   const [showResults, setShowResults] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  
-  // Timer state
+
+  // Timer
   const [elapsedTime, setElapsedTime] = useState(0);
   const [timerRunning, setTimerRunning] = useState(true);
 
@@ -34,7 +34,7 @@ export default function Quiz({ questions, onComplete }) {
         setElapsedTime(prevTime => prevTime + 1);
       }, 1000);
     }
-    
+
     return () => clearInterval(timer);
   }, [timerRunning]);
 
@@ -81,13 +81,13 @@ export default function Quiz({ questions, onComplete }) {
   const submitQuiz = () => {
     // Stop the timer
     setTimerRunning(false);
-    
+
     // Fill in unanswered questions with an incorrect choice
     const finalAnswers = userAnswers.map((answer, index) => {
       if (answer === null) {
         const correctAnswer = questions[index].answer;
-        const incorrectChoice = questions[index].choices.find(choice => choice !== correctAnswer);
-        return incorrectChoice || questions[index].choices[0];
+        const incorrectChoice = questions[index].options.find(choice => choice !== correctAnswer);
+        return incorrectChoice || questions[index].options[0];
       }
       return answer;
     });
@@ -198,7 +198,7 @@ export default function Quiz({ questions, onComplete }) {
 
       {/* Answer choices */}
       <div className="space-y-2 mb-4">
-        {current.choices.map((choice, i) => (
+        {current.options.map((choice, i) => (
           <Button
             key={i}
             onClick={() => handleSelect(choice)}

@@ -1,0 +1,12 @@
+const mongoose = require("mongoose");
+const resourceSchema = new mongoose.Schema(
+  {
+    title: String,
+    quizID: { type: mongoose.Schema.Types.ObjectId, ref: "Quiz" },
+    flashcardID: { type: mongoose.Schema.Types.ObjectId, ref: "Flashcard" },
+    summaryID: { type: mongoose.Schema.Types.ObjectId, ref: "Summary" },
+    tags: { type: Array, default: [] },
+  },
+  { timestamps: true }
+);
+module.exports = mongoose.model("Resource", resourceSchema);
