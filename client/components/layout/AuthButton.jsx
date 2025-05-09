@@ -30,12 +30,14 @@ const AuthButton = ({ className = "" }) => {
                 </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+               <a href="/profile"> <DropdownMenuLabel>My Account</DropdownMenuLabel></a>
+                <a href={`${ServerUrl}/logout`}>
                 <DropdownMenuItem>
           <LogOut />
           <span>Log out</span>
          
         </DropdownMenuItem>
+        </a>
                 </DropdownMenuContent>
                 </DropdownMenu>
 
