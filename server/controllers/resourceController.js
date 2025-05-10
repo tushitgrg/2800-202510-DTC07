@@ -179,11 +179,13 @@ const deleteResource = async function (req, res) {
   if (!user) {
     res.status(404).json({ error: "User not found" });
   }
-  if (!user.hasResource) {
+
+  if (!req.hasResource) {
     return res
       .status(403)
       .json({ msg: "User has no authorization to delete this resource" });
   }
+
   try {
     await Resource.findByIdAndDelete(resourceId);
     await user.updateOne({ $pull: { resources: resourceId } });
