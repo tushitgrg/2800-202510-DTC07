@@ -37,6 +37,9 @@ export default function DashboardPage() {
         const response = await fetch(`${ServerUrl}/resources/info`, {
           credentials: 'include'
         });
+        if(response.status === 401){
+          return router.push(`${ServerUrl}/auth/google`)
+        }
         if (!response.ok) throw new Error('Failed to fetch resources');
         const data = await response.json();
         console.log('Resources data:', data);
