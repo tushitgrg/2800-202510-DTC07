@@ -47,6 +47,9 @@ app.use(passport.session());
 passportConfig(passport);
 
 app.use("/", authRoutes);
+app.get("/keep-alive", (req, res) => {
+  res.json("HI")
+});
 app.use(isAuthenticated);
 app.get("/", (req, res) => {
   console.log(req.user)
