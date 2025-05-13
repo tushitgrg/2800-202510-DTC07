@@ -110,7 +110,7 @@ export default function ProfileCard({ googleUser = {} }) {
           firstName,
           lastName,
           email,
-          school,
+          school: school || "",  // allow empty
         }),
       });
 
@@ -195,60 +195,34 @@ export default function ProfileCard({ googleUser = {} }) {
               <Input
                 id="school"
                 value={schoolSearch}
-                placeholder="搜尋學校..."
+                placeholder="Searching school..."
                 className="rounded-full mt-1"
                 onChange={(e) => {
                   const value = e.target.value;
                   setSchoolSearch(value);
+                  setSchool(value);  // Always sync school with search
                   if (value) {
                     debouncedFetch(value);
                   } else {
-                    setSchoolList([]);  // 沒輸入就清空列表
+                    setSchoolList([]);
                   }
                 }}
               />
-              {schoolSearch && (
+              {schoolList.length > 0 && (
                 <div className="border rounded-md max-h-40 overflow-y-auto mt-1">
-                  {schoolList.length > 0 ? (
-                    <>
-                      {schoolList.map((s) => (
-                        <div
-                          key={s.name}
-                          className="p-2 cursor-pointer hover:font-bold"
-                          onClick={() => {
-                            setSchool(s.name);
-                            setSchoolSearch(s.name);
-                            setSchoolList([]);  
-                          }}
-                        >
-                          {s.name}
-                        </div>
-                      ))}
-                      {/* other always existed */}
-                      <div
-                        className="p-2 cursor-pointer hover:font-bold text-gray-400"
-                        onClick={() => {
-                          setSchool("Other");
-                          setSchoolSearch("Other");
-                          setSchoolList([]);
-                        }}
-                      >
-                        Other
-                      </div>
-                    </>
-                  ) : (
-                    // no result, only show others
+                  {schoolList.map((s) => (
                     <div
-                      className="p-2 cursor-pointer hover:font-bold text-gray-400"
+                      key={s.name}
+                      className="p-2 cursor-pointer hover:font-bold"
                       onClick={() => {
-                        setSchool("Other");
-                        setSchoolSearch("Other");
-                        setSchoolList([]);
+                        setSchool(s.name);
+                        setSchoolSearch(s.name);
+                        setSchoolList([]);  // Clear dropdown after select
                       }}
                     >
-                      Other
+                      {s.name}
                     </div>
-                  )}
+                  ))}
                 </div>
               )}
             </>
@@ -260,7 +234,6 @@ export default function ProfileCard({ googleUser = {} }) {
               className="rounded-full mt-1"
             />
           )}
-
         </div>
 
       </CardContent>

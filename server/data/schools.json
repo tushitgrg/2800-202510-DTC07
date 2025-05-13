@@ -1,5 +1,17 @@
 [
   {
+    "name": "Other",
+    "domains": [
+      "Other"
+    ],
+    "web_pages": [
+      "Other"
+    ],
+    "country": "Other",
+    "alpha_two_code": "Other",
+    "state-province": null
+  },
+  {
     "name": "Engineering Institute of Technology",
     "domains": ["student.eit.edu.au"],
     "web_pages": ["https://www.eit.edu.au/"],
