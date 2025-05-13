@@ -8,10 +8,11 @@ const resourceSchema = new mongoose.Schema(
     tags: { type: Array, default: [] },
     isPublic: { type: Boolean, default: false },
     shareCount: { type: Number, default: 0 },
-    rating: {
-      average: { type: Number, default: 0 },
-      totalRatings: { type: Number, default: 0 },
+    likes: {
+      type: Number,
+      default: 0,
     },
+    course: { type: String, default: null },
     author: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   },
   { timestamps: true }

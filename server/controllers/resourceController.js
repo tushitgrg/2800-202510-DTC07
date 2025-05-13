@@ -229,7 +229,7 @@ const updateResourceInfo = async function (req, res) {
 const getPublicResources = async function (req, res) {
   try {
     const publicResources =
-      (await Resource.find({ isPublic: true }).populate("author", "name")) ||
+      (await Resource.find({ isPublic: true }).populate("author", "name school")) ||
       [];
     const publicResourceInfo = publicResources.map((resource) => {
       return {

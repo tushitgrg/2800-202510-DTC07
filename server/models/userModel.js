@@ -34,6 +34,7 @@ const userSchema = new mongoose.Schema(
       },
       totalSharesReceived: { type: Number, default: 0 }, // when others add their resource
     },
+    school: { type: String, default: null },
   },
   { timestamps: true }
 );
