@@ -225,9 +225,35 @@ const updateResourceInfo = async function (req, res) {
   } catch (err) {}
 };
 
+const getPublicResources = async function (req, res) {
+  try {
+    const publicResources =
+      (
+        await Resource.find({ public: true }).populate("author", "name")
+      ).lean() || [];
+    const publicResourceInfo = publicResources.map((resource) => {
+      return {
+        title: resource.title,
+        author: resource.author?.name || null,
+        tags: resource.tags || [],
+        createdAt: resource.createdAt,
+        shareCount: resource.shareCount || 0,
+        rating: resource.rating.average || 0.0,
+      };
+    });
+    res.status(200).json(publicResourceInfo);
+  } catch (err) {
+    res.status(500).json({
+      msg: "Unable to fetch public resources",
+      error: err.message || err,
+    });
+  }
+};
+
 module.exports = {
   getResources,
   getResourceInfo,
+  getPublicResources,
   getResourceById,
   addResource,
   deleteResource,
