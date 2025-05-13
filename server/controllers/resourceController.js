@@ -231,21 +231,46 @@ const updateResourceInfo = async function (req, res) {
 
 const getPublicResources = async function (req, res) {
   try {
-    const publicResources =
-      (await Resource.find({ isPublic: true }).populate(
-        "author",
-        "name school"
-      )) || [];
-    const publicResourceInfo = publicResources.map((resource) => {
-      return {
-        title: resource.title,
-        author: resource.author?.name || null,
-        tags: resource.tags || [],
-        createdAt: resource.createdAt,
-        shareCount: resource.shareCount || 0,
-        rating: resource.rating.average || 0.0,
-      };
-    });
+    const { course, school, q, sort } = req.query;
+
+    // Always filter for public resources
+    const filters = { isPublic: true };
+
+    // Optional filters
+    if (course) filters.course = course;
+    if (school) filters.school = school;
+
+    // Text search (title, description, tags)
+    if (q) {
+      filters.$or = [
+        { title: { $regex: q, $options: "i" } },
+        { description: { $regex: q, $options: "i" } },
+        { tags: { $regex: q, $options: "i" } },
+      ];
+    }
+
+    // Optional sorting
+    let sortOption = {};
+    if (sort) {
+      const [field, order] = sort.split(":");
+      sortOption[field] = order === "desc" ? -1 : 1;
+    }
+
+    const publicResources = await Resource.find(filters)
+      .sort(sortOption)
+      .populate("author", "name school")
+      .lean();
+
+    const publicResourceInfo = publicResources.map((resource) => ({
+      title: resource.title,
+      author: resource.author?.name || null,
+      school: resource.school || resource.author?.school || null,
+      course: resource.course,
+      createdAt: resource.createdAt,
+      shareCount: resource.shareCount || 0,
+      likes: resource.likes || 0,
+    }));
+
     res.status(200).json(publicResourceInfo);
   } catch (err) {
     res.status(500).json({
