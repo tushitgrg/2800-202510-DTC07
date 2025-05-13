@@ -14,6 +14,7 @@ export default function DashboardPage() {
   const [editingId, setEditingId] = useState(null);
   const [editValue, setEditValue] = useState("");
   const [allTags, setAllTags] = useState([]);
+  const [sharingResourceId, setSharingResourceId] = useState(null);
   const router = useRouter();
 
   // Fetch resources when component mounts
@@ -121,6 +122,9 @@ export default function DashboardPage() {
 
   const handleShare = async (id, newTitle, isPublic) => {
     try {
+      // Set the sharing resource ID to null to close the dialog
+      setSharingResourceId(null);
+      
       // If a new title was provided, update the title
       if (newTitle) {
         // Update db
@@ -133,6 +137,15 @@ export default function DashboardPage() {
     } catch (error) {
       console.error('Error sharing resource:', error);
     }
+  };
+
+  // Functions to track when a share dialog opens or closes
+  const handleOpenShareDialog = (id) => {
+    setSharingResourceId(id);
+  };
+
+  const handleCloseShareDialog = () => {
+    setSharingResourceId(null);
   };
 
   const handleAddTag = (resourceId, tag) => {
@@ -242,6 +255,10 @@ export default function DashboardPage() {
                   handleRemoveTag={handleRemoveTag}
                   allTags={allTags}
                   formatDate={formatDate}
+                  // Pass the sharing state and handlers to the ResourceCard
+                  isSharing={sharingResourceId === resource.id}
+                  onOpenShareDialog={() => handleOpenShareDialog(resource.id)}
+                  onCloseShareDialog={handleCloseShareDialog}
                 />
               ))}
             </div>
