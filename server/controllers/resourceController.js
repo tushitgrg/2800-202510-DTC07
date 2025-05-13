@@ -102,17 +102,18 @@ const getResourceById = async function (req, res) {
 //POST request handler for creating a resource
 const addResource = async function (req, res) {
   const userId = req.user._id;
-  const { title, quizPrompt, flashcardPrompt, summaryPrompt, youtubeUrl } = req.body;
+  const { title, quizPrompt, flashcardPrompt, summaryPrompt, youtubeUrl } =
+    req.body;
   if (!req.file) {
-     if(!youtubeUrl) return res.status(400).json({ error: "No file or youtube URL uploaded" });
-    file = await getTranscriptAsFilePart(youtubeUrl)
-  }else{
-   file =  processFile(req.file);
+    if (!youtubeUrl)
+      return res.status(400).json({ error: "No file or youtube URL uploaded" });
+    file = await getTranscriptAsFilePart(youtubeUrl);
+  } else {
+    file = processFile(req.file);
   }
 
-
   if (!file) {
- return res.status(500).json({ error: "Failed to process file" });
+    return res.status(500).json({ error: "Failed to process file" });
   }
   const newResource = await Resource.create({
     title: title || "Untitled Resource",
@@ -228,9 +229,8 @@ const updateResourceInfo = async function (req, res) {
 const getPublicResources = async function (req, res) {
   try {
     const publicResources =
-      (
-        await Resource.find({ public: true }).populate("author", "name")
-      ).lean() || [];
+      (await Resource.find({ isPublic: true }).populate("author", "name")) ||
+      [];
     const publicResourceInfo = publicResources.map((resource) => {
       return {
         title: resource.title,
