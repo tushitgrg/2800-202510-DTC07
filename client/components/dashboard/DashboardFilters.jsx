@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { Search, Filter, SortAsc, SortDesc, X, Tag as TagIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,59 +15,45 @@ import {
 const DashboardFilters = ({
   resources,
   allTags,
+  selectedTags,
+  searchQuery,
+  sortOption,
   onFilterChange,
   onSortChange
 }) => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedTags, setSelectedTags] = useState([]);
-  const [sortOption, setSortOption] = useState("newest");
-
-  // Update filters when inputs change
+  // Update parent component when filters change
   useEffect(() => {
-    const filterFunction = (resource) => {
-      const matchesSearch = resource.title.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesTags = selectedTags.length === 0 ||
-        selectedTags.every(tag => resource.tags?.includes(tag));
-      return matchesSearch && matchesTags;
-    };
+    onFilterChange(searchQuery, selectedTags);
+  }, [searchQuery, selectedTags, onFilterChange]);
 
-    // Create a sort function based on current sort option
-    const sortFunction = (a, b) => {
-      switch (sortOption) {
-        case "newest":
-          return new Date(b.createdAt) - new Date(a.createdAt);
-        case "oldest":
-          return new Date(a.createdAt) - new Date(b.createdAt);
-        case "a-z":
-          return a.title.localeCompare(b.title);
-        case "z-a":
-          return b.title.localeCompare(a.title);
-        default:
-          return 0;
-      }
-    };
-
-    onFilterChange(filterFunction);
-    onSortChange(sortFunction);
-  }, [searchQuery, selectedTags, sortOption, onFilterChange, onSortChange]);
-
-  // Add a tag to selected tags
+  // Handle adding a tag to the filter
   const handleAddTag = (tag) => {
     if (!selectedTags.includes(tag)) {
-      setSelectedTags([...selectedTags, tag]);
+      const newSelectedTags = [...selectedTags, tag];
+      onFilterChange(searchQuery, newSelectedTags);
     }
   };
 
-  // Remove a tag from selected tags
+  // Handle removing a tag from the filter
   const handleRemoveTag = (tag) => {
-    setSelectedTags(selectedTags.filter(t => t !== tag));
+    const newSelectedTags = selectedTags.filter(t => t !== tag);
+    onFilterChange(searchQuery, newSelectedTags);
+  };
+
+  // Handle search query changes
+  const handleSearchChange = (e) => {
+    onFilterChange(e.target.value, selectedTags);
+  };
+
+  // Handle sort option changes
+  const handleSortChange = (option) => {
+    onSortChange(option);
   };
 
   // Clear all filters
   const handleClearFilters = () => {
-    setSearchQuery("");
-    setSelectedTags([]);
-    setSortOption("newest");
+    onFilterChange("", []);
+    onSortChange("newest");
   };
 
   return (
@@ -78,7 +64,7 @@ const DashboardFilters = ({
         <Input
           placeholder="Search resources..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={handleSearchChange}
           className="pl-10 w-full"
         />
         {searchQuery && (
@@ -86,7 +72,7 @@ const DashboardFilters = ({
             variant="ghost"
             size="sm"
             className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0"
-            onClick={() => setSearchQuery("")}
+            onClick={() => onFilterChange("", selectedTags)}
           >
             <X className="h-4 w-4" />
           </Button>
@@ -98,7 +84,7 @@ const DashboardFilters = ({
         {/* Sort dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="h-9">
+            <Button variant="outline" size="sm" className="h-9 cursor-pointer">
               {sortOption === "newest" || sortOption === "oldest" ? (
                 <Filter className="mr-2 h-4 w-4" />
               ) : sortOption === "a-z" ? (
@@ -118,19 +104,19 @@ const DashboardFilters = ({
           <DropdownMenuContent align="start">
             <DropdownMenuLabel>Sort by</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => setSortOption("newest")} className="cursor-pointer">
+            <DropdownMenuItem onClick={() => handleSortChange("newest")} className="cursor-pointer">
               <Filter className="mr-2 h-4 w-4" />
               Newest
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setSortOption("oldest")} className="cursor-pointer">
+            <DropdownMenuItem onClick={() => handleSortChange("oldest")} className="cursor-pointer">
               <Filter className="mr-2 h-4 w-4" />
               Oldest
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setSortOption("a-z")} className="cursor-pointer">
+            <DropdownMenuItem onClick={() => handleSortChange("a-z")} className="cursor-pointer">
               <SortAsc className="mr-2 h-4 w-4" />
               A - Z
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setSortOption("z-a")} className="cursor-pointer">
+            <DropdownMenuItem onClick={() => handleSortChange("z-a")} className="cursor-pointer">
               <SortDesc className="mr-2 h-4 w-4" />
               Z - A
             </DropdownMenuItem>
@@ -140,7 +126,7 @@ const DashboardFilters = ({
         {/* Tag filter dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="h-9">
+            <Button variant="outline" size="sm" className="h-9 cursor-pointer">
               <TagIcon className="mr-2 h-4 w-4" />
               Tags
             </Button>
@@ -171,15 +157,15 @@ const DashboardFilters = ({
         {/* Selected tags */}
         <div className="flex flex-wrap gap-1 ml-1 items-center">
           {selectedTags.map((tag) => (
-            <Badge key={tag} variant="secondary" className="pl-2 pr-1 py-1 h-7">
+            <Badge key={tag} variant="destructive" className="pl-2 pr-1 py-1 h-7">
               {tag}
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => handleRemoveTag(tag)}
-                className="h-5 w-5 p-0 ml-1 -mr-1 rounded-full hover:bg-muted"
+                className="h-5 w-5 p-0 ml-1 rounded-full hover:bg-muted cursor-pointer"
               >
-                <X className="h-3 w-3" />
+                <X className="h-3 w-3"/>
               </Button>
             </Badge>
           ))}
@@ -190,9 +176,8 @@ const DashboardFilters = ({
             variant="ghost"
             size="sm"
             onClick={handleClearFilters}
-            className="h-9"
+            className="h-9 cursor-pointer text-slate-300"
           >
-            <X className="mr-2 h-4 w-4" />
             Clear filters
           </Button>
         )}

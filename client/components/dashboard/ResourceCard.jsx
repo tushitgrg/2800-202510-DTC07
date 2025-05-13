@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import ResourceActions from "./ResourceActions";
 import TagsManager from "./TagsManager";
 import ResourceFooter from "./ResourceFooter";
-import ShareDialog from "./ShareDialog"; // Import the ShareDialog component
+import ShareDialog from "./ShareDialog";
 
 export default function ResourceCard({
   resource,
@@ -25,10 +25,19 @@ export default function ResourceCard({
   formatDate,
   isSharing = false,
   onOpenShareDialog,
-  onCloseShareDialog
+  onCloseShareDialog,
+  onTagClick
 }) {
   const isEditing = editingId === resource.id;
   const isInteractive = isEditing || isSharing;
+
+  // Prevent navigation
+  const handleCardClick = (e) => {
+    if (isInteractive) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  };
 
   const CardContent = () => (
     <div className="flex flex-col justify-between p-4 h-full">
@@ -91,6 +100,7 @@ export default function ResourceCard({
           allTags={allTags}
           handleAddTag={handleAddTag}
           handleRemoveTag={handleRemoveTag}
+          onTagClick={onTagClick} // Pass the tag click handler
         />
       </div>
 
@@ -125,7 +135,7 @@ export default function ResourceCard({
         </>
       ) : (
         // When not in interactive state, wrap with Link
-        <Link href={`/resource/${resource.id}`}>
+        <Link href={`/resource/${resource.id}`} onClick={handleCardClick}>
           <CardContent />
         </Link>
       )}

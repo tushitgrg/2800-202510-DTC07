@@ -18,6 +18,9 @@ export default function DashboardPage() {
   const [sharingResourceId, setSharingResourceId] = useState(null);
   const [filterFunction, setFilterFunction] = useState(() => () => true);
   const [sortFunction, setSortFunction] = useState(() => () => 0);
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortOption, setSortOption] = useState("newest");
   const router = useRouter();
 
   // Fetch resources when component mounts
@@ -46,6 +49,38 @@ export default function DashboardPage() {
     };
     fetchResources();
   }, []);
+
+  // Update filter function when search query or selected tags change
+  useEffect(() => {
+    const newFilterFunction = (resource) => {
+      const matchesSearch = resource.title.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesTags = selectedTags.length === 0 ||
+        selectedTags.every(tag => resource.tags?.includes(tag));
+      return matchesSearch && matchesTags;
+    };
+
+    setFilterFunction(() => newFilterFunction);
+  }, [searchQuery, selectedTags]);
+
+  // Update sort function when sort option changes
+  useEffect(() => {
+    const newSortFunction = (a, b) => {
+      switch (sortOption) {
+        case "newest":
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        case "oldest":
+          return new Date(a.createdAt) - new Date(b.createdAt);
+        case "a-z":
+          return a.title.localeCompare(b.title);
+        case "z-a":
+          return b.title.localeCompare(a.title);
+        default:
+          return 0;
+      }
+    };
+    
+    setSortFunction(() => newSortFunction);
+  }, [sortOption]);
 
   // Filtered and sorted resources
   const filteredResources = useMemo(() => {
@@ -234,14 +269,24 @@ export default function DashboardPage() {
   };
 
   // Handle filter changes from DashboardFilters component
-  const handleFilterChange = useCallback((newFilterFunction) => {
-    setFilterFunction(() => newFilterFunction);
+  const handleFilterChange = useCallback((newSearchQuery, newSelectedTags) => {
+    setSearchQuery(newSearchQuery);
+    setSelectedTags(newSelectedTags);
   }, []);
 
   // Handle sort changes from DashboardFilters component
-  const handleSortChange = useCallback((newSortFunction) => {
-    setSortFunction(() => newSortFunction);
+  const handleSortChange = useCallback((newSortOption) => {
+    setSortOption(newSortOption);
   }, []);
+
+  // Handle tag click from resource card
+  const handleTagClick = (tag) => {
+    // Only add the tag if it's not already in the selected tags
+    if (!selectedTags.includes(tag)) {
+      const newSelectedTags = [...selectedTags, tag];
+      setSelectedTags(newSelectedTags);
+    }
+  };
 
   return (
     <>
@@ -255,6 +300,9 @@ export default function DashboardPage() {
             <DashboardFilters
               resources={resources}
               allTags={allTags}
+              selectedTags={selectedTags}
+              searchQuery={searchQuery}
+              sortOption={sortOption}
               onFilterChange={handleFilterChange}
               onSortChange={handleSortChange}
             />
@@ -289,10 +337,10 @@ export default function DashboardPage() {
                     handleRemoveTag={handleRemoveTag}
                     allTags={allTags}
                     formatDate={formatDate}
-                    // Pass the sharing state and handlers to the ResourceCard
                     isSharing={sharingResourceId === resource.id}
                     onOpenShareDialog={() => handleOpenShareDialog(resource.id)}
                     onCloseShareDialog={handleCloseShareDialog}
+                    onTagClick={handleTagClick} // Pass the tag click handler
                   />
                 ))}
               </div>
