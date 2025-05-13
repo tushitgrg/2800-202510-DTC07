@@ -6,6 +6,7 @@ const {
   getResources,
   getResourceById,
   getResourceInfo,
+  getPublicResources,
   addResource,
   deleteResource,
   updateResourceInfo,
@@ -16,6 +17,7 @@ const { addResourceById } = require("../controllers/shareController");
 //GET Routers
 router.get("/", getResources);
 router.get("/info", getResourceInfo);
+router.get("/public", getPublicResources);
 router.get("/:id", hasResource, getResourceById);
 
 //POST Routers

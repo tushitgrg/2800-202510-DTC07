@@ -6,7 +6,7 @@ const resourceSchema = new mongoose.Schema(
     flashcardID: { type: mongoose.Schema.Types.ObjectId, ref: "Flashcard" },
     summaryID: { type: mongoose.Schema.Types.ObjectId, ref: "Summary" },
     tags: { type: Array, default: [] },
-    public: { type: Boolean, default: false },
+    isPublic: { type: Boolean, default: false },
     shareCount: { type: Number, default: 0 },
     rating: {
       average: { type: Number, default: 0 },
