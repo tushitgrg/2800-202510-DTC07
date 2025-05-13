@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema(
     displayName: String,
     firstName: String, // optional, user could add on profile page
     lastName: String,
-    school: String,
+    school: { type: String, default: null },
     resources: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -27,14 +27,27 @@ const userSchema = new mongoose.Schema(
       },
     ],
     achievements: {
-      badges: {
-        gold: { type: Number, default: 0 },
-        silver: { type: Number, default: 0 },
-        bronze: { type: Number, default: 0 },
-      },
+      quiz: { type: Number, default: 0 },
+      flashcard: { type: Number, default: 0 },
+      summary: { type: Number, default: 0 },
+      community_resource: { type: Number, default: 0 },
+      streak: { type: Number, default: 0 },
+      resource: { type: Number, default: 0 },
       totalSharesReceived: { type: Number, default: 0 }, // when others add their resource
     },
-    school: { type: String, default: null },
+    equippedAchievement: {
+      type: String,
+      enum: [
+        "quiz",
+        "flashcard",
+        "summary",
+        "community_resource",
+        "streak",
+        "resource",
+        null,
+      ],
+      default: null,
+    },
   },
   { timestamps: true }
 );

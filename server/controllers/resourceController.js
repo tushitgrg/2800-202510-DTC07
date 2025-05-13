@@ -102,6 +102,8 @@ const getResourceById = async function (req, res) {
 //POST request handler for creating a resource
 const addResource = async function (req, res) {
   const userId = req.user._id;
+  const user = await User.findById(userId);
+
   const { title, quizPrompt, flashcardPrompt, summaryPrompt, youtubeUrl } =
     req.body;
   if (!req.file) {
@@ -120,6 +122,8 @@ const addResource = async function (req, res) {
     quizID: null,
     flashcardID: null,
     summaryID: null,
+    author: userId,
+    school: user.school || null,
   });
 
   try {
@@ -164,7 +168,6 @@ const addResource = async function (req, res) {
       .json({ error: "Failed to create one or more parts of the resource." });
   }
 
-  const user = await User.findById(userId);
   user.resources.push(newResource._id);
   await user.save();
   res.status(201).json({
@@ -229,8 +232,10 @@ const updateResourceInfo = async function (req, res) {
 const getPublicResources = async function (req, res) {
   try {
     const publicResources =
-      (await Resource.find({ isPublic: true }).populate("author", "name school")) ||
-      [];
+      (await Resource.find({ isPublic: true }).populate(
+        "author",
+        "name school"
+      )) || [];
     const publicResourceInfo = publicResources.map((resource) => {
       return {
         title: resource.title,

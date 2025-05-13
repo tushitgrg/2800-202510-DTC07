@@ -13,6 +13,8 @@ const resourceSchema = new mongoose.Schema(
       default: 0,
     },
     course: { type: String, default: null },
+    school: { type: String, default: null },
+
     author: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   },
   { timestamps: true }
