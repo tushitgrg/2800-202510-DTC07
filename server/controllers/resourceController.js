@@ -9,6 +9,7 @@ const Resource = require("../models/resourceModel");
 const Quiz = require("../models/quizModel");
 const Flashcard = require("../models/flashcardModel");
 const Summary = require("../models/summaryModel");
+const { getTranscriptAsFilePart } = require("../utils/GetYoutubeTranscript");
 
 const fetchResource = async (resourceID) => {
   const resource = await Resource.findById(resourceID);
@@ -101,15 +102,17 @@ const getResourceById = async function (req, res) {
 //POST request handler for creating a resource
 const addResource = async function (req, res) {
   const userId = req.user._id;
-  const { title, quizPrompt, flashcardPrompt, summaryPrompt } = req.body;
+  const { title, quizPrompt, flashcardPrompt, summaryPrompt, youtubeUrl } = req.body;
   if (!req.file) {
-    return res.status(400).json({ error: "No file uploaded" });
+     if(!youtubeUrl) return res.status(400).json({ error: "No file or youtube URL uploaded" });
+    file = await getTranscriptAsFilePart(youtubeUrl)
+  }else{
+   file =  processFile(req.file);
   }
 
-  const file = await processFile(req.file);
 
   if (!file) {
-    return res.status(500).json({ error: "Failed to process file" });
+ return res.status(500).json({ error: "Failed to process file" });
   }
   const newResource = await Resource.create({
     title: title || "Untitled Resource",

@@ -23,11 +23,12 @@ export default function CreatePage() {
   const [currentStep, setCurrentStep] = useState("upload")
   // Update the useState for contentType to be an array
   const [selectedContentTypes, setSelectedContentTypes] = useState([])
+  const [youtubeUrl, setyoutubeUrl] = useState("") 
   // Update the file state to handle a single file instead of an array
   const [file, setFile] = useState(null)
   const [isDragging, setIsDragging] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
-  const [isUploading, setIsUploading] = useState(false)
+
   const fileInputRef = useRef(null)
 const [titleText, settitleText] = useState("")
 const [progressV, setprogressV] = useState(0)
@@ -37,6 +38,10 @@ const [progressV, setprogressV] = useState(0)
     difficulty: "medium",
     questionTypes: ["multiple-choice", "true-false"],
   })
+  function isValidYouTubeUrl(url) {
+  const youtubeRegex = /^https:\/\/(www\.youtube\.com\/watch\?v=|youtu\.be\/)[\w-]{11}([&?]\S*)?$/;
+  return youtubeRegex.test(url);
+}
 
   // Flashcard settings
   const [flashcardSettings, setFlashcardSettings] = useState({
@@ -54,6 +59,7 @@ const [progressV, setprogressV] = useState(0)
   // Handle file selection
   // Update the handleFileSelect function to only accept one PDF file
   const handleFileSelect = (e) => {
+    setyoutubeUrl("")
     if (e.target.files && e.target.files.length > 0) {
       const selectedFile = e.target.files[0]
       if (selectedFile.type === "application/pdf") {
@@ -114,7 +120,7 @@ const [progressV, setprogressV] = useState(0)
 
   const handleNext =async () => {
     if (currentStep === "upload") {
-      if (!file) return
+      if (!file && !isValidYouTubeUrl(youtubeUrl)) return
       setCurrentStep("select")
     } else if (currentStep === "select") {
       if (selectedContentTypes.length === 0) return
@@ -124,6 +130,7 @@ const [progressV, setprogressV] = useState(0)
       let apiBody = new FormData()
       apiBody.append('pdf', file)
       apiBody.append('title', titleText)
+      apiBody.append('youtubeUrl', youtubeUrl)
       if(selectedContentTypes.includes("quiz")){
         apiBody.append("quizPrompt",  generateQuizPrompt(quizSettings)) 
       }
@@ -194,7 +201,7 @@ try{
    
      
 
-      <main className="container py-12 md:py-16 relative">
+      <main className="container py-12 md:py-16 relative px-10 md:px-0">
         {/* Background elements */}
         <div className="absolute inset-0 -z-10">
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
@@ -308,7 +315,7 @@ try{
                   onDrop={handleDrop}
                 >
                   {/* Update the file input to only accept PDF files */}
-                  <input type="file" ref={fileInputRef} onChange={handleFileSelect} className="hidden" accept=".pdf" />
+                  <input type="file" ref={fileInputRef} onChange={handleFileSelect} className="hidden" accept=".pdf"/>
 
                   <div className="flex flex-col items-center justify-center gap-4">
                     <div className="size-16 rounded-full bg-primary/10 flex items-center justify-center text-primary">
@@ -323,6 +330,11 @@ try{
                       </Button>
                     </div>
                   </div>
+                </motion.div>
+
+                <motion.div variants={itemVariants}>
+                  <p className="text-center p-2 text-2xl">OR</p>
+                    <Input type="url" className={`${isValidYouTubeUrl(youtubeUrl)?"input-valid":"input-invalid"}`} placeholder="Youtube Url" value={youtubeUrl} onChange={(e)=>setyoutubeUrl(e.currentTarget.value)} disabled={!!file}/>
                 </motion.div>
 
                 {/* Replace the files.length check with file check */}
@@ -357,7 +369,7 @@ try{
 
                 <motion.div variants={itemVariants} className="flex justify-end">
                   {/* Update the continue button to check for a single file */}
-                  <Button onClick={handleNext} className="rounded-full" disabled={!file || isUploading}>
+                  <Button onClick={handleNext} className="rounded-full" disabled={!file && !isValidYouTubeUrl(youtubeUrl)}>
                     Continue
                     <ArrowRight className="ml-2 size-4" />
                   </Button>

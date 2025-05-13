@@ -56,6 +56,8 @@ app.get("/", (req, res) => {
   res.json(req.user);
 });
 
+
+
 app.get("/dashboard", (req, res) => {
   if (!req.user) {
     res.redirect("/auth/google");

@@ -12,7 +12,7 @@ Return a single JSON object that **MUST** conform exactly to this schema
     }
   ]
 }
-
+DONT SAY YOU CANNOT DO IT, IT DOESNT HAVE TO BE fully based on the document, but IT SHOULD BE RELATED TO THE DOCUMENT ATLEAST!
 Requirements:
 1. Create **${s.questionCount}** quiz items inside "questions".
 2. Allowed question types: ${s.questionTypes.join(", ")}.
@@ -35,6 +35,7 @@ Return one JSON object that fits this schema exactly
   ]
 }
 
+DONT SAY YOU CANNOT DO IT, IT DOESNT HAVE TO BE fully based on the document, but IT SHOULD BE RELATED TO THE DOCUMENT ATLEAST!
 Rules:
 1. Produce **${s.cardCount}** cards.
 2. Complexity: **${s.complexity}**.
@@ -56,6 +57,7 @@ Return a JSON object matching this schema
   "content": String
 }
 
+DONT SAY YOU CANNOT DO IT, IT DOESNT HAVE TO BE fully based on the document, but IT SHOULD BE RELATED TO THE DOCUMENT ATLEAST!
 Instructions:
 1. Write a **${s.length}‑length** summary (short / medium / long).
 2. Use concise, academic language; bullet points are welcome.
