@@ -13,6 +13,9 @@ const addResourceById = async function (req, res) {
     }
     sharedResource.shareCount += 1;
     await sharedResource.save();
+    await User.findByIdAndUpdate(sharedResource.author, {
+      $inc: { "achievements.totalSharesRecieved": 1 },
+    });
     const { quizID, flashcardID, summaryID, title } = sharedResource;
     const newResource = await Resource.create({
       quizID: quizID,
