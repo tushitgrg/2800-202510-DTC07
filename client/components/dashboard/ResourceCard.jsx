@@ -25,6 +25,7 @@ export default function ResourceCard({
 }) {
   const isEditing = editingId === resource.id;
 
+
   return (
     <div className="border rounded-lg hover:shadow-md transition-shadow overflow-hidden">
       {isEditing ? (

@@ -119,10 +119,20 @@ export default function DashboardPage() {
     }
   };
 
-  const handleShare = (id) => {
-    // Share functionality
-    console.log("Share resource", id);
-    // To be implemented.....
+  const handleShare = async (id, newTitle, isPublic) => {
+    try {
+      // If a new title was provided, update the title
+      if (newTitle) {
+        // Update db
+        setResources(resources.map(resource =>
+          resource.id === id ? { ...resource, title: newTitle } : resource
+        ));
+      }
+      // Update db
+
+    } catch (error) {
+      console.error('Error sharing resource:', error);
+    }
   };
 
   const handleAddTag = (resourceId, tag) => {
