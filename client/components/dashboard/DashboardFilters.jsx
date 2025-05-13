@@ -157,13 +157,13 @@ const DashboardFilters = ({
         {/* Selected tags */}
         <div className="flex flex-wrap gap-1 ml-1 items-center">
           {selectedTags.map((tag) => (
-            <Badge key={tag} variant="destructive" className="pl-2 pr-1 py-1 h-7">
+            <Badge key={tag} variant="secondary" className="pl-2 pr-1 py-1 h-7">
               {tag}
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => handleRemoveTag(tag)}
-                className="h-5 w-5 p-0 ml-1 rounded-full hover:bg-muted cursor-pointer"
+                className="h-5 w-5 p-0 ml-1 rounded-full hover:text-red-600 hover:dark:text-red-600 cursor-pointer"
               >
                 <X className="h-3 w-3"/>
               </Button>

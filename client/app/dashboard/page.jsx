@@ -78,7 +78,7 @@ export default function DashboardPage() {
           return 0;
       }
     };
-    
+
     setSortFunction(() => newSortFunction);
   }, [sortOption]);
 
