@@ -55,6 +55,7 @@ const [progressV, setprogressV] = useState(0)
     length: "medium",
     focusAreas: ["key-concepts", "definitions"],
   })
+  const sizeLimit = 50* 1024 * 1024
 
   // Handle file selection
   // Update the handleFileSelect function to only accept one PDF file
@@ -63,7 +64,12 @@ const [progressV, setprogressV] = useState(0)
     if (e.target.files && e.target.files.length > 0) {
       const selectedFile = e.target.files[0]
       if (selectedFile.type === "application/pdf") {
+        if(selectedFile.size < sizeLimit){
         setFile(selectedFile)
+        }else{
+          alert("Too Large File!")
+        }
+       
       }
     }
   }
@@ -92,9 +98,11 @@ const [progressV, setprogressV] = useState(0)
 
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const droppedFile = e.dataTransfer.files[0]
-      if (droppedFile.type === "application/pdf") {
+      if(droppedFile.size < sizeLimit){
         setFile(droppedFile)
-      }
+        }else{
+          alert("Too Large File!")
+        }
     }
   }
   useEffect(() => {
