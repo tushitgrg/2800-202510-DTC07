@@ -7,6 +7,7 @@ const passportConfig = require("./utils/google_auth");
 const authRoutes = require("./controllers/authController");
 const resourceRoutes = require("./routes/resourceRoutes");
 const userRoutes = require("./routes/user");
+const userRoutes = require("./routes/progressRoutes");
 const MongoStore = require("connect-mongo");
 const isAuthenticated = require("./controllers/authMiddleware");
 const schoolRoutes = require('./routes/schoolRoutes');
@@ -70,7 +71,7 @@ app.get("/dashboard", (req, res) => {
 
 app.use("/resources", resourceRoutes);
 app.use("/api/user", userRoutes)
-// app.use('/quiz', quizRoutes)
+app.use('/progress', progressRoutes)
 // app.use("/flashcard", flashcardRoutes);
 
 if (process.env.VERCEL !== '1') {
