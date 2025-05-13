@@ -16,12 +16,13 @@ const addResourceById = async function (req, res) {
     await User.findByIdAndUpdate(sharedResource.author, {
       $inc: { "achievements.totalSharesRecieved": 1 },
     });
-    const { quizID, flashcardID, summaryID, title } = sharedResource;
+    const { quizID, flashcardID, summaryID, title, author } = sharedResource;
     const newResource = await Resource.create({
       quizID: quizID,
       flashcardID: flashcardID,
       summaryID: summaryID,
       title: title,
+      author: author,
     });
     await User.findByIdAndUpdate(req.user._id, {
       $push: { resources: newResource._id },
