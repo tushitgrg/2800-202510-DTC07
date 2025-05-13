@@ -226,7 +226,9 @@ const updateResourceInfo = async function (req, res) {
       return res.status(404).json({ error: "Resource not found" });
     }
     return res.status(200).json(updatedResource);
-  } catch (err) {}
+  } catch (err) {
+    res.status(500).json({error:"Unable to update resource", msg:err.message || err})
+  }
 };
 
 const getPublicResources = async function (req, res) {
@@ -258,8 +260,7 @@ const getPublicResources = async function (req, res) {
 
     const publicResources = await Resource.find(filters)
       .sort(sortOption)
-      .populate("author", "name school")
-      .lean();
+      .populate("author", "name school");
 
     const publicResourceInfo = publicResources.map((resource) => ({
       title: resource.title,
