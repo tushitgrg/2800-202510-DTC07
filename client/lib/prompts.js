@@ -12,7 +12,8 @@ Return a single JSON object that **MUST** conform exactly to this schema
     }
   ]
 }
-DONT SAY YOU CANNOT DO IT, IT DOESNT HAVE TO BE fully based on the document, but IT SHOULD BE RELATED TO THE DOCUMENT ATLEAST!
+  The input may resemble a transcript. Please ignore speaker labels or timestamps and extract meaningful content
+DO NOT SAY YOU CANNOT DO IT. It does not have to be strictly based on the transcript, but should be **clearly related** to its themes or topics. Use inferred context when needed.
 Requirements:
 1. Create **${s.questionCount}** quiz items inside "questions".
 2. Allowed question types: ${s.questionTypes.join(", ")}.
@@ -34,8 +35,8 @@ Return one JSON object that fits this schema exactly
     }
   ]
 }
-
-DONT SAY YOU CANNOT DO IT, IT DOESNT HAVE TO BE fully based on the document, but IT SHOULD BE RELATED TO THE DOCUMENT ATLEAST!
+The input may resemble a transcript. Please ignore speaker labels or timestamps and extract meaningful content
+DO NOT SAY YOU CANNOT DO IT. It does not have to be strictly based on the transcript, but should be **clearly related** to its themes or topics. Use inferred context when needed.
 Rules:
 1. Produce **${s.cardCount}** cards.
 2. Complexity: **${s.complexity}**.
@@ -56,8 +57,8 @@ Return a JSON object matching this schema
 {
   "content": String
 }
-
-DONT SAY YOU CANNOT DO IT, IT DOESNT HAVE TO BE fully based on the document, but IT SHOULD BE RELATED TO THE DOCUMENT ATLEAST!
+The input may resemble a transcript. Please ignore speaker labels or timestamps and extract meaningful content
+DO NOT SAY YOU CANNOT DO IT. It does not have to be strictly based on the transcript, but should be **clearly related** to its themes or topics. Use inferred context when needed.
 Instructions:
 1. Write a **${s.length}‑length** summary (short / medium / long).
 2. Use concise, academic language; bullet points are welcome.
