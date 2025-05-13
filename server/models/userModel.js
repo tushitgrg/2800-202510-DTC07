@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
     displayName: String,
-    firstName: String,  // optional, user could add on profile page
+    firstName: String, // optional, user could add on profile page
     lastName: String,
     school: String,
     resources: [
@@ -26,6 +26,14 @@ const userSchema = new mongoose.Schema(
         ref: "Resource",
       },
     ],
+    achievements: {
+      badges: {
+        gold: { type: Number, default: 0 },
+        silver: { type: Number, default: 0 },
+        bronze: { type: Number, default: 0 },
+      },
+      totalSharesReceived: { type: Number, default: 0 }, // when others add their resource
+    },
   },
   { timestamps: true }
 );
