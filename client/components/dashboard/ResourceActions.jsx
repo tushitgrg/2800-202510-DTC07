@@ -13,7 +13,7 @@ export default function ResourceActions({
   resource,
   handleEdit,
   handleDelete,
-  handleShare
+  onOpenShareDialog
 }) {
   return (
     <div className="relative" onClick={e => e.stopPropagation()}>
@@ -40,7 +40,7 @@ export default function ResourceActions({
           </DropdownMenuItem>
           <DropdownMenuItem onClick={(e) => {
             e.stopPropagation();
-            handleShare(resource.id);
+            onOpenShareDialog();
           }} style={{ cursor: 'pointer' }}>
             <Share className="mr-2 h-4 w-4" />
             Share

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
@@ -8,12 +8,19 @@ import { ServerUrl } from "@/lib/urls";
 import Loading from "@/components/Loading";
 import ResourceCard from "@/components/dashboard/ResourceCard";
 import MiniProfileCard from "@/components/ProfileCard/MiniProfileCard";
+import DashboardFilters from "@/components/dashboard/DashboardFilters";
 
 export default function DashboardPage() {
   const [resources, setResources] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [editValue, setEditValue] = useState("");
   const [allTags, setAllTags] = useState([]);
+  const [sharingResourceId, setSharingResourceId] = useState(null);
+  const [filterFunction, setFilterFunction] = useState(() => () => true);
+  const [sortFunction, setSortFunction] = useState(() => () => 0);
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortOption, setSortOption] = useState("newest");
   const router = useRouter();
 
   // Fetch resources when component mounts
@@ -42,6 +49,46 @@ export default function DashboardPage() {
     };
     fetchResources();
   }, []);
+
+  // Update filter function when search query or selected tags change
+  useEffect(() => {
+    const newFilterFunction = (resource) => {
+      const matchesSearch = resource.title.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesTags = selectedTags.length === 0 ||
+        selectedTags.every(tag => resource.tags?.includes(tag));
+      return matchesSearch && matchesTags;
+    };
+
+    setFilterFunction(() => newFilterFunction);
+  }, [searchQuery, selectedTags]);
+
+  // Update sort function when sort option changes
+  useEffect(() => {
+    const newSortFunction = (a, b) => {
+      switch (sortOption) {
+        case "newest":
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        case "oldest":
+          return new Date(a.createdAt) - new Date(b.createdAt);
+        case "a-z":
+          return a.title.localeCompare(b.title);
+        case "z-a":
+          return b.title.localeCompare(a.title);
+        default:
+          return 0;
+      }
+    };
+
+    setSortFunction(() => newSortFunction);
+  }, [sortOption]);
+
+  // Filtered and sorted resources
+  const filteredResources = useMemo(() => {
+    if (!resources) return [];
+    return [...resources]
+      .filter(filterFunction)
+      .sort(sortFunction);
+  }, [resources, filterFunction, sortFunction]);
 
   const handleCreateClick = () => {
     router.push("/create");
@@ -119,10 +166,32 @@ export default function DashboardPage() {
     }
   };
 
-  const handleShare = (id) => {
-    // Share functionality
-    console.log("Share resource", id);
-    // To be implemented.....
+  const handleShare = async (id, newTitle, isPublic) => {
+    try {
+      // Set the sharing resource ID to null to close the dialog
+      setSharingResourceId(null);
+
+      // If a new title was provided, update the title
+      if (newTitle) {
+        // Update db
+        setResources(resources.map(resource =>
+          resource.id === id ? { ...resource, title: newTitle } : resource
+        ));
+      }
+      // Update db
+
+    } catch (error) {
+      console.error('Error sharing resource:', error);
+    }
+  };
+
+  // Functions to track when a share dialog opens or closes
+  const handleOpenShareDialog = (id) => {
+    setSharingResourceId(id);
+  };
+
+  const handleCloseShareDialog = () => {
+    setSharingResourceId(null);
   };
 
   const handleAddTag = (resourceId, tag) => {
@@ -199,6 +268,26 @@ export default function DashboardPage() {
     }
   };
 
+  // Handle filter changes from DashboardFilters component
+  const handleFilterChange = useCallback((newSearchQuery, newSelectedTags) => {
+    setSearchQuery(newSearchQuery);
+    setSelectedTags(newSelectedTags);
+  }, []);
+
+  // Handle sort changes from DashboardFilters component
+  const handleSortChange = useCallback((newSortOption) => {
+    setSortOption(newSortOption);
+  }, []);
+
+  // Handle tag click from resource card
+  const handleTagClick = (tag) => {
+    // Only add the tag if it's not already in the selected tags
+    if (!selectedTags.includes(tag)) {
+      const newSelectedTags = [...selectedTags, tag];
+      setSelectedTags(newSelectedTags);
+    }
+  };
+
   return (
     <>
       {resources != null ? (
@@ -206,6 +295,17 @@ export default function DashboardPage() {
           <div className="container">
             {/* Mini Profile Card */}
             <MiniProfileCard resources={resources} />
+
+            {/* Dashboard Filters */}
+            <DashboardFilters
+              resources={resources}
+              allTags={allTags}
+              selectedTags={selectedTags}
+              searchQuery={searchQuery}
+              sortOption={sortOption}
+              onFilterChange={handleFilterChange}
+              onSortChange={handleSortChange}
+            />
 
             <div className="flex justify-between w-full items-center mb-6">
               <h1 className="text-2xl font-bold">Your Resources</h1>
@@ -215,26 +315,36 @@ export default function DashboardPage() {
               </Button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
-              {resources.map(resource => (
-                <ResourceCard
-                  key={resource.id}
-                  resource={resource}
-                  editingId={editingId}
-                  editValue={editValue}
-                  setEditValue={setEditValue}
-                  handleEdit={handleEdit}
-                  handleSaveEdit={handleSaveEdit}
-                  handleCancelEdit={handleCancelEdit}
-                  handleDelete={handleDelete}
-                  handleShare={handleShare}
-                  handleAddTag={handleAddTag}
-                  handleRemoveTag={handleRemoveTag}
-                  allTags={allTags}
-                  formatDate={formatDate}
-                />
-              ))}
-            </div>
+            {filteredResources.length === 0 ? (
+              <div className="text-center py-12 text-muted-foreground">
+                No resources found matching your filters.
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+                {filteredResources.map(resource => (
+                  <ResourceCard
+                    key={resource.id}
+                    resource={resource}
+                    editingId={editingId}
+                    editValue={editValue}
+                    setEditValue={setEditValue}
+                    handleEdit={handleEdit}
+                    handleSaveEdit={handleSaveEdit}
+                    handleCancelEdit={handleCancelEdit}
+                    handleDelete={handleDelete}
+                    handleShare={handleShare}
+                    handleAddTag={handleAddTag}
+                    handleRemoveTag={handleRemoveTag}
+                    allTags={allTags}
+                    formatDate={formatDate}
+                    isSharing={sharingResourceId === resource.id}
+                    onOpenShareDialog={() => handleOpenShareDialog(resource.id)}
+                    onCloseShareDialog={handleCloseShareDialog}
+                    onTagClick={handleTagClick} // Pass the tag click handler
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       ) : <Loading />}

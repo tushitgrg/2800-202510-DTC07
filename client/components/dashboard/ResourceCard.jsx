@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import ResourceActions from "./ResourceActions";
 import TagsManager from "./TagsManager";
 import ResourceFooter from "./ResourceFooter";
+import ShareDialog from "./ShareDialog";
 
 export default function ResourceCard({
   resource,
@@ -21,101 +22,121 @@ export default function ResourceCard({
   handleAddTag,
   handleRemoveTag,
   allTags,
-  formatDate
+  formatDate,
+  isSharing = false,
+  onOpenShareDialog,
+  onCloseShareDialog,
+  onTagClick
 }) {
   const isEditing = editingId === resource.id;
+  const isInteractive = isEditing || isSharing;
+
+  // Prevent navigation
+  const handleCardClick = (e) => {
+    if (isInteractive) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  };
+
+  const CardContent = () => (
+    <div className="flex flex-col justify-between p-4 h-full">
+      <div>
+        <div className="flex justify-between items-center">
+          {isEditing ? (
+            <div className="flex flex-grow items-center gap-2">
+              <Input
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                className="h-9"
+                autoFocus
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSaveEdit();
+                  } else if (e.key === 'Escape') {
+                    handleCancelEdit();
+                  }
+                }}
+              />
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleSaveEdit();
+                }}
+                className="h-8 w-8 p-0"
+              >
+                <Check className="h-4 w-4 text-green-500" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleCancelEdit();
+                }}
+                className="h-8 w-8 p-0"
+              >
+                <X className="h-4 w-4 text-red-500" />
+              </Button>
+            </div>
+          ) : (
+            <h2 className="text-lg font-semibold">{resource.title}</h2>
+          )}
+
+          <ResourceActions
+            resource={resource}
+            handleEdit={handleEdit}
+            handleDelete={handleDelete}
+            handleShare={handleShare}
+            onOpenShareDialog={onOpenShareDialog}
+          />
+        </div>
+
+        <TagsManager
+          resource={resource}
+          isEditing={isEditing}
+          allTags={allTags}
+          handleAddTag={handleAddTag}
+          handleRemoveTag={handleRemoveTag}
+          onTagClick={onTagClick} // Pass the tag click handler
+        />
+      </div>
+
+      <ResourceFooter
+        resource={resource}
+        formatDate={formatDate}
+      />
+    </div>
+  );
 
   return (
     <div className="border rounded-lg hover:shadow-md transition-shadow overflow-hidden">
-      {isEditing ? (
-        // When editing, don't wrap with Link
-        <div className="flex flex-col justify-between p-4 h-full">
-          <div>
-            <div className="flex justify-between items-center">
-              <div className="flex flex-grow items-center gap-2">
-                <Input
-                  value={editValue}
-                  onChange={(e) => setEditValue(e.target.value)}
-                  className="h-9"
-                  autoFocus
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      handleSaveEdit();
-                    } else if (e.key === 'Escape') {
-                      handleCancelEdit();
-                    }
-                  }}
-                />
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleSaveEdit();
-                  }}
-                  className="h-8 w-8 p-0"
-                >
-                  <Check className="h-4 w-4 text-green-500" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleCancelEdit();
-                  }}
-                  className="h-8 w-8 p-0"
-                >
-                  <X className="h-4 w-4 text-red-500" />
-                </Button>
-              </div>
-              <ResourceActions
-                resource={resource}
-                handleEdit={handleEdit}
-                handleDelete={handleDelete}
-                handleShare={handleShare}
-              />
-            </div>
-            <TagsManager
+      {isInteractive ? (
+        // When in an interactive state (editing or sharing), don't wrap with Link
+        <>
+          <CardContent />
+          {/* Render ShareDialog when in sharing state */}
+          {isSharing && (
+            <ShareDialog
+              isOpen={isSharing}
+              onClose={onCloseShareDialog}
               resource={resource}
-              isEditing={isEditing}
-              allTags={allTags}
-              handleAddTag={handleAddTag}
-              handleRemoveTag={handleRemoveTag}
+              onShare={(data) => {
+                handleShare(
+                  resource.id,
+                  data.title !== resource.title ? data.title : null,
+                  data.isPublic
+                );
+              }}
             />
-          </div>
-          <ResourceFooter
-            resource={resource}
-            formatDate={formatDate}
-          />
-        </div>
+          )}
+        </>
       ) : (
-        // When not editing, wrap with Link
-        <Link href={`/resource/${resource.id}`}>
-          <div className="flex flex-col justify-between p-4 h-full">
-            <div>
-              <div className="flex justify-between items-center">
-                <h2 className="text-lg font-semibold">{resource.title}</h2>
-                <ResourceActions
-                  resource={resource}
-                  handleEdit={handleEdit}
-                  handleDelete={handleDelete}
-                  handleShare={handleShare}
-                />
-              </div>
-              <TagsManager
-                resource={resource}
-                isEditing={isEditing}
-                allTags={allTags}
-                handleAddTag={handleAddTag}
-                handleRemoveTag={handleRemoveTag}
-              />
-            </div>
-            <ResourceFooter
-              resource={resource}
-              formatDate={formatDate}
-            />
-          </div>
+        // When not in interactive state, wrap with Link
+        <Link href={`/resource/${resource.id}`} onClick={handleCardClick}>
+          <CardContent />
         </Link>
       )}
     </div>
