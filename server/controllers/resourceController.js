@@ -38,9 +38,8 @@ const getResourceInfo = async function (req, res) {
       userResources.map(async (resourceID) => {
         const resource = await Resource.findById(resourceID);
         const progress = await Progress.findOne({
-          userId,
-          resourceId,
-        });
+          $and: [{ userId: userId }, { resourceId: resourceID }],
+        }).select("-_id -userId -resourceId");
         if (!resource) return null;
         const info = {};
         info.id = resourceID;
@@ -178,6 +177,11 @@ const addResource = async function (req, res) {
 
   user.resources.push(newResource._id);
   await user.save();
+  await Progress.create({
+    userId: userId,
+    resourceId: newResource._id,
+  });
+
   res.status(201).json({
     msg: `Successfully created resource with id:${newResource._id}`,
     resourceID: newResource._id,
