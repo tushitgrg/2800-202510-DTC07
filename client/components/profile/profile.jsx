@@ -1,12 +1,26 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import React from "react";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ServerUrl } from "@/lib/urls";
+
+//add debounce function to let user finish entering first
+function debounce(cb, delay) {
+  let timeoutId;
+  return function (...args) {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+    timeoutId = setTimeout(() => {
+      cb(...args);
+    }, delay);
+  };
+}
+
 
 export default function ProfileCard({ googleUser = {} }) {
   // Initialize state variables with default values
@@ -15,6 +29,9 @@ export default function ProfileCard({ googleUser = {} }) {
   const [lastName, setLastName] = useState(googleUser.lastName || "Enter last name");
   const [email, setEmail] = useState(googleUser.email || "");
   const [school, setSchool] = useState(googleUser.name || "Enter school");
+  const [schoolSearch, setSchoolSearch] = useState("");
+  const [schoolList, setSchoolList] = useState([]);
+
 
   // Tracks whether profile is in editing mode (false is read only mode)
   const [isEditing, setIsEditing] = useState(false);
@@ -26,6 +43,17 @@ export default function ProfileCard({ googleUser = {} }) {
     email: "",
     school: "",
   });
+  // The logic of searching school
+  const fetchSchools = async (query) => {
+    console.log("keyword:", query);
+    if (!query) return setSchoolList([]);
+    const res = await fetch(`http://localhost:3001/school/search?q=${query}`);
+    const data = await res.json();
+    setSchoolList(data);
+  };
+
+  const debouncedFetch = useMemo(() => debounce(fetchSchools, 500), []);
+
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -162,13 +190,47 @@ export default function ProfileCard({ googleUser = {} }) {
 
         <div>
           <Label htmlFor="school">School</Label>
-          <Input
-            id="school"
-            value={school}
-            disabled={!isEditing}
-            className="rounded-full mt-1"
-            onChange={(e) => setSchool(e.target.value)}
-          />
+          {isEditing ? (
+            <>
+              <Input
+                id="school"
+                value={schoolSearch}
+                placeholder="Searching your school..."
+                disabled={!isEditing}
+                className="rounded-full mt-1"
+                onChange={(e) => {
+                  setSchoolSearch(e.target.value);
+                  debouncedFetch(e.target.value);
+                }}
+              />
+              <div className="border rounded-md max-h-40 overflow-y-auto mt-1">
+                {schoolList.length === 0 ? (
+                  <div className="p-2 text-gray-500">No result</div>
+                ) : (
+                  schoolList.map((s) => (
+                    <div
+                      key={s.name}
+                      className="p-2 hover:bg-gray-100 cursor-pointer"
+                      onClick={() => {
+                        setSchool(s.name);
+                        setSchoolSearch(s.name);
+                        setSchoolList([]);
+                      }}
+                    >
+                      {s.name}
+                    </div>
+                  ))
+                )}
+              </div>
+            </>
+          ) : (
+            <Input
+              id="school"
+              value={school}
+              disabled
+              className="rounded-full mt-1"
+            />
+          )}
         </div>
       </CardContent>
       <CardFooter className="justify-end space-x-2">

@@ -9,6 +9,7 @@ const resourceRoutes = require("./routes/resourceRoutes");
 const userRoutes = require("./routes/user");
 const MongoStore = require("connect-mongo");
 const isAuthenticated = require("./controllers/authMiddleware");
+const schoolRoutes = require('./routes/schoolRoutes');
 require("./utils/db");
 
 const app = express();
@@ -50,6 +51,7 @@ app.use("/", authRoutes);
 app.get("/keep-alive", (req, res) => {
   res.json("HI")
 });
+app.use("/school", schoolRoutes); 
 app.use(isAuthenticated);
 app.get("/", (req, res) => {
   console.log(req.user)
