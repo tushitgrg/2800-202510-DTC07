@@ -5,9 +5,15 @@ const addResourceById = async function (req, res) {
     return res.status(409).json({ msg: "User already has this resource" });
   }
   try {
-    const { quizID, flashcardID, summaryID, title } = await Resource.findOne({
-      _id: req.params.$_id,
+    const sharedResource = await Resource.findOne({
+      _id: req.params._id,
     });
+    if (!sharedResource) {
+      return res.status(404).json({ message: "Resource not found" });
+    }
+    sharedResource.shareCount += 1;
+    await sharedResource.save();
+    const { quizID, flashcardID, summaryID, title } = sharedResource;
     const newResource = await Resource.create({
       quizID: quizID,
       flashcardID: flashcardID,
