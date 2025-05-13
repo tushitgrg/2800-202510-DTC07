@@ -5,6 +5,7 @@ const addFlashcardEntry = require("../utils/addFlashcardEntry");
 const addSummaryEntry = require("../utils/addSummaryEntry");
 
 const User = require("../models/userModel");
+const Progress = require("../models/progressModel");
 const Resource = require("../models/resourceModel");
 const Quiz = require("../models/quizModel");
 const Flashcard = require("../models/flashcardModel");
@@ -32,15 +33,22 @@ const getResourceInfo = async function (req, res) {
   try {
     const user = await User.findById(userId);
     const userResources = user.resources;
+
     const result = await Promise.all(
       userResources.map(async (resourceID) => {
         const resource = await Resource.findById(resourceID);
+        const progress = await Progress.findOne({
+          userId,
+          resourceId,
+        });
         if (!resource) return null;
         const info = {};
         info.id = resourceID;
         info.title = resource.title;
         info.createdAt = resource.createdAt;
         info.tags = resource.tags || [];
+        info.progress = progress || {};
+
         return info;
       })
     );
@@ -227,7 +235,9 @@ const updateResourceInfo = async function (req, res) {
     }
     return res.status(200).json(updatedResource);
   } catch (err) {
-    res.status(500).json({error:"Unable to update resource", msg:err.message || err})
+    res
+      .status(500)
+      .json({ error: "Unable to update resource", msg: err.message || err });
   }
 };
 
