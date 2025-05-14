@@ -1,54 +1,16 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import CommunityFilters from "@/components/Community/CommunityFilters";
 import CommunityCard from "@/components/Community/CommunityCard";
 import Loading from "@/components/Loading";
 import { ServerUrl } from "@/lib/urls";
 
-// Mock resources for testing
-const mockResources = [
-  {
-    id: "1",
-    title: "React Basics",
-    author: "Alice",
-    createdAt: "2025-05-01T10:00:00Z",
-    shareCount: 12,
-    likes: 34,
-    school: "BCIT",
-    course: "CPSC 319",
-  },
-  {
-    id: "2",
-    title: "Node.js Guide",
-    author: "Bob",
-    createdAt: "2025-04-20T14:30:00Z",
-    shareCount: 5,
-    likes: 8,
-    school: "UBC",
-    course: "CPSC 210",
-  },
-  {
-    id: "3",
-    title: "CSS Grid Mastery",
-    author: "Carol",
-    createdAt: "2025-03-15T09:45:00Z",
-    shareCount: 8,
-    likes: 15,
-    school: "SFU",
-    course: "WEB 200",
-  },
-];
-
 export default function CommunityPage() {
-  // MOCK TESTING
-  const [resources, setResources] = useState(mockResources);
-  const allSchools = Array.from(new Set(mockResources.map(r => r.school)));
-  const allCourses = Array.from(new Set(mockResources.map(r => r.course)));
-  // const [resources, setResources] = useState(null);
-  // const [allSchools, setAllSchools] = useState([]);
-  // const [allCourses, setAllCourses] = useState([]);
+  const [resources, setResources] = useState(null);
+  const [allSchools, setAllSchools] = useState([]);
+  const [allCourses, setAllCourses] = useState([]);
   const [searchQuery, setSearchQuery] = useState(""); // Text for the title search input
   const [selectedSchool, setSelectedSchool] = useState(""); // Value for school dropdown
   const [selectedCourse, setSelectedCourse] = useState(""); // Value for course dropdown
@@ -63,18 +25,18 @@ export default function CommunityPage() {
     const fetchResources = async () => {
       try {
         // URL to public resources endpoint (Obtain all public resources)
-        const res = await fetch(`\${ServerUrl}/resources/public`, { credentials: "include" });
+        const res = await fetch(`${ServerUrl}/resources/public`, { credentials: "include" });
         if ([401, 201].includes(res.status)) return router.push(`${ServerUrl}/auth/google`);
         if (!res.ok) throw new Error("Failed to fetch resources");
         const data = await res.json();
-        setResources(data.resources); // Update state with real data
-        // Extract all avaliable school names
+        setResources(data); // Update state with real data
+        // Extract all avaliable school names (no dupes)
         setAllSchools(
-          Array.from(new Set(data.resources.map((r) => r.school).filter(Boolean)))
+          Array.from(new Set(data.map((r) => r.school).filter(Boolean)))
         );
-        // Extract all avaliable courses
+        // Extract all avaliable courses (no dupes)
         setAllCourses(
-          Array.from(new Set(data.resources.map((r) => r.course).filter(Boolean)))
+          Array.from(new Set(data.map((r) => r.course).filter(Boolean)))
         );
       } catch (err) {
         console.error("Error fetching resources:", err);
@@ -151,7 +113,8 @@ export default function CommunityPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
             {filteredResources.map((resource) => (
               <CommunityCard
-                _id={resource.id}
+                key={resource._id}
+                _id={resource._id}
                 title={resource.title}
                 author={resource.author}
                 createdAt={resource.createdAt}

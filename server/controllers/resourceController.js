@@ -122,7 +122,7 @@ const addResource = async function (req, res) {
     req.body;
   if (!req.file) {
     if (!youtubeUrl)
-      return res.status(400).json({ error: "No file or youtube URL uploaded" });
+      return res.status(500).json({ error: "No file or youtube URL uploaded" });
     file = await getTranscriptAsFilePart(youtubeUrl);
   } else {
     file = processFile(req.file);
