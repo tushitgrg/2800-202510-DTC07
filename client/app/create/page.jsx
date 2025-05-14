@@ -16,7 +16,7 @@ import { generateFlashcardPrompt, generateQuizPrompt, generateSummaryPrompt } fr
 import { useRouter } from 'next/navigation'
 import { Input } from "@/components/ui/input"
 import { ServerUrl } from "@/lib/urls"
-
+import toast from 'react-hot-toast'
 
 export default function CreatePage() {
   const router = useRouter()
@@ -67,7 +67,10 @@ const [progressV, setprogressV] = useState(0)
         if(selectedFile.size < sizeLimit){
         setFile(selectedFile)
         }else{
-          alert("Too Large File!")
+        toast.error('File too large!', {
+            duration: 4000,
+            position: 'bottom-right',
+          })
         }
        
       }
@@ -101,7 +104,10 @@ const [progressV, setprogressV] = useState(0)
       if(droppedFile.size < sizeLimit){
         setFile(droppedFile)
         }else{
-          alert("Too Large File!")
+            toast.error('File too large!', {
+            duration: 4000,
+            position: 'bottom-right',
+          })
         }
     }
   }

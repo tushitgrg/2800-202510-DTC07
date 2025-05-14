@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Link, Globe } from "lucide-react";
+import { Link, Globe, Clipboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ClientUrl } from "@/lib/urls";
+import toast from "react-hot-toast";
 
 export default function ShareDialog({ isOpen, onClose, resource, onShare }) {
   const [title, setTitle] = useState(resource?.title || "");
@@ -59,21 +60,41 @@ export default function ShareDialog({ isOpen, onClose, resource, onShare }) {
     c.name.toLowerCase().includes(searchCourse.toLowerCase())
   );
 
+  const handlecopylink = async () => {
+    if (navigator.clipboard) {
+      try {
+        await navigator.clipboard.writeText(`${ClientUrl}/resource/${resource.id}`)
+        toast.success('Copied!', {
+          duration: 4000,
+          position: 'bottom-right',
+        })
+      } catch {
+        toast.error('Could not copy to clipboard.', {
+          duration: 4000,
+          position: 'bottom-right',
+        })
+      }
+
+    }
+  }
   // Handle share button click
   const handleSharePrivate = async () => {
     if (navigator.share) {
       try {
-        await navigator.clipboard.writeText(`${ClientUrl}/resource/${resource.id}`)
+
         await navigator.share({
           title: resource.title,
           url: `${ClientUrl}/resource/${resource.id}`,
         });
-        
+
       } catch (e) {
-        console.log("hi");
+     
       }
     } else {
-      console.log("Web Share API is not supported in this browser.");
+      toast.error('Web Share API is not supported in this browser.', {
+        duration: 4000,
+        position: 'bottom-right',
+      })
     }
     // onShare({
     //   title,
@@ -219,14 +240,26 @@ export default function ShareDialog({ isOpen, onClose, resource, onShare }) {
 
           {/* Action Buttons */}
           <div className="flex justify-between pt-4">
-            <Button
-              variant="outline"
-              className="space-x-2"
-              onClick={handleSharePrivate}
-            >
-              <Link className="h-4 w-4" />
-              <span>Private Link</span>
-            </Button>
+
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                className="space-x-2 cursor-pointer"
+                onClick={handlecopylink}
+              >
+                <Clipboard className="h-4 w-4" />
+              </Button>
+
+              <Button
+                variant="outline"
+                className="space-x-2 cursor-pointer"
+                onClick={handleSharePrivate}
+              >
+                <Link className="h-4 w-4" />
+                <span>Private Link</span>
+              </Button>
+            </div>
+
             <Button className="space-x-2" onClick={handleSharePublic}>
               <Globe className="h-4 w-4" />
               <span>Share to Public</span>
