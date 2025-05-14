@@ -1,14 +1,12 @@
 "use client";
 
-export default function UserAvatar({ resources, equippedBadge }) {
+export default function UserAvatar({ user }) {
   return (
     <div className="flex items-center space-x-4">
       <div className="relative">
         <div className="h-16 w-16 rounded-full bg-gradient-to-r from-primary to-purple-600 flex items-center justify-center">
           <span className="text-primary-foreground text-lg font-bold">
-            {resources && resources.length > 0
-              ? resources[0].title[0].toUpperCase()
-              : "S"}
+            <img src={user.avatar} className="rounded-full"/>
           </span>
         </div>
         {/* Level chevron */}
@@ -27,8 +25,8 @@ export default function UserAvatar({ resources, equippedBadge }) {
         </div>
       </div>
       <div>
-        <h2 className="text-xl font-bold">Jimmy Cho</h2>
-        <p className="text-sm text-muted-foreground">Legendary Adventurer</p>
+        <h2 className="text-xl font-bold">{user.name}</h2>
+        <p className="text-sm text-muted-foreground">{user.school?user.school:""}</p>
       </div>
     </div>
   );
