@@ -18,11 +18,18 @@ import { updateResourceProgress } from "@/lib/progress";
 import { useParams } from "next/navigation";
 
 export default function Quiz({ questions, onComplete, progress }) {
-  // state management
+  // State management
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [userAnswers, setUserAnswers] = useState(
-    Array(questions.length).fill(null)
-  );
+  const [userAnswers, setUserAnswers] = useState([]);
+
+  // Randomization
+  const [randomizedQuestions, setRandomizedQuestions] = useState([]);
+  useEffect(() => {
+    if (randomizedQuestions.length > 0) {
+      setUserAnswers(Array(randomizedQuestions.length).fill(null));
+    }
+  }, [randomizedQuestions]);
+
   const [showResults, setShowResults] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
@@ -30,7 +37,47 @@ export default function Quiz({ questions, onComplete, progress }) {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [timerRunning, setTimerRunning] = useState(true);
 
-  // Start timer when component mounts
+  // Randomize questions and options
+  useEffect(() => {
+    if (!questions || questions.length === 0) return;
+    // Shuffle the questions
+    const shuffledQuestions = [...questions].sort(() => Math.random() - 0.5);
+    // Shuffle the options
+    const questionsWithShuffledOptions = shuffledQuestions.map((question) => {
+      // correct answer
+      const correctAnswer = question.answer;
+
+      // not shuffling True/false questions
+      const isTrueFalseQuestion =
+        question.options.length === 2 &&
+        question.options.every(
+          (option) =>
+            option.toLowerCase() === "true" || option.toLowerCase() === "false"
+        );
+
+      // Shuffle the options
+      const shuffledOptions = [...question.options].sort(
+        () => Math.random() - 0.5
+      );
+
+      return {
+        ...question,
+        options: shuffledOptions,
+        answer: correctAnswer,
+      };
+    });
+
+    setRandomizedQuestions(questionsWithShuffledOptions);
+  }, [questions]);
+
+  // Initialize userAnswers based on randomized questions
+  useEffect(() => {
+    if (randomizedQuestions.length > 0) {
+      setUserAnswers(Array(randomizedQuestions.length).fill(null));
+    }
+  }, [randomizedQuestions]);
+
+  // Start timer
   useEffect(() => {
     let timer;
     if (timerRunning) {
@@ -49,8 +96,12 @@ export default function Quiz({ questions, onComplete, progress }) {
     return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
   };
 
+  // Use randomizedQuestions instead of questions
+  const questionsToUse =
+    randomizedQuestions.length > 0 ? randomizedQuestions : questions;
+
   // Get current question and answer
-  const current = questions[currentIndex];
+  const current = questionsToUse[currentIndex];
   const currentAnswer = userAnswers[currentIndex];
 
   // Progress tracking
@@ -93,11 +144,11 @@ export default function Quiz({ questions, onComplete, progress }) {
     // Fill in unanswered questions with an incorrect choice
     const finalAnswers = userAnswers.map((answer, index) => {
       if (answer === null) {
-        const correctAnswer = questions[index].answer;
-        const incorrectChoice = questions[index].options.find(
+        const correctAnswer = questionsToUse[index].answer;
+        const incorrectChoice = questionsToUse[index].options.find(
           (choice) => choice !== correctAnswer
         );
-        return incorrectChoice || questions[index].options[0];
+        return incorrectChoice || questionsToUse[index].options[0];
       }
       return answer;
     });
@@ -124,7 +175,7 @@ export default function Quiz({ questions, onComplete, progress }) {
   // Calculate score
   const calculateScore = () => {
     return userAnswers.reduce((score, answer, i) => {
-      return score + (answer === questions[i].answer ? 1 : 0);
+      return score + (answer === questionsToUse[i].answer ? 1 : 0);
     }, 0);
   };
 
