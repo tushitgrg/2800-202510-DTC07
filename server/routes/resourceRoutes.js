@@ -25,7 +25,7 @@ router.post("/", upload.single("pdf"), addResource);
 router.post("/:id/add", hasResource, addResourceById);
 
 router.delete("/:id", hasResource, deleteResource);
-router.put("/:id", updateResourceSchoolInfo);
+router.put("/:id/schoolInfo", updateResourceSchoolInfo);
 router.put("/:id", updateResourceInfo);
 
 module.exports = router;
