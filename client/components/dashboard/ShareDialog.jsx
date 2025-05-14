@@ -63,10 +63,12 @@ export default function ShareDialog({ isOpen, onClose, resource, onShare }) {
   const handleSharePrivate = async () => {
     if (navigator.share) {
       try {
+        await navigator.clipboard.writeText(`${ClientUrl}/resource/${resource.id}`)
         await navigator.share({
           title: resource.title,
           url: `${ClientUrl}/resource/${resource.id}`,
         });
+        
       } catch (e) {
         console.log("hi");
       }
