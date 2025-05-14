@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ServerUrl } from "@/lib/urls";
+import toast from 'react-hot-toast';
 
 //add debounce function to let user finish entering first
 function debounce(cb, delay) {
@@ -117,7 +118,10 @@ export default function ProfileCard({ googleUser = {} }) {
 
       if (!res.ok) {
         const text = await res.text();
-        alert("Save failed: " + text);
+            toast.error(`Save failed: ${text}`, {
+            duration: 4000,
+            position: 'bottom-right',
+          })
         return;
       }
 
@@ -126,10 +130,16 @@ export default function ProfileCard({ googleUser = {} }) {
       if (res.ok && data.success) {
         setIsEditing(false);
       } else {
-        alert("Save failed: " + (data.error || "Unknown error"));
+             toast.error(`Save failed: ${data.error || "Unknown error"}`, {
+            duration: 4000,
+            position: 'bottom-right',
+          })
       }
     } catch (error) {
-      alert("Save failed: " + error.message);
+          toast.error(`Save failed: ${error.message || "Unknown error"}`, {
+            duration: 4000,
+            position: 'bottom-right',
+          })
     }
   };
 

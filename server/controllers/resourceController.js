@@ -51,10 +51,10 @@ const getResourceInfo = async function (req, res) {
         return info;
       })
     );
-    res.status(200).json({ resources: result });
+    return res.status(200).json({ resources: result });
   } catch (err) {
     console.error("Failed to fetch user resources:", err);
-    res.status(500).json({ error: "Failed to fetch resources" });
+    return res.status(500).json({ error: "Failed to fetch resources" });
   }
 };
 
@@ -67,10 +67,10 @@ const getResources = async function (req, res) {
     const result = await Promise.all(
       userResources.map((resourceID) => fetchResource(resourceID))
     );
-    res.status(200).json(result);
+    return res.status(200).json(result);
   } catch (err) {
     console.error("Failed to fetch user resources:", err);
-    res.status(500).json({ error: "Failed to fetch resources" });
+    return res.status(500).json({ error: "Failed to fetch resources" });
   }
 };
 
@@ -84,7 +84,8 @@ const getResourceById = async function (req, res) {
     if (!resource) {
       return res.status(404).json({ error: "Resource not found" });
     }
-    const { quizID, flashcardID, summaryID, title, createdAt } = resource;
+    const { quizID, flashcardID, summaryID, title, createdAt, author } =
+      resource;
     const progress = await Progress.findOne({ resourceId: resourceId }).select(
       "-_id -userId -resourceId"
     );
@@ -92,6 +93,7 @@ const getResourceById = async function (req, res) {
     response.title = title;
     response.createdAt = createdAt;
     response.progress = progress || {};
+    response.isOwner = author.equals(req.user._id);
     if (quizID) {
       const quiz = await Quiz.findById(quizID);
       response.quiz = quiz;
@@ -120,7 +122,7 @@ const addResource = async function (req, res) {
     req.body;
   if (!req.file) {
     if (!youtubeUrl)
-      return res.status(400).json({ error: "No file or youtube URL uploaded" });
+      return res.status(500).json({ error: "No file or youtube URL uploaded" });
     file = await getTranscriptAsFilePart(youtubeUrl);
   } else {
     file = processFile(req.file);
@@ -175,7 +177,14 @@ const addResource = async function (req, res) {
     await Promise.all(tasks);
   } catch (err) {
     console.error("Failed to create resource data:", err);
-    res
+    if (newResource._id) {
+      await Resource.deleteOne({
+        _id: newResource._id
+      })
+    }
+
+
+    return res
       .status(500)
       .json({ error: "Failed to create one or more parts of the resource." });
   }
@@ -187,7 +196,7 @@ const addResource = async function (req, res) {
     resourceId: newResource._id,
   });
 
-  res.status(201).json({
+  return res.status(201).json({
     msg: `Successfully created resource with id:${newResource._id}`,
     resourceID: newResource._id,
   });
@@ -196,12 +205,12 @@ const addResource = async function (req, res) {
 const deleteResource = async function (req, res) {
   const resourceId = req.params.id;
   if (!resourceId) {
-    res.status(400).json({ error: "Resource ID is required" });
+    return res.status(400).json({ error: "Resource ID is required" });
   }
 
   const user = await User.findById(req.user._id);
   if (!user) {
-    res.status(404).json({ error: "User not found" });
+    return res.status(404).json({ error: "User not found" });
   }
 
   if (!req.hasResource) {
@@ -213,13 +222,11 @@ const deleteResource = async function (req, res) {
   try {
     await Resource.findByIdAndDelete(resourceId);
     await user.updateOne({ $pull: { resources: resourceId } });
-    res
+    return res
       .status(200)
       .json({ msg: `Successfully deleted resource with ID: ${resourceId}` });
   } catch (err) {
-    res
-      .status(500)
-      .json({ error: err, msg: "Unable to delete the provided resource" });
+    return res.status(500).json({ error: err, msg: "Unable to delete the provided resource" });
   }
 };
 
@@ -235,7 +242,7 @@ const updateResourceInfo = async function (req, res) {
   };
 
   if (!resourceId) {
-    res.status(400).json({ error: "Resource ID is required" });
+    return res.status(400).json({ error: "Resource ID is required" });
   }
   try {
     const updatedResource = await Resource.findByIdAndUpdate(
