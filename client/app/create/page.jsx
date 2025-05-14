@@ -17,8 +17,10 @@ import { useRouter } from 'next/navigation'
 import { Input } from "@/components/ui/input"
 import { ServerUrl } from "@/lib/urls"
 import toast from 'react-hot-toast'
+import { useAuth } from "@/hooks/use-auth"
 
 export default function CreatePage() {
+  useAuth()
   const router = useRouter()
   const [currentStep, setCurrentStep] = useState("upload")
   // Update the useState for contentType to be an array
