@@ -16,6 +16,7 @@ import AuthButton from "./AuthButton"
 const Navbar = () => {
     const menuItems = [
         { href: "/dashboard", label: "Dashboard" },
+        { href: "/community", label: "Community" },
         { href: "/pomodoro", label: "Pomodoro" },
         { href: "/about", label: "About Us" },
       ]
