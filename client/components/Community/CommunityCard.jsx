@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 
 export default function ResourceCard({
-  resource,
+  _id,
   title,
   author,
   createdAt,
@@ -14,7 +14,7 @@ export default function ResourceCard({
   course,
 }) {
   return (
-    // <Link href={`/resource/${resource.id}`}>
+    // <Link href={`/resource/${_id}`}>
     <div className="block border rounded-lg hover:shadow-md transition-shadow overflow-hidden">
       <div className="flex flex-col justify-between p-4 h-full">
         <h2 className="text-lg font-semibold mb-2">{title}</h2>
@@ -30,7 +30,7 @@ export default function ResourceCard({
             <span>❤️ {likes}</span>
           </div>
           <div className="text-right">
-            <p className="text-gray-600">{author ?? "Unknown"}</p>
+            <p className="text-gray-600">Created by: {author ?? "Unknown"}</p>
             <p>{new Date(createdAt).toLocaleDateString()}</p>
           </div>
         </div>
