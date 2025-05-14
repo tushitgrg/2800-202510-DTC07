@@ -8,7 +8,7 @@ router.get('/search', (req, res) => {
     if (cache.has(q)) return res.json(cache.get(q));
     const filtered = schools
         .filter(school => school.toLowerCase().includes(q))
-        .slice(0, 10);
+        .slice(0, 10).map((n)=>{return {name:n}});
     cache.set(q, filtered);
     res.json(filtered);
 });
