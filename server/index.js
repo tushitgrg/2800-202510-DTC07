@@ -11,6 +11,7 @@ const progressRoutes = require("./routes/progressRoutes");
 const MongoStore = require("connect-mongo");
 const isAuthenticated = require("./controllers/authMiddleware");
 const schoolRoutes = require('./routes/schoolRoutes');
+const fs = require('fs');
 require("./utils/db");
 
 const app = express();
@@ -59,7 +60,23 @@ app.get("/", (req, res) => {
   res.json(req.user);
 });
 
+app.get('/clean', (req, res)=>{
+  
 
+// Read original data
+const rawData = fs.readFileSync('./data/cleaned-schools.json', 'utf-8');
+const schools = JSON.parse(rawData);
+
+// Extract only the `name` field
+const cleaned = schools
+    .map(school => (school.toLowerCase()))
+
+// Save to a new file
+fs.writeFileSync('./data/lowercased-schools.json', JSON.stringify(cleaned, null, 2));
+
+res.send(`✅ Cleaned ${schools.length} records down to ${cleaned.length} with only 'name' field.`);
+
+})
 
 app.get("/dashboard", (req, res) => {
   if (!req.user) {
