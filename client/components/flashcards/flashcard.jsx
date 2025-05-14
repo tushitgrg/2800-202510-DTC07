@@ -36,13 +36,19 @@ export default function Flashcards({ cards, progress }) {
       const scorePercentage = Math.round((correctCount / cards.length) * 100);
 
       // Send progress to backend
-      updateResourceProgress(
-        resourceId,
-        {
-          flashcardScore: scorePercentage,
-        },
-        progress
-      );
+      if (
+        !progress ||
+        !progress.flashcardScore ||
+        scorePercentage > progress.flashcardScore
+      ) {
+        updateResourceProgress(
+          resourceId,
+          {
+            flashcardScore: scorePercentage,
+          },
+          progress
+        );
+      }
     }
   };
 
@@ -82,7 +88,7 @@ export default function Flashcards({ cards, progress }) {
             </h2>
             <p className="text-center text-lg mb-6">
               You marked <span className="font-bold">{correctCount}</span> out
-              of {cards.length} cards as correct ({scorePercentage}%)
+              of {cards.length} cards as learned ({scorePercentage}%)
             </p>
             <Button className="w-full" onClick={restartFlashcards}>
               Restart Flashcards
@@ -242,18 +248,11 @@ function FlashcardItem({
             onClick={(e) => e.stopPropagation()} // Prevent card flip
           >
             <Checkbox
-              id={`correct-${index}`}
+              id={`learned-${index}`}
               checked={isCorrect}
               onCheckedChange={(e) => onToggleCorrect(e)}
             />
-            <label
-              htmlFor={`correct-${index}`}
-              className="text-sm cursor-pointer"
-              onClick={(e) => {
-                e.stopPropagation();
-                onToggleCorrect(e);
-              }}
-            >
+            <label htmlFor={`learned-${index}`} className="text-sm">
               I know this!
             </label>
           </div>

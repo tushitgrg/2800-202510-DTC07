@@ -6,18 +6,31 @@ export const updateResourceProgress = async (
   currentProgress
 ) => {
   try {
+    console.log("Progress data before processing:", progressData);
+    console.log("Current progress:", currentProgress);
+
     if (currentProgress) {
-      if (progressData.quizScore <= currentProgress.quizScore) {
+      if (
+        progressData.quizScore !== undefined &&
+        progressData.quizScore <= currentProgress.quizScore
+      ) {
         delete progressData.quizScore;
       }
-      if (progressData.flashcardScore <= currentProgress.flashcardScore) {
+      if (
+        progressData.flashcardScore !== undefined &&
+        progressData.flashcardScore <= currentProgress.flashcardScore
+      ) {
         delete progressData.flashcardScore;
       }
     }
 
-    if (!progressData.quizScore && !progressData.flashcardScore) {
+    console.log("Progress data after processing:", progressData);
+
+    if (Object.keys(progressData).length === 0) {
+      console.log("No progress data to update"); // Add logging
       return;
     }
+
     const response = await fetch(`${ServerUrl}/progress/${resourceId}`, {
       method: "POST",
       headers: {

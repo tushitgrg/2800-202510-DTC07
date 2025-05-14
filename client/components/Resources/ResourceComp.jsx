@@ -1,39 +1,27 @@
 "use client";
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import Quiz from "@/components/quizzes/quiz";
 import Flashcards from "@/components/flashcards/flashcard";
-import Markdown from "react-markdown";
-import { Checkbox } from "@/components/ui/checkbox";
-import { updateResourceProgress } from "@/lib/progress";
+import Summary from "@/components/summaries/Summary";
 
 const ResourceComp = ({ resourceData }) => {
+  // Check what content types are available
   const hasQuiz = !!resourceData.quiz;
   const hasFlashcards = !!resourceData.flashcard;
   const hasSummary = !!resourceData.summary;
 
-  // Add state for summary completion
-  const [summaryCompleted, setSummaryCompleted] = useState(false);
-  const resourceId = resourceData.id;
-
-  // Make tab on what's available
+  // Determine default tab based on available content
   let defaultTab = "quiz";
   if (!hasQuiz && hasFlashcards) defaultTab = "flashcard";
   else if (!hasQuiz && !hasFlashcards && hasSummary) defaultTab = "summary";
 
   const [activeTab, setActiveTab] = useState(defaultTab);
 
-  // Handle summary completion toggle
-  const handleSummaryComplete = async (checked) => {
-    setSummaryCompleted(checked);
-    // Send progress to backend
-    updateResourceProgress(resourceId, {
-      summaryCompletion: checked,
-    });
-  };
+  // Format the creation date
+  const formattedDate = new Date(resourceData.createdAt).toDateString();
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl w-screen">
@@ -51,9 +39,7 @@ const ResourceComp = ({ resourceData }) => {
         <h1 className="text-2xl md:text-3xl font-bold mb-2">
           {resourceData.title}
         </h1>
-        <p className="text-sm text-gray-400">
-          Created on {new Date(resourceData.createdAt).toDateString()}
-        </p>
+        <p className="text-sm text-gray-400">Created on {formattedDate}</p>
       </div>
 
       {/* Tabs for different content types */}
@@ -62,6 +48,7 @@ const ResourceComp = ({ resourceData }) => {
         onValueChange={setActiveTab}
         className="w-full"
       >
+        {/* Dynamic tab list based on available content */}
         <TabsList
           className={`grid w-full mb-6 ${
             [hasQuiz, hasFlashcards, hasSummary].filter(Boolean).length === 1
@@ -79,6 +66,7 @@ const ResourceComp = ({ resourceData }) => {
           {hasSummary && <TabsTrigger value="summary">Summary</TabsTrigger>}
         </TabsList>
 
+        {/* Tab content */}
         {hasQuiz && (
           <TabsContent value="quiz" className="py-4 flex justify-center">
             <Quiz
@@ -99,24 +87,10 @@ const ResourceComp = ({ resourceData }) => {
 
         {hasSummary && (
           <TabsContent value="summary" className="py-4 flex justify-center">
-            <div className="bg-slate-800 rounded-lg p-6 shadow-md w-full relative">
-              <Markdown>{resourceData.summary.content}</Markdown>
-
-              {/* Mark as complete checkbox */}
-              <div className="mt-8 flex justify-end items-center space-x-2">
-                <Checkbox
-                  id="summary-complete"
-                  checked={summaryCompleted}
-                  onCheckedChange={handleSummaryComplete}
-                />
-                <label
-                  htmlFor="summary-complete"
-                  className="text-sm cursor-pointer"
-                >
-                  Mark as completed
-                </label>
-              </div>
-            </div>
+            <Summary
+              content={resourceData.summary.content}
+              progress={resourceData.progress}
+            />
           </TabsContent>
         )}
       </Tabs>
