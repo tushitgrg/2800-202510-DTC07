@@ -8,12 +8,12 @@ const updateProgress = async (req, res) => {
     const { quizScore, flashcardScore, summaryCompletion } = req.body;
 
     // Find existing progress or create a new one
-    let progress = await Progress.findOne({ userId, resourceId });
+    let progress = await Progress.findOne({ resourceId: resourceId });
 
     if (!progress) {
       progress = new Progress({
-        userId,
-        resourceId,
+        userId: userId,
+        resourceId: resourceId,
         quizScore: null,
         flashcardScore: null,
         summaryCompletion: false,
