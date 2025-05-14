@@ -42,17 +42,19 @@ const ResourceComp = ({ resourceData, userData, goToDashboard }) => {
     }
   };
 
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl w-screen">
       {/* Back button and Add to Dashboard */}
       <div className="flex justify-between items-center mb-6">
-        <Link
-          href="/dashboard"
+        <p
+
+          onClick={()=>window.history.back()}
           className="flex items-center text-sm text-gray-400 hover:text-white"
         >
           <ChevronLeft className="w-5 h-5 mr-1" />
-          Back to Dashboard
-        </Link>
+          Back
+        </p>
 
         {/* Add button if not owner and not already added */}
         {!isOwner && !hasResource && (
