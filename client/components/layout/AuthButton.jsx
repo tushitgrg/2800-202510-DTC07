@@ -22,12 +22,17 @@ const AuthButton = ({ className = "" }) => {
             {user ? (
  <DropdownMenu>
    <DropdownMenuTrigger asChild>
-                <Button className={`rounded-full hover:cursor-pointer ${className}`}>
+            <Button
+                className={`rounded-full border-purple-600 border-2 bg-black/50 text-white py-2 pr-1 pl-3
+                        hover:bg-black hover:cursor-pointer
+                          hover:shadow-[0_0_2px_1px_rgba(168,85,247,0.7)] 
+                          transition duration-300
+                          ${className}`}
+            >
+                {user.name}
+                <img src={user.avatar} className="rounded-full w-7 h-7 ml-2" />
+            </Button>
 
-
-                    {user.name}
-                    <img src={user.avatar} className='rounded-full w-8 h-8  border-black border-[0.1px]' />
-                </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
                <a href="/profile"> <DropdownMenuLabel>My Account</DropdownMenuLabel></a>

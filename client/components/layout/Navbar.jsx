@@ -80,7 +80,7 @@ const Navbar = () => {
         </Link>)}
       
       </nav>
-      <div className="hidden md:flex gap-4 items-center">
+      <div className="hidden md:flex items-center">
       
        <AuthButton/>
       </div>
