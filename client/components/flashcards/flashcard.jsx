@@ -14,13 +14,30 @@ export default function Flashcards({ cards, progress }) {
   const params = useParams();
   const resourceId = params.id;
 
+  // State for randomized cards
+  const [randomizedCards, setRandomizedCards] = useState([]);
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
-  const [correctAnswers, setCorrectAnswers] = useState(
-    Array(cards.length).fill(false)
-  );
+  const [correctAnswers, setCorrectAnswers] = useState([]);
   const [showResults, setShowResults] = useState(false);
-  const currentCard = cards[currentIndex];
+
+  // Use randomized cards or fall back to original cards
+  const cardsToUse = randomizedCards.length > 0 ? randomizedCards : cards;
+  const currentCard = cardsToUse[currentIndex];
+
+  // Shuffle cards on component mount
+  useEffect(() => {
+    if (!cards || cards.length === 0) return;
+
+    // Create a shuffled copy of the cards array
+    const shuffledCards = [...cards].sort(() => Math.random() - 0.5);
+
+    setRandomizedCards(shuffledCards);
+
+    // CorrectAnswers array based on shuffled cards
+    setCorrectAnswers(Array(shuffledCards.length).fill(false));
+  }, [cards]);
 
   // Navigation
   const nextCard = () => {
@@ -77,7 +94,7 @@ export default function Flashcards({ cards, progress }) {
   // Results view
   if (showResults) {
     const correctCount = correctAnswers.filter(Boolean).length;
-    const scorePercentage = Math.round((correctCount / cards.length) * 100);
+    const scorePercentage = Math.round((correctCount / cardsToUse.length) * 100);
 
     return (
       <div className="w-full max-w-md">

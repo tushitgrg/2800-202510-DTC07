@@ -18,6 +18,16 @@ import { updateResourceProgress } from "@/lib/progress";
 import { useParams } from "next/navigation";
 
 export default function Quiz({ questions, onComplete, progress }) {
+  // Loading
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   // State management
   const [currentIndex, setCurrentIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState([]);
@@ -226,6 +236,11 @@ export default function Quiz({ questions, onComplete, progress }) {
       <span>Time: {formatTime(elapsedTime)}</span>
     </div>
   );
+
+  // Loading state
+  if (loading) {
+    return <div className="w-full h-[400px]"></div>;
+  }
 
   // Results view
   if (showResults) {
