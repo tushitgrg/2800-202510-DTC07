@@ -277,6 +277,7 @@ const getPublicResources = async function (req, res) {
       .populate("author", "name school");
 
     const publicResourceInfo = publicResources.map((resource) => ({
+      _id: resource._id,
       title: resource.title,
       author: resource.author?.name || null,
       school: resource.school || resource.author?.school || null,
