@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { updateResourceProgress } from "@/lib/progress";
-import { useParams } from 'next/navigation';
+import { useParams } from "next/navigation";
 
 export default function Flashcards({ cards, progress }) {
   // Progress tracking
@@ -16,7 +16,9 @@ export default function Flashcards({ cards, progress }) {
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
-  const [correctAnswers, setCorrectAnswers] = useState(Array(cards.length).fill(false));
+  const [correctAnswers, setCorrectAnswers] = useState(
+    Array(cards.length).fill(false)
+  );
   const [showResults, setShowResults] = useState(false);
   const currentCard = cards[currentIndex];
 
@@ -34,9 +36,13 @@ export default function Flashcards({ cards, progress }) {
       const scorePercentage = Math.round((correctCount / cards.length) * 100);
 
       // Send progress to backend
-      updateResourceProgress(resourceId, {
-        flashcardScore: scorePercentage
-      }, progress);
+      updateResourceProgress(
+        resourceId,
+        {
+          flashcardScore: scorePercentage,
+        },
+        progress
+      );
     }
   };
 
@@ -71,10 +77,12 @@ export default function Flashcards({ cards, progress }) {
       <div className="w-full max-w-md">
         <Card className="w-full">
           <div className="p-6">
-            <h2 className="text-2xl font-bold text-center mb-4">Flashcards Completed!</h2>
+            <h2 className="text-2xl font-bold text-center mb-4">
+              Flashcards Completed!
+            </h2>
             <p className="text-center text-lg mb-6">
-              You marked <span className="font-bold">{correctCount}</span> out of {cards.length} cards as correct
-              ({scorePercentage}%)
+              You marked <span className="font-bold">{correctCount}</span> out
+              of {cards.length} cards as correct ({scorePercentage}%)
             </p>
             <Button className="w-full" onClick={restartFlashcards}>
               Restart Flashcards
@@ -108,11 +116,7 @@ export default function Flashcards({ cards, progress }) {
           <ChevronLeft className="h-6 w-6" />
         </Button>
 
-        <Button
-          onClick={nextCard}
-          variant="outline"
-          size="icon"
-        >
+        <Button onClick={nextCard} variant="outline" size="icon">
           <ChevronRight className="h-6 w-6" />
         </Button>
       </div>
@@ -121,7 +125,16 @@ export default function Flashcards({ cards, progress }) {
 }
 
 // Flashcard item component
-function FlashcardItem({ front, back, flipped, onFlip, index, total, isCorrect, onToggleCorrect }) {
+function FlashcardItem({
+  front,
+  back,
+  flipped,
+  onFlip,
+  index,
+  total,
+  isCorrect,
+  onToggleCorrect,
+}) {
   // Text sizing state
   const [frontSize, setFrontSize] = useState("text-lg");
   const [backSize, setBackSize] = useState("text-lg");

@@ -3,7 +3,14 @@
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 
-export function BadgeDialog({ isOpen, setIsOpen, badges, selectedBadge, setSelectedBadge, tiers }) {
+export function BadgeDialog({
+  isOpen,
+  setIsOpen,
+  badges,
+  selectedBadge,
+  setSelectedBadge,
+  tiers,
+}) {
   // Handle equipping a badge
   const handleEquipBadge = (badge) => {
     console.log("Equipping badge:", badge);
@@ -34,13 +41,18 @@ export function BadgeDialog({ isOpen, setIsOpen, badges, selectedBadge, setSelec
         {selectedBadge ? (
           <div className="p-4 border rounded-lg">
             <div className="flex items-center gap-4">
-              <div className={`size-20 rounded-full ${selectedBadge.color} flex items-center justify-center`}>
+              <div
+                className={`size-20 rounded-full ${selectedBadge.color} flex items-center justify-center`}
+              >
                 {selectedBadge.icon}
               </div>
               <div>
                 <h3 className="font-bold">{selectedBadge.displayName}</h3>
                 <p className="text-sm text-muted-foreground">
-                  {selectedBadge.description.replace('{threshold}', selectedBadge.count)}
+                  {selectedBadge.description.replace(
+                    "{threshold}",
+                    selectedBadge.count
+                  )}
                 </p>
 
                 {!selectedBadge.isLocked && (
@@ -48,7 +60,10 @@ export function BadgeDialog({ isOpen, setIsOpen, badges, selectedBadge, setSelec
                     <Button onClick={() => handleEquipBadge(selectedBadge)}>
                       Equip as Avatar
                     </Button>
-                    <Button variant="outline" onClick={() => setSelectedBadge(null)}>
+                    <Button
+                      variant="outline"
+                      onClick={() => setSelectedBadge(null)}
+                    >
                       Back to All Badges
                     </Button>
                   </div>
@@ -57,9 +72,15 @@ export function BadgeDialog({ isOpen, setIsOpen, badges, selectedBadge, setSelec
                 {selectedBadge.isLocked && (
                   <div className="mt-3">
                     <p className="text-muted-foreground">
-                      Complete {tiers.bronze.threshold} {selectedBadge.name.toLowerCase()} activities to unlock this badge.
+                      Complete {tiers.bronze.threshold}{" "}
+                      {selectedBadge.name.toLowerCase()} activities to unlock
+                      this badge.
                     </p>
-                    <Button variant="outline" className="mt-2" onClick={() => setSelectedBadge(null)}>
+                    <Button
+                      variant="outline"
+                      className="mt-2"
+                      onClick={() => setSelectedBadge(null)}
+                    >
                       Back to All Badges
                     </Button>
                   </div>
@@ -69,18 +90,22 @@ export function BadgeDialog({ isOpen, setIsOpen, badges, selectedBadge, setSelec
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {badges.map(badge => (
+            {badges.map((badge) => (
               <div
                 key={badge.id}
                 className={`border rounded-lg p-4 flex flex-col items-center gap-2 cursor-pointer transition-colors ${
-                  badge.isLocked ? 'opacity-60' : 'hover:bg-muted/50'
+                  badge.isLocked ? "opacity-60" : "hover:bg-muted/50"
                 }`}
                 onClick={() => setSelectedBadge(badge)}
               >
-                <div className={`size-16 rounded-full ${badge.color} flex items-center justify-center`}>
+                <div
+                  className={`size-16 rounded-full ${badge.color} flex items-center justify-center`}
+                >
                   {badge.icon}
                 </div>
-                <h4 className="font-medium text-sm text-center">{badge.displayName}</h4>
+                <h4 className="font-medium text-sm text-center">
+                  {badge.displayName}
+                </h4>
 
                 {!badge.isLocked ? (
                   <div className="text-xs text-center text-muted-foreground">

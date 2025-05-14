@@ -11,10 +11,10 @@ export default async function SummaryPage({ params }) {
   const created = new Date(note.date);
 
   // Format the date to Month-Day-Year
-  const formattedDate = created.toLocaleDateString('en-CA', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
+  const formattedDate = created.toLocaleDateString("en-CA", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   });
 
   return (
@@ -40,7 +40,6 @@ export default async function SummaryPage({ params }) {
           {note.description}
         </div>
       </div>
-
     </section>
   );
 }

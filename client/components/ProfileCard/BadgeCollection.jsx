@@ -19,7 +19,7 @@ export default function BadgeCollection() {
     silver: { color: "bg-gray-400", name: "Enthusiast", threshold: 50 },
     gold: { color: "bg-yellow-400", name: "Expert", threshold: 100 },
     platinum: { color: "bg-slate-300", name: "Master", threshold: 500 },
-    ruby: { color: "bg-red-600", name: "Scholar", threshold: 1000 }
+    ruby: { color: "bg-red-600", name: "Scholar", threshold: 1000 },
   };
 
   // Badge type configuration
@@ -30,7 +30,8 @@ export default function BadgeCollection() {
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="20" height="20"
+          width="20"
+          height="20"
           viewBox="0 0 24 24"
           fill="none"
           stroke="white"
@@ -44,7 +45,7 @@ export default function BadgeCollection() {
           <path d="M8 15h5" />
         </svg>
       ),
-      description: "Complete {threshold} quizzes"
+      description: "Complete {threshold} quizzes",
     },
     {
       id: "flashcard",
@@ -52,7 +53,8 @@ export default function BadgeCollection() {
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="20" height="20"
+          width="20"
+          height="20"
           viewBox="0 0 24 24"
           fill="none"
           stroke="white"
@@ -64,7 +66,7 @@ export default function BadgeCollection() {
           <path d="M3 9h18" />
         </svg>
       ),
-      description: "Complete {threshold} flashcard sets"
+      description: "Complete {threshold} flashcard sets",
     },
     {
       id: "summary",
@@ -72,7 +74,8 @@ export default function BadgeCollection() {
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="20" height="20"
+          width="20"
+          height="20"
           viewBox="0 0 24 24"
           fill="none"
           stroke="white"
@@ -87,7 +90,7 @@ export default function BadgeCollection() {
           <path d="M10 9H8" />
         </svg>
       ),
-      description: "Complete {threshold} summaries"
+      description: "Complete {threshold} summaries",
     },
     {
       id: "community_resource",
@@ -95,7 +98,8 @@ export default function BadgeCollection() {
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="20" height="20"
+          width="20"
+          height="20"
           viewBox="0 0 24 24"
           fill="none"
           stroke="white"
@@ -106,7 +110,7 @@ export default function BadgeCollection() {
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
         </svg>
       ),
-      description: "Add {threshold} resources to the community"
+      description: "Add {threshold} resources to the community",
     },
     {
       id: "share",
@@ -114,7 +118,8 @@ export default function BadgeCollection() {
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="20" height="20"
+          width="20"
+          height="20"
           viewBox="0 0 24 24"
           fill="none"
           stroke="white"
@@ -127,7 +132,7 @@ export default function BadgeCollection() {
           <line x1="12" y1="2" x2="12" y2="15" />
         </svg>
       ),
-      description: "Share {threshold} resources with the community"
+      description: "Share {threshold} resources with the community",
     },
     {
       id: "community_quiz",
@@ -135,7 +140,8 @@ export default function BadgeCollection() {
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="20" height="20"
+          width="20"
+          height="20"
           viewBox="0 0 24 24"
           fill="none"
           stroke="white"
@@ -146,7 +152,7 @@ export default function BadgeCollection() {
           <path d="M21 12a9 9 0 0 1-9 9m9-9a9 9 0 0 0-9-9m9 9H3m9 9a9 9 0 0 1-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9" />
         </svg>
       ),
-      description: "Complete {threshold} community quizzes"
+      description: "Complete {threshold} community quizzes",
     },
     {
       id: "community_flashcard",
@@ -154,7 +160,8 @@ export default function BadgeCollection() {
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="20" height="20"
+          width="20"
+          height="20"
           viewBox="0 0 24 24"
           fill="none"
           stroke="white"
@@ -169,7 +176,7 @@ export default function BadgeCollection() {
           <path d="M8 14h4" />
         </svg>
       ),
-      description: "Complete {threshold} community flashcard sets"
+      description: "Complete {threshold} community flashcard sets",
     },
     {
       id: "community_summary",
@@ -177,7 +184,8 @@ export default function BadgeCollection() {
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="20" height="20"
+          width="20"
+          height="20"
           viewBox="0 0 24 24"
           fill="none"
           stroke="white"
@@ -189,7 +197,7 @@ export default function BadgeCollection() {
           <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
         </svg>
       ),
-      description: "Complete {threshold} community summaries"
+      description: "Complete {threshold} community summaries",
     },
     {
       id: "streak",
@@ -197,7 +205,8 @@ export default function BadgeCollection() {
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="20" height="20"
+          width="20"
+          height="20"
           viewBox="0 0 24 24"
           fill="none"
           stroke="white"
@@ -208,7 +217,7 @@ export default function BadgeCollection() {
           <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
         </svg>
       ),
-      description: "Maintain a {threshold}-day study streak"
+      description: "Maintain a {threshold}-day study streak",
     },
     {
       id: "resource",
@@ -216,7 +225,8 @@ export default function BadgeCollection() {
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="20" height="20"
+          width="20"
+          height="20"
           viewBox="0 0 24 24"
           fill="none"
           stroke="white"
@@ -228,8 +238,8 @@ export default function BadgeCollection() {
           <polyline points="12 6 12 12 16 14" />
         </svg>
       ),
-      description: "Complete {threshold} resources"
-    }
+      description: "Complete {threshold} resources",
+    },
   ];
 
   // Get badge tier based on count
@@ -244,7 +254,7 @@ export default function BadgeCollection() {
 
   // Get badge info by combining type and tier
   const getBadgeInfo = (badgeId, count, equipped) => {
-    const badgeType = badgeTypes.find(type => type.id === badgeId);
+    const badgeType = badgeTypes.find((type) => type.id === badgeId);
     if (!badgeType) return null;
 
     const tier = getBadgeTier(count);
@@ -254,24 +264,28 @@ export default function BadgeCollection() {
       tier,
       tierName: tier ? tiers[tier].name : "Locked",
       color: tier ? tiers[tier].color : "bg-gray-300",
-      displayName: tier ? `${badgeType.name} ${tiers[tier].name}` : `${badgeType.name} Badge`,
+      displayName: tier
+        ? `${badgeType.name} ${tiers[tier].name}`
+        : `${badgeType.name} Badge`,
       count,
       isLocked: !tier,
-      equipped
+      equipped,
     };
   };
 
   // Process all badge types with user data
-  const processedBadges = userBadges.map(badge =>
-    getBadgeInfo(badge.id, badge.count, badge.equipped)
-  ).filter(badge => badge !== null && !badge.isLocked);
+  const processedBadges = userBadges
+    .map((badge) => getBadgeInfo(badge.id, badge.count, badge.equipped))
+    .filter((badge) => badge !== null && !badge.isLocked);
 
   // Handle equipping a badge
   const handleEquipBadge = (badgeId) => {
-    setUserBadges(userBadges.map(badge => ({
-      ...badge,
-      equipped: badge.id === badgeId
-    })));
+    setUserBadges(
+      userBadges.map((badge) => ({
+        ...badge,
+        equipped: badge.id === badgeId,
+      }))
+    );
   };
 
   return (
@@ -281,22 +295,34 @@ export default function BadgeCollection() {
       </div>
 
       <div className="flex flex-wrap gap-3">
-        {processedBadges.slice(0, 6).map(badge => (
+        {processedBadges.slice(0, 6).map((badge) => (
           <div
             key={badge.id}
             className="group relative cursor-pointer"
             onClick={() => setIsDialogOpen(true)}
           >
-            <div className={`size-10 rounded-full ${badge.color} flex items-center justify-center hover:ring-1 hover:ring-primary transition-all`}>
+            <div
+              className={`size-10 rounded-full ${badge.color} flex items-center justify-center hover:ring-1 hover:ring-primary transition-all`}
+            >
               {badge.icon}
             </div>
             {/* Tooltip */}
             <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-40 bg-popover text-popover-foreground text-xs p-2 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
               <p className="font-bold">{badge.displayName}</p>
               {badge.tier ? (
-                <p>{badge.description.replace('{threshold}', tiers[badge.tier].threshold)}</p>
+                <p>
+                  {badge.description.replace(
+                    "{threshold}",
+                    tiers[badge.tier].threshold
+                  )}
+                </p>
               ) : (
-                <p>{badge.description.replace('{threshold}', tiers.bronze.threshold)}</p>
+                <p>
+                  {badge.description.replace(
+                    "{threshold}",
+                    tiers.bronze.threshold
+                  )}
+                </p>
               )}
             </div>
           </div>
@@ -313,7 +339,8 @@ export default function BadgeCollection() {
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="20" height="20"
+                width="20"
+                height="20"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -330,29 +357,49 @@ export default function BadgeCollection() {
             <h2 className="text-xl font-bold mb-6">Badge Collection</h2>
 
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {processedBadges.map(badge => (
+              {processedBadges.map((badge) => (
                 <div
                   key={badge.id}
                   className={`border rounded-lg p-4 flex flex-col items-center gap-2 cursor-pointer hover:bg-muted/50 transition-colors ${
-                    badge.equipped ? 'border-primary ring-1 ring-primary' : 'border-border'
+                    badge.equipped
+                      ? "border-primary ring-1 ring-primary"
+                      : "border-border"
                   }`}
                   onClick={(e) => {
                     e.stopPropagation();
                     handleEquipBadge(badge.id);
                   }}
                 >
-                  <div className={`size-16 rounded-full ${badge.color} flex items-center justify-center ${
-                    badge.equipped ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : ''
-                  }`}>
+                  <div
+                    className={`size-16 rounded-full ${
+                      badge.color
+                    } flex items-center justify-center ${
+                      badge.equipped
+                        ? "ring-2 ring-primary ring-offset-2 ring-offset-background"
+                        : ""
+                    }`}
+                  >
                     {badge.icon}
                   </div>
-                  <h4 className="font-medium text-sm text-center">{badge.displayName}</h4>
+                  <h4 className="font-medium text-sm text-center">
+                    {badge.displayName}
+                  </h4>
 
                   <div className="text-xs text-center text-muted-foreground">
                     {badge.tier ? (
-                      <p>{badge.description.replace('{threshold}', tiers[badge.tier].threshold)}</p>
+                      <p>
+                        {badge.description.replace(
+                          "{threshold}",
+                          tiers[badge.tier].threshold
+                        )}
+                      </p>
                     ) : (
-                      <p>{badge.description.replace('{threshold}', tiers.bronze.threshold)}</p>
+                      <p>
+                        {badge.description.replace(
+                          "{threshold}",
+                          tiers.bronze.threshold
+                        )}
+                      </p>
                     )}
                   </div>
 

@@ -1,13 +1,13 @@
 "use client";
 
-import React from 'react';
-import ProgressMedal from './ProgressMedal';
+import React from "react";
+import ProgressMedal from "./ProgressMedal";
 
 export default function ResourceFooter({ resource, formatDate, progress }) {
   return (
     <div>
       <div className="mt-4 w-full mb-2">
-        <div className="flex justify-end gap-2">
+        <div className="flex gap-2">
           {/* Show medals based on progress */}
           <div className="flex space-x-1">
             <ProgressMedal type="quiz" score={progress?.quizScore} />

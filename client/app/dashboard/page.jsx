@@ -29,12 +29,12 @@ export default function DashboardPage() {
     const fetchResources = async () => {
       try {
         const response = await fetch(`${ServerUrl}/resources/info`, {
-          credentials: 'include'
+          credentials: "include",
         });
-        if(response.status==401||response.status==201){
-          return router.push(`${ServerUrl}/auth/google`)
+        if (response.status == 401 || response.status == 201) {
+          return router.push(`${ServerUrl}/auth/google`);
         }
-        if (!response.ok) throw new Error('Failed to fetch resources');
+        if (!response.ok) throw new Error("Failed to fetch resources");
         const data = await response.json();
         setResources(data.resources);
 
@@ -42,13 +42,13 @@ export default function DashboardPage() {
         const uniqueTags = Array.from(
           new Set(
             data.resources
-              .flatMap(resource => resource.tags || [])
-              .filter(tag => tag)
+              .flatMap((resource) => resource.tags || [])
+              .filter((tag) => tag)
           )
         );
         setAllTags(uniqueTags);
       } catch (error) {
-        console.error('Error fetching resources:', error);
+        console.error("Error fetching resources:", error);
       }
     };
     fetchResources();
@@ -57,9 +57,12 @@ export default function DashboardPage() {
   // Update filter function when search query or selected tags change
   useEffect(() => {
     const newFilterFunction = (resource) => {
-      const matchesSearch = resource.title.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesTags = selectedTags.length === 0 ||
-        selectedTags.every(tag => resource.tags?.includes(tag));
+      const matchesSearch = resource.title
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      const matchesTags =
+        selectedTags.length === 0 ||
+        selectedTags.every((tag) => resource.tags?.includes(tag));
       return matchesSearch && matchesTags;
     };
 
@@ -89,9 +92,7 @@ export default function DashboardPage() {
   // Filtered and sorted resources
   const filteredResources = useMemo(() => {
     if (!resources) return [];
-    return [...resources]
-      .filter(filterFunction)
-      .sort(sortFunction);
+    return [...resources].filter(filterFunction).sort(sortFunction);
   }, [resources, filterFunction, sortFunction]);
 
   const handleCreateClick = () => {
@@ -107,35 +108,43 @@ export default function DashboardPage() {
     if (editValue.trim() === "") return;
 
     try {
-      const updatedResource = resources.find(r => r.id === editingId);
+      const updatedResource = resources.find((r) => r.id === editingId);
       if (!updatedResource) return;
 
       const response = await fetch(`${ServerUrl}/resources/${editingId}`, {
-        method: 'PUT',
-        credentials: 'include',
+        method: "PUT",
+        credentials: "include",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           newTitle: editValue,
-          newTags: updatedResource.tags || []
+          newTags: updatedResource.tags || [],
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to update resource');
+        throw new Error("Failed to update resource");
       }
 
-      setResources(resources.map(resource =>
-        resource.id === editingId ? { ...resource, title: editValue } : resource
-      ));
+      setResources(
+        resources.map((resource) =>
+          resource.id === editingId
+            ? { ...resource, title: editValue }
+            : resource
+        )
+      );
       setEditingId(null);
     } catch (error) {
-      console.error('Error updating resource:', error);
+      console.error("Error updating resource:", error);
       // Update UI
-      setResources(resources.map(resource =>
-        resource.id === editingId ? { ...resource, title: editValue } : resource
-      ));
+      setResources(
+        resources.map((resource) =>
+          resource.id === editingId
+            ? { ...resource, title: editValue }
+            : resource
+        )
+      );
       setEditingId(null);
     }
   };
@@ -148,23 +157,23 @@ export default function DashboardPage() {
     if (confirm("Are you sure you want to delete this resource?")) {
       try {
         const response = await fetch(`${ServerUrl}/resources/${id}`, {
-          method: 'DELETE',
-          credentials: 'include',
+          method: "DELETE",
+          credentials: "include",
         });
 
         if (!response.ok) {
-          throw new Error('Failed to delete resource');
+          throw new Error("Failed to delete resource");
         }
 
         // Update the local state
-        setResources(resources.filter(resource => resource.id !== id));
+        setResources(resources.filter((resource) => resource.id !== id));
 
         // Update allTags after resource removal
         updateAllTagsAfterResourceChange();
       } catch (error) {
-        console.error('Error deleting resource:', error);
+        console.error("Error deleting resource:", error);
         // Update UI
-        setResources(resources.filter(resource => resource.id !== id));
+        setResources(resources.filter((resource) => resource.id !== id));
         updateAllTagsAfterResourceChange();
       }
     }
@@ -178,14 +187,15 @@ export default function DashboardPage() {
       // If a new title was provided, update the title
       if (newTitle) {
         // Update db
-        setResources(resources.map(resource =>
-          resource.id === id ? { ...resource, title: newTitle } : resource
-        ));
+        setResources(
+          resources.map((resource) =>
+            resource.id === id ? { ...resource, title: newTitle } : resource
+          )
+        );
       }
       // Update db
-
     } catch (error) {
-      console.error('Error sharing resource:', error);
+      console.error("Error sharing resource:", error);
     }
   };
 
@@ -200,7 +210,7 @@ export default function DashboardPage() {
 
   const handleAddTag = (resourceId, tag) => {
     // Find the resource
-    const resource = resources.find(r => r.id === resourceId);
+    const resource = resources.find((r) => r.id === resourceId);
     if (!resource) return;
 
     // Make sure we don't add duplicate tags or exceed 5 tags
@@ -208,11 +218,11 @@ export default function DashboardPage() {
     if (currentTags.includes(tag) || currentTags.length >= 5) return;
 
     // Update resources with new tag
-    const updatedResources = resources.map(r => {
+    const updatedResources = resources.map((r) => {
       if (r.id === resourceId) {
         return {
           ...r,
-          tags: [...currentTags, tag]
+          tags: [...currentTags, tag],
         };
       }
       return r;
@@ -228,11 +238,11 @@ export default function DashboardPage() {
 
   const handleRemoveTag = (resourceId, tagToRemove) => {
     // Update resources by removing tag
-    const updatedResources = resources.map(r => {
+    const updatedResources = resources.map((r) => {
       if (r.id === resourceId) {
         return {
           ...r,
-          tags: (r.tags || []).filter(tag => tag !== tagToRemove)
+          tags: (r.tags || []).filter((tag) => tag !== tagToRemove),
         };
       }
       return r;
@@ -249,8 +259,8 @@ export default function DashboardPage() {
     const uniqueTags = Array.from(
       new Set(
         currentResources
-          .flatMap(resource => resource.tags || [])
-          .filter(tag => tag)
+          .flatMap((resource) => resource.tags || [])
+          .filter((tag) => tag)
       )
     );
     setAllTags(uniqueTags);
@@ -258,14 +268,14 @@ export default function DashboardPage() {
 
   // Format date helper function
   const formatDate = (dateString) => {
-    if (!dateString) return '';
+    if (!dateString) return "";
 
     try {
       const date = new Date(dateString);
-      return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
+      return date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
       });
     } catch (e) {
       return dateString;
@@ -313,7 +323,7 @@ export default function DashboardPage() {
 
             <div className="flex justify-between w-full items-center mb-6">
               <h1 className="text-2xl font-bold">Your Resources</h1>
-              <Button onClick={handleCreateClick} style={{ cursor: 'pointer' }}>
+              <Button onClick={handleCreateClick} style={{ cursor: "pointer" }}>
                 <Plus className="mr-2 h-4 w-4" />
                 Create
               </Button>
@@ -325,7 +335,7 @@ export default function DashboardPage() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
-                {filteredResources.map(resource => (
+                {filteredResources.map((resource) => (
                   <ResourceCard
                     key={resource.id}
                     resource={resource}
@@ -352,7 +362,9 @@ export default function DashboardPage() {
             )}
           </div>
         </div>
-      ) : <Loading />}
+      ) : (
+        <Loading />
+      )}
     </>
   );
 }

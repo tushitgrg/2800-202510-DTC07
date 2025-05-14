@@ -6,12 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ClientUrl } from "@/lib/urls";
 
-export default function ShareDialog({
-  isOpen,
-  onClose,
-  resource,
-  onShare,
-}) {
+export default function ShareDialog({ isOpen, onClose, resource, onShare }) {
   const [title, setTitle] = useState(resource?.title || "");
   const [school, setSchool] = useState("");
   const [course, setCourse] = useState("");
@@ -55,31 +50,29 @@ export default function ShareDialog({
   }, [school]);
 
   // Filter schools based on search
-  const filteredSchools = schools.filter(s => 
+  const filteredSchools = schools.filter((s) =>
     s.name.toLowerCase().includes(searchSchool.toLowerCase())
   );
 
   // Filter courses based on search
-  const filteredCourses = courses.filter(c => 
+  const filteredCourses = courses.filter((c) =>
     c.name.toLowerCase().includes(searchCourse.toLowerCase())
   );
 
   // Handle share button click
   const handleSharePrivate = async () => {
     if (navigator.share) {
-      try{
-  await navigator.share({
-    title: resource.title,
-    url: `${ClientUrl}/resource/${resource.id}`
-  })
-      }catch(e){
-        console.log("hi")
+      try {
+        await navigator.share({
+          title: resource.title,
+          url: `${ClientUrl}/resource/${resource.id}`,
+        });
+      } catch (e) {
+        console.log("hi");
       }
-
- 
-} else {
-  console.log('Web Share API is not supported in this browser.');
-}
+    } else {
+      console.log("Web Share API is not supported in this browser.");
+    }
     // onShare({
     //   title,
     //   school: school || null,
@@ -94,7 +87,7 @@ export default function ShareDialog({
       title,
       school: school || null,
       course: course || null,
-      isPublic: true
+      isPublic: true,
     });
     onClose();
   };
@@ -113,7 +106,8 @@ export default function ShareDialog({
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="18" height="18"
+            width="18"
+            height="18"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -172,7 +166,9 @@ export default function ShareDialog({
                       </div>
                     ))
                   ) : (
-                    <div className="p-2 text-muted-foreground">No schools found</div>
+                    <div className="p-2 text-muted-foreground">
+                      No schools found
+                    </div>
                   )}
                 </div>
               )}
@@ -209,7 +205,9 @@ export default function ShareDialog({
                         </div>
                       ))
                     ) : (
-                      <div className="p-2 text-muted-foreground">No courses found</div>
+                      <div className="p-2 text-muted-foreground">
+                        No courses found
+                      </div>
                     )}
                   </div>
                 )}
@@ -227,10 +225,7 @@ export default function ShareDialog({
               <Link className="h-4 w-4" />
               <span>Private Link</span>
             </Button>
-            <Button
-              className="space-x-2"
-              onClick={handleSharePublic}
-            >
+            <Button className="space-x-2" onClick={handleSharePublic}>
               <Globe className="h-4 w-4" />
               <span>Share to Public</span>
             </Button>

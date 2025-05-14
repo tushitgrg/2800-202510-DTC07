@@ -1,32 +1,39 @@
 import { ServerUrl } from "./urls";
 
-export const updateResourceProgress = async (resourceId, progressData, currentProgress) => {
+export const updateResourceProgress = async (
+  resourceId,
+  progressData,
+  currentProgress
+) => {
   try {
-    if (progressData.quizScore <= currentProgress.quizScore) {
-      delete progressData.quizScore;
+    if (currentProgress) {
+      if (progressData.quizScore <= currentProgress.quizScore) {
+        delete progressData.quizScore;
+      }
+      if (progressData.flashcardScore <= currentProgress.flashcardScore) {
+        delete progressData.flashcardScore;
+      }
     }
-    if (progressData.flashcardScore <= currentProgress.flashcardScore) {
-      delete progressData.flashcardScore;
-    }
+
     if (!progressData.quizScore && !progressData.flashcardScore) {
       return;
     }
     const response = await fetch(`${ServerUrl}/progress/${resourceId}`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      credentials: 'include',
+      credentials: "include",
       body: JSON.stringify(progressData),
     });
 
     if (!response.ok) {
-      throw new Error('Failed to update progress');
+      throw new Error("Failed to update progress");
     }
 
     return await response.json();
   } catch (error) {
-    console.error('Error updating progress:', error);
+    console.error("Error updating progress:", error);
     return null;
   }
 };

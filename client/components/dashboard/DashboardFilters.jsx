@@ -1,5 +1,12 @@
 import { useEffect } from "react";
-import { Search, Filter, SortAsc, SortDesc, X, Tag as TagIcon } from "lucide-react";
+import {
+  Search,
+  Filter,
+  SortAsc,
+  SortDesc,
+  X,
+  Tag as TagIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -19,7 +26,7 @@ const DashboardFilters = ({
   searchQuery,
   sortOption,
   onFilterChange,
-  onSortChange
+  onSortChange,
 }) => {
   // Update parent component when filters change
   useEffect(() => {
@@ -36,7 +43,7 @@ const DashboardFilters = ({
 
   // Handle removing a tag from the filter
   const handleRemoveTag = (tag) => {
-    const newSelectedTags = selectedTags.filter(t => t !== tag);
+    const newSelectedTags = selectedTags.filter((t) => t !== tag);
     onFilterChange(searchQuery, newSelectedTags);
   };
 
@@ -104,21 +111,31 @@ const DashboardFilters = ({
           <DropdownMenuContent align="start">
             <DropdownMenuLabel>Sort by</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => handleSortChange("newest")} className="cursor-pointer">
+            <DropdownMenuItem
+              onClick={() => handleSortChange("newest")}
+              className="cursor-pointer"
+            >
               <Filter className="mr-2 h-4 w-4" />
               Newest
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleSortChange("oldest")} className="cursor-pointer">
+            <DropdownMenuItem
+              onClick={() => handleSortChange("oldest")}
+              className="cursor-pointer"
+            >
               <Filter className="mr-2 h-4 w-4" />
               Oldest
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleSortChange("a-z")} className="cursor-pointer">
-              <SortAsc className="mr-2 h-4 w-4" />
-              A - Z
+            <DropdownMenuItem
+              onClick={() => handleSortChange("a-z")}
+              className="cursor-pointer"
+            >
+              <SortAsc className="mr-2 h-4 w-4" />A - Z
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleSortChange("z-a")} className="cursor-pointer">
-              <SortDesc className="mr-2 h-4 w-4" />
-              Z - A
+            <DropdownMenuItem
+              onClick={() => handleSortChange("z-a")}
+              className="cursor-pointer"
+            >
+              <SortDesc className="mr-2 h-4 w-4" />Z - A
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -165,22 +182,22 @@ const DashboardFilters = ({
                 onClick={() => handleRemoveTag(tag)}
                 className="h-5 w-5 p-0 ml-1 rounded-full hover:text-red-600 hover:dark:text-red-600 cursor-pointer"
               >
-                <X className="h-3 w-3"/>
+                <X className="h-3 w-3" />
               </Button>
             </Badge>
           ))}
 
-        {/* Clear filters button */}
-        {(searchQuery || selectedTags.length > 0) && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleClearFilters}
-            className="h-9 cursor-pointer text-slate-300"
-          >
-            Clear filters
-          </Button>
-        )}
+          {/* Clear filters button */}
+          {(searchQuery || selectedTags.length > 0) && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleClearFilters}
+              className="h-9 cursor-pointer text-slate-300"
+            >
+              Clear filters
+            </Button>
+          )}
         </div>
       </div>
     </div>

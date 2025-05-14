@@ -15,12 +15,14 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { updateResourceProgress } from "@/lib/progress";
-import { useParams } from 'next/navigation';
+import { useParams } from "next/navigation";
 
 export default function Quiz({ questions, onComplete, progress }) {
   // state management
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [userAnswers, setUserAnswers] = useState(Array(questions.length).fill(null));
+  const [userAnswers, setUserAnswers] = useState(
+    Array(questions.length).fill(null)
+  );
   const [showResults, setShowResults] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
@@ -33,7 +35,7 @@ export default function Quiz({ questions, onComplete, progress }) {
     let timer;
     if (timerRunning) {
       timer = setInterval(() => {
-        setElapsedTime(prevTime => prevTime + 1);
+        setElapsedTime((prevTime) => prevTime + 1);
       }, 1000);
     }
 
@@ -44,7 +46,7 @@ export default function Quiz({ questions, onComplete, progress }) {
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+    return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
   };
 
   // Get current question and answer
@@ -92,7 +94,9 @@ export default function Quiz({ questions, onComplete, progress }) {
     const finalAnswers = userAnswers.map((answer, index) => {
       if (answer === null) {
         const correctAnswer = questions[index].answer;
-        const incorrectChoice = questions[index].options.find(choice => choice !== correctAnswer);
+        const incorrectChoice = questions[index].options.find(
+          (choice) => choice !== correctAnswer
+        );
         return incorrectChoice || questions[index].options[0];
       }
       return answer;
@@ -108,9 +112,13 @@ export default function Quiz({ questions, onComplete, progress }) {
     const scorePercentage = Math.round((score / questions.length) * 100);
 
     // Send progress to backend
-    updateResourceProgress(resourceId, {
-      quizScore: scorePercentage
-    }, progress);
+    updateResourceProgress(
+      resourceId,
+      {
+        quizScore: scorePercentage,
+      },
+      progress
+    );
   };
 
   // Calculate score
@@ -125,13 +133,13 @@ export default function Quiz({ questions, onComplete, progress }) {
     if (currentAnswer === null) return {};
 
     if (choice === currentAnswer && choice === current.answer) {
-      return { backgroundColor: '#0fa372', color: 'white' };
+      return { backgroundColor: "#0fa372", color: "white" };
     }
     if (choice === currentAnswer && choice !== current.answer) {
-      return { backgroundColor: '#d45959', color: 'white' };
+      return { backgroundColor: "#d45959", color: "white" };
     }
     if (choice !== currentAnswer && choice === current.answer) {
-      return { backgroundColor: '#0fa372', color: 'white' };
+      return { backgroundColor: "#0fa372", color: "white" };
     }
     return {};
   };
@@ -141,10 +149,12 @@ export default function Quiz({ questions, onComplete, progress }) {
     if (currentAnswer === null) return null;
 
     return (
-      <div className={`mb-2 font-light text-sm text-center ${
-        currentAnswer === current.answer ? 'text-green-500' : 'text-red-400'
-      }`}>
-        {currentAnswer === current.answer ? 'Correct!' : 'Wrong!'}
+      <div
+        className={`mb-2 font-light text-sm text-center ${
+          currentAnswer === current.answer ? "text-green-500" : "text-red-400"
+        }`}
+      >
+        {currentAnswer === current.answer ? "Correct!" : "Wrong!"}
       </div>
     );
   };
@@ -174,9 +184,12 @@ export default function Quiz({ questions, onComplete, progress }) {
         <Timer />
         <Card className="w-full">
           <CardContent className="p-6">
-            <h2 className="text-2xl font-bold text-center mb-4">Quiz Completed!</h2>
+            <h2 className="text-2xl font-bold text-center mb-4">
+              Quiz Completed!
+            </h2>
             <p className="text-center text-lg mb-6">
-              Your score: <span className="font-bold">{calculateScore()}</span> out of {questions.length}
+              Your score: <span className="font-bold">{calculateScore()}</span>{" "}
+              out of {questions.length}
             </p>
             <p className="text-center text-gray-600 mb-6">
               Time taken: {formatTime(elapsedTime)}
@@ -219,7 +232,11 @@ export default function Quiz({ questions, onComplete, progress }) {
             onClick={() => handleSelect(choice)}
             className="w-full justify-start text-left py-3 h-auto whitespace-normal"
             variant="outline"
-            disabled={currentAnswer !== null && choice !== currentAnswer && choice !== current.answer}
+            disabled={
+              currentAnswer !== null &&
+              choice !== currentAnswer &&
+              choice !== current.answer
+            }
             style={getButtonStyle(choice)}
           >
             {choice}
@@ -238,11 +255,7 @@ export default function Quiz({ questions, onComplete, progress }) {
           <ChevronLeft className="h-6 w-6" />
         </Button>
 
-        <Button
-          onClick={handleNext}
-          variant="outline"
-          size="icon"
-        >
+        <Button onClick={handleNext} variant="outline" size="icon">
           <ChevronRight className="h-6 w-6" />
         </Button>
       </div>
@@ -253,7 +266,8 @@ export default function Quiz({ questions, onComplete, progress }) {
           <AlertDialogHeader>
             <AlertDialogTitle>Submit Quiz?</AlertDialogTitle>
             <AlertDialogDescription>
-              You have unanswered questions. If you submit now, these questions will be marked as wrong. Are you sure you want to submit?
+              You have unanswered questions. If you submit now, these questions
+              will be marked as wrong. Are you sure you want to submit?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

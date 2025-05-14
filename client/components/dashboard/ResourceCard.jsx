@@ -26,7 +26,7 @@ export default function ResourceCard({
   isSharing = false,
   onOpenShareDialog,
   onCloseShareDialog,
-  onTagClick
+  onTagClick,
 }) {
   const isEditing = editingId === resource.id;
   const isInteractive = isEditing || isSharing;
@@ -51,9 +51,9 @@ export default function ResourceCard({
                 className="h-9"
                 autoFocus
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
+                  if (e.key === "Enter") {
                     handleSaveEdit();
-                  } else if (e.key === 'Escape') {
+                  } else if (e.key === "Escape") {
                     handleCancelEdit();
                   }
                 }}
