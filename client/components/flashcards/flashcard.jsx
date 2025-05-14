@@ -9,7 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { updateResourceProgress } from "@/lib/progress";
 import { useParams } from 'next/navigation';
 
-export default function Flashcards({ cards }) {
+export default function Flashcards({ cards, progress }) {
   // Progress tracking
   const params = useParams();
   const resourceId = params.id;
@@ -18,6 +18,7 @@ export default function Flashcards({ cards }) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [correctAnswers, setCorrectAnswers] = useState(Array(cards.length).fill(false));
   const [showResults, setShowResults] = useState(false);
+  const currentCard = cards[currentIndex];
 
   // Navigation
   const nextCard = () => {
@@ -35,7 +36,7 @@ export default function Flashcards({ cards }) {
       // Send progress to backend
       updateResourceProgress(resourceId, {
         flashcardScore: scorePercentage
-      });
+      }, progress);
     }
   };
 
@@ -49,7 +50,6 @@ export default function Flashcards({ cards }) {
   const flipCard = () => setIsFlipped(!isFlipped);
 
   const toggleCorrect = (e) => {
-    e.stopPropagation(); // Prevent card flip for checkbox chek
     const newCorrectAnswers = [...correctAnswers];
     newCorrectAnswers[currentIndex] = !newCorrectAnswers[currentIndex];
     setCorrectAnswers(newCorrectAnswers);

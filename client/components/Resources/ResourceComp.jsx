@@ -28,7 +28,6 @@ const ResourceComp = ({resourceData}) => {
 
     // Handle summary completion toggle
     const handleSummaryComplete = async (checked) => {
-      console.log('Summary completed:', checked);
       setSummaryCompleted(checked);
       // Send progress to backend
       updateResourceProgress(resourceId, {
@@ -63,13 +62,19 @@ const ResourceComp = ({resourceData}) => {
 
         {hasQuiz && (
           <TabsContent value="quiz" className="py-4 flex justify-center">
-            <Quiz questions={resourceData.quiz.questions}/>
+            <Quiz
+              questions={resourceData.quiz.questions}
+              progress={resourceData.progress}
+            />
           </TabsContent>
         )}
 
         {hasFlashcards && (
           <TabsContent value="flashcard" className="py-4 flex justify-center">
-            <Flashcards cards={resourceData.flashcard.cards} />
+            <Flashcards
+              cards={resourceData.flashcard.cards}
+              progress={resourceData.progress}
+            />
           </TabsContent>
         )}
 

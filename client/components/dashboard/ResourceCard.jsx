@@ -107,6 +107,7 @@ export default function ResourceCard({
       <ResourceFooter
         resource={resource}
         formatDate={formatDate}
+        progress={resource.progress}
       />
     </div>
   );

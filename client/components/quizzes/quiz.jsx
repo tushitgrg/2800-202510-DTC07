@@ -17,7 +17,7 @@ import {
 import { updateResourceProgress } from "@/lib/progress";
 import { useParams } from 'next/navigation';
 
-export default function Quiz({ questions, onComplete }) {
+export default function Quiz({ questions, onComplete, progress }) {
   // state management
   const [currentIndex, setCurrentIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState(Array(questions.length).fill(null));
@@ -110,7 +110,7 @@ export default function Quiz({ questions, onComplete }) {
     // Send progress to backend
     updateResourceProgress(resourceId, {
       quizScore: scorePercentage
-    });
+    }, progress);
   };
 
   // Calculate score
