@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 
-export default function ResourceCard({
+export default function CommunityCard({
   _id,
   title,
   author,
