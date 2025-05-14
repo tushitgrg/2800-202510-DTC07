@@ -1,3 +1,4 @@
+import { useState, useMemo } from "react";
 import { useEffect } from "react";
 import { Search, Filter, SortAsc, SortDesc, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,19 +14,41 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const CommunityFilters = ({
-  allSchools,
-  allCourses,
-  selectedSchool,
-  selectedCourse,
-  searchQuery,
-  sortOption,
-  onFilterChange,
-  onSortChange
+  allSchools,      // List of all school options
+  allCourses,      // List of all course options
+  selectedSchool,  // Currently selected school filter
+  selectedCourse,  // Currently selected course filter
+  searchQuery,     // Current search input
+  sortOption,      // Current sort selection
+  onFilterChange,  // Function to update filters
+  onSortChange     // Function to update sort
 }) => {
+  
+  // Local input state for filtering dropdown list of schools/courses dynamically
+  const [schoolSearch, setSchoolSearch] = useState("");
+  const [courseSearch, setCourseSearch] = useState("");
+
+  // useMemo prevents re-calculation unless schoolSearch/allSchools or courseSearch/allCourses changes
+  const filteredSchools = useMemo(() => {
+    if (!schoolSearch.trim()) return allSchools;
+    return allSchools.filter((school) =>
+      school.toLowerCase().includes(schoolSearch.toLowerCase())
+    );
+  }, [schoolSearch, allSchools]);
+
+  const filteredCourses = useMemo(() => {
+    if (!courseSearch.trim()) return allCourses;
+    return allCourses.filter((course) =>
+      course.toLowerCase().includes(courseSearch.toLowerCase())
+    );
+  }, [courseSearch, allCourses]);
+
+  // Automatically applies filtering logic whenever the query or selected filters change
   useEffect(() => {
     onFilterChange(searchQuery, selectedSchool, selectedCourse);
   }, [searchQuery, selectedSchool, selectedCourse, onFilterChange]);
 
+  // The handles update filters or clear them. All call onFilterChange with updated values
   const handleSchoolSelect = (school) => {
     onFilterChange(searchQuery, school, selectedCourse);
   };
@@ -110,29 +133,49 @@ const CommunityFilters = ({
           </DropdownMenuContent>
         </DropdownMenu>
 
-        {/* School filter */}
+        {/* Searchable School Filter */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="h-9 cursor-pointer">
               School: {selectedSchool || "All"}
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-56">
-            <DropdownMenuLabel>Filter by school</DropdownMenuLabel>
+          <DropdownMenuContent align="start" className="w-64">
+            <div className="px-2 pt-2">
+              <input
+                type="text"
+                placeholder="Search school..."
+                value={schoolSearch}
+                onChange={(e) => setSchoolSearch(e.target.value)}
+                className="w-full px-2 py-1 mb-2 rounded-md border border-gray-600 bg-zinc-800 text-white placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
             <DropdownMenuSeparator />
-            {allSchools.map((school) => (
-              <DropdownMenuItem
-                key={school}
-                onClick={() => handleSchoolSelect(school)}
-                disabled={selectedSchool === school}
-                className="cursor-pointer"
-              >
-                {school}
+            {filteredSchools.length > 0 ? (
+              filteredSchools.map((school) => (
+                <DropdownMenuItem
+                  key={school}
+                  onClick={() => {
+                    handleSchoolSelect(school);
+                    setSchoolSearch("");
+                  }}
+                  disabled={selectedSchool === school}
+                  className="cursor-pointer hover:bg-zinc-700"
+                >
+                  {school}
+                </DropdownMenuItem>
+              ))
+            ) : (
+              <DropdownMenuItem disabled className="text-gray-400">
+                No results
               </DropdownMenuItem>
-            ))}
+            )}
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onClick={() => handleSchoolSelect("")}
+              onClick={() => {
+                handleSchoolSelect("");
+                setSchoolSearch("");
+              }}
               disabled={!selectedSchool}
               className="cursor-pointer"
             >
@@ -148,22 +191,42 @@ const CommunityFilters = ({
               Course: {selectedCourse || "All"}
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-56">
-            <DropdownMenuLabel>Filter by course</DropdownMenuLabel>
+          <DropdownMenuContent align="start" className="w-64">
+            <div className="px-2 pt-2">
+              <input
+                type="text"
+                placeholder="Search course..."
+                value={courseSearch}
+                onChange={(e) => setCourseSearch(e.target.value)}
+                className="w-full px-2 py-1 mb-2 rounded-md border border-gray-600 bg-zinc-800 text-white placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
             <DropdownMenuSeparator />
-            {allCourses.map((course) => (
-              <DropdownMenuItem
-                key={course}
-                onClick={() => handleCourseSelect(course)}
-                disabled={selectedCourse === course}
-                className="cursor-pointer"
-              >
-                {course}
+            {filteredCourses.length > 0 ? (
+              filteredCourses.map((course) => (
+                <DropdownMenuItem
+                  key={course}
+                  onClick={() => {
+                    handleCourseSelect(course);
+                    setCourseSearch("");
+                  }}
+                  disabled={selectedCourse === course}
+                  className="cursor-pointer"
+                >
+                  {course}
+                </DropdownMenuItem>
+              ))
+            ) : (
+              <DropdownMenuItem disabled className="text-gray-400">
+                No results
               </DropdownMenuItem>
-            ))}
+            )}
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onClick={() => handleCourseSelect("")}
+              onClick={() => {
+                handleCourseSelect("");
+                setCourseSearch("");
+              }}
               disabled={!selectedCourse}
               className="cursor-pointer"
             >
