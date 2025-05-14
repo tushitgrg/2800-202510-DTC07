@@ -29,7 +29,7 @@ const ResourceComp = ({ resourceData, userData, goToDashboard }) => {
   // Check if user already has this resource or is the owner
   const hasResource =
     resourceData.hasResource ||
-    (userData.resources || []).includes(resourceData._id);
+    (userData.resources || []).includes(resourceData.id);
   const isOwner = resourceData.isOwner === true;
 
   // Add to dashboard

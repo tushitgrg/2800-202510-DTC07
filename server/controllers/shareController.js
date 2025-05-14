@@ -6,7 +6,7 @@ const addResourceById = async function (req, res) {
   }
   try {
     const sharedResource = await Resource.findOne({
-      _id: req.params._id,
+      _id: req.params.id,
     });
     if (!sharedResource) {
       return res.status(404).json({ message: "Resource not found" });
