@@ -42,7 +42,30 @@ export default function CreatePage() {
     const youtubeRegex = /^https:\/\/(www\.youtube\.com\/watch\?v=|youtu\.be\/)[\w-]{11}([&?]\S*)?$/;
     return youtubeRegex.test(url);
   }
-
+  const resetForm = () => {
+    setCurrentStep("upload")
+    setSelectedContentTypes([])
+    setyoutubeUrl("")
+    setFile(null)
+    setIsDragging(false)
+    setUploadProgress(0)
+    settitleText("")
+    setprogressV(0)
+    setQuizSettings({
+      questionCount: 10,
+      difficulty: "medium",
+      questionTypes: ["multiple-choice", "true-false"],
+    })
+    setFlashcardSettings({
+      cardCount: 20,
+      complexity: "medium",
+      style: "standard",
+    })
+    setSummarySettings({
+      length: "medium",
+      focusAreas: ["key-concepts", "definitions"],
+    })
+  }
   // Flashcard settings
   const [flashcardSettings, setFlashcardSettings] = useState({
     cardCount: 20,
@@ -169,6 +192,7 @@ export default function CreatePage() {
             duration: 4000,
             position: 'bottom-right',
           })
+          resetForm()
           return
         }
         router.push(`/resource/${data.resourceID}`)
@@ -179,6 +203,7 @@ export default function CreatePage() {
           duration: 4000,
           position: 'bottom-right',
         }) //change this to a toast
+        resetForm()
       }
 
 
