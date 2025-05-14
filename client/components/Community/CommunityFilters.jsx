@@ -23,7 +23,7 @@ const CommunityFilters = ({
   onFilterChange,  // Function to update filters
   onSortChange     // Function to update sort
 }) => {
-  
+
   // Local input state for filtering dropdown list of schools/courses dynamically
   const [schoolSearch, setSchoolSearch] = useState("");
   const [courseSearch, setCourseSearch] = useState("");
@@ -95,39 +95,36 @@ const CommunityFilters = ({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="h-9 cursor-pointer">
-              {sortOption === "newest" || sortOption === "oldest" ? (
-                <Filter className="mr-2 h-4 w-4" />
-              ) : sortOption === "likes" ? (
-                <SortAsc className="mr-2 h-4 w-4" />
-              ) : (
-                <SortDesc className="mr-2 h-4 w-4" />
-              )}
-              {sortOption === "newest"
-                ? "Newest"
-                : sortOption === "oldest"
-                  ? "Oldest"
-                  : sortOption === "likes"
-                    ? "Likes"
-                    : "Share Count"}
+              {/* Icon logic*/}
+              {(() => {
+                switch (sortOption) {
+                  case "createdAt:desc":
+                    return "Newest";
+                  case "createdAt:asc":
+                    return "Oldest";
+                  case "likes:desc":
+                    return "Likes";
+                  case "shareCount:desc":
+                    return "Share Count";
+                  default:
+                    return "Newest";
+                }
+              })()}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start">
             <DropdownMenuLabel>Sort by</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => onSortChange("newest")} className="cursor-pointer">
-              <Filter className="mr-2 h-4 w-4" />
+            <DropdownMenuItem onClick={() => onSortChange("createdAt:desc")} className="cursor-pointer">
               Newest
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onSortChange("oldest")} className="cursor-pointer">
-              <Filter className="mr-2 h-4 w-4" />
+            <DropdownMenuItem onClick={() => onSortChange("createdAt:asc")} className="cursor-pointer">
               Oldest
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onSortChange("likes")} className="cursor-pointer">
-              <SortAsc className="mr-2 h-4 w-4" />
+            <DropdownMenuItem onClick={() => onSortChange("likes:desc")} className="cursor-pointer">
               Likes
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onSortChange("shareCount")} className="cursor-pointer">
-              <SortDesc className="mr-2 h-4 w-4" />
+            <DropdownMenuItem onClick={() => onSortChange("shareCount:desc")} className="cursor-pointer">
               Share Count
             </DropdownMenuItem>
           </DropdownMenuContent>
