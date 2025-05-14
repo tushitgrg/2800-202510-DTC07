@@ -6,8 +6,15 @@ const hasResource = async function (req, res, next) {
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
+    const alreadyHas = user.resources.some(
+      (r) =>
+        r._id.equals(req.params.id) ||
+        r.originalResourceId?.equals(req.params.id)
+    );
 
-    req.hasResource = user.resources.includes(req.params.id);
+    req.hasResource = alreadyHas;
+
+    // req.hasResource = user.resources.includes(req.params.id);
     next();
   } catch (err) {
     console.error("Error in hasResource middleware:", err);
