@@ -14,8 +14,8 @@ export default function CommunityCard({
   course,
 }) {
   return (
-    <Link href={`/resource/${_id}`}>
-      <div className="block border rounded-lg hover:shadow-md transition-shadow overflow-hidden">
+    <Link href={`/resource/${_id}`} className="h-full">
+      <div className="block border rounded-lg hover:shadow-md transition-shadow overflow-hidden h-full">
         <div className="flex flex-col justify-between p-4 h-full">
           <h2 className="text-lg font-semibold mb-2">{title}</h2>
 
