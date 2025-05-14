@@ -8,7 +8,7 @@ const updateUser = async (req, res) => {
         await connectToDB();
         const result = await userModel.updateOne(
             { email },
-            { $set: { displayName: displayName || "no username", firstName, lastName, school } },
+            { $set: { name: displayName || "no username", firstName, lastName, school } },
             { upsert: true }
         );
         res.status(200).json({ success: true, result });
