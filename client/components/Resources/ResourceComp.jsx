@@ -35,7 +35,7 @@ const ResourceComp = ({ resourceData, userData, goToDashboard }) => {
   // Add to dashboard
   const handleAddToDashboard = async () => {
     try {
-      await addToDashboard(resourceData._id);
+      await addToDashboard(resourceData.id);
       setTimeout(() => goToDashboard(), 500);
     } catch (error) {
       console.error("Error adding to dashboard:", error);
