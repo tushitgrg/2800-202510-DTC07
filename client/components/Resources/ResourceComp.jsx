@@ -5,7 +5,7 @@ import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import Quiz from "@/components/quizzes/quiz";
 import Flashcards from "@/components/flashcards/flashcard";
-import Summary from "@/components/summaries/Summary";
+import Summary from "@/components/summaries/summary";
 
 const ResourceComp = ({ resourceData }) => {
   // Check what content types are available
