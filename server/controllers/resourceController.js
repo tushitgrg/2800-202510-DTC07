@@ -84,7 +84,8 @@ const getResourceById = async function (req, res) {
     if (!resource) {
       return res.status(404).json({ error: "Resource not found" });
     }
-    const { quizID, flashcardID, summaryID, title, createdAt } = resource;
+    const { quizID, flashcardID, summaryID, title, createdAt, author } =
+      resource;
     const progress = await Progress.findOne({ resourceId: resourceId }).select(
       "-_id -userId -resourceId"
     );
@@ -92,6 +93,7 @@ const getResourceById = async function (req, res) {
     response.title = title;
     response.createdAt = createdAt;
     response.progress = progress || {};
+    response.isOwner = author.equals(req.user._id);
     if (quizID) {
       const quiz = await Quiz.findById(quizID);
       response.quiz = quiz;
