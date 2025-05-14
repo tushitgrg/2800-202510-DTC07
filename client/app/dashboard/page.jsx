@@ -305,7 +305,7 @@ export default function DashboardPage() {
   return (
     <>
       {resources != null ? (
-        <div className="flex flex-col w-full justify-center items-center p-6">
+        <div className="flex flex-col w-full justify-center items-center p-10">
           <div className="container">
             {/* Mini Profile Card */}
             <MiniProfileCard resources={resources} />
