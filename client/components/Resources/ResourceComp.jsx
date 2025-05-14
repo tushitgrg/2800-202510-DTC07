@@ -1,17 +1,23 @@
 "use client"
 import React from 'react'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import Quiz from "@/components/quizzes/quiz";
 import Flashcards from "@/components/flashcards/flashcard";
 import Markdown from 'react-markdown';
+import { Checkbox } from "@/components/ui/checkbox";
+import { updateResourceProgress } from "@/lib/progress";
 
 const ResourceComp = ({resourceData}) => {
     const hasQuiz = !!resourceData.quiz;
     const hasFlashcards = !!resourceData.flashcard;
     const hasSummary = !!resourceData.summary;
+
+    // Add state for summary completion
+    const [summaryCompleted, setSummaryCompleted] = useState(false);
+    const resourceId = resourceData.id;
 
     // Make tab on what's available
     let defaultTab = 'quiz';
@@ -19,6 +25,17 @@ const ResourceComp = ({resourceData}) => {
     else if (!hasQuiz && !hasFlashcards && hasSummary) defaultTab = 'summary';
 
     const [activeTab, setActiveTab] = useState(defaultTab);
+
+    // Handle summary completion toggle
+    const handleSummaryComplete = async (checked) => {
+      console.log('Summary completed:', checked);
+      setSummaryCompleted(checked);
+      // Send progress to backend
+      updateResourceProgress(resourceId, {
+        summaryCompletion: checked
+      });
+    };
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl w-screen">
       {/* Back button */}
@@ -58,9 +75,23 @@ const ResourceComp = ({resourceData}) => {
 
         {hasSummary && (
           <TabsContent value="summary" className="py-4 flex justify-center">
-            <div className="bg-slate-800 rounded-lg p-6 shadow-md">
-                <Markdown>{resourceData.summary.content}</Markdown>
-              {/* <p className="text-white">{JSON.stringify(resourceData.summary.content)}</p> */}
+            <div className="bg-slate-800 rounded-lg p-6 shadow-md w-full relative">
+              <Markdown>{resourceData.summary.content}</Markdown>
+
+              {/* Mark as complete checkbox */}
+              <div className="mt-8 flex justify-end items-center space-x-2">
+                <Checkbox
+                  id="summary-complete"
+                  checked={summaryCompleted}
+                  onCheckedChange={handleSummaryComplete}
+                />
+                <label
+                  htmlFor="summary-complete"
+                  className="text-sm cursor-pointer"
+                >
+                  Mark as completed
+                </label>
+              </div>
             </div>
           </TabsContent>
         )}

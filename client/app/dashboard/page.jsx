@@ -21,6 +21,7 @@ export default function DashboardPage() {
   const [selectedTags, setSelectedTags] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState("newest");
+  const [progressData, setProgressData] = useState({});
   const router = useRouter();
 
   // Fetch resources when component mounts
@@ -46,6 +47,27 @@ export default function DashboardPage() {
           )
         );
         setAllTags(uniqueTags);
+
+        // fetch progress
+        const progressResponse = await fetch(`${ServerUrl}/progress`, {
+          credentials: 'include'
+        });
+
+        if (progressResponse.ok) {
+          const progressDataArray = await progressResponse.json();
+
+          // Convert array to object keyed by resourceId
+          const progressObj = {};
+          progressDataArray.forEach(item => {
+            progressObj[item.resourceId] = {
+              quizScore: item.quizScore,
+              flashcardScore: item.flashcardScore,
+              summaryCompletion: item.summaryCompletion
+            };
+          });
+
+          setProgressData(progressObj);
+        }
       } catch (error) {
         console.error('Error fetching resources:', error);
       }
@@ -328,6 +350,7 @@ export default function DashboardPage() {
                   <ResourceCard
                     key={resource.id}
                     resource={resource}
+                    progress={progressData[resource.id]}
                     editingId={editingId}
                     editValue={editValue}
                     setEditValue={setEditValue}

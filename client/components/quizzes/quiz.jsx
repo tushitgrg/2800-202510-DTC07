@@ -14,6 +14,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { updateResourceProgress } from "@/lib/progress";
+import { useParams } from 'next/navigation';
 
 export default function Quiz({ questions, onComplete }) {
   // state management
@@ -48,6 +50,10 @@ export default function Quiz({ questions, onComplete }) {
   // Get current question and answer
   const current = questions[currentIndex];
   const currentAnswer = userAnswers[currentIndex];
+
+  // Progress tracking
+  const params = useParams();
+  const resourceId = params.id;
 
   // Handle answer selection
   const handleSelect = (choice) => {
@@ -96,6 +102,15 @@ export default function Quiz({ questions, onComplete }) {
     setShowResults(true);
     setShowConfirmDialog(false);
     onComplete?.();
+
+    // Calculate score percentage
+    const score = calculateScore();
+    const scorePercentage = Math.round((score / questions.length) * 100);
+
+    // Send progress to backend
+    updateResourceProgress(resourceId, {
+      quizScore: scorePercentage
+    });
   };
 
   // Calculate score

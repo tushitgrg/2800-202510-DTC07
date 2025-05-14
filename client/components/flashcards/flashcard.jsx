@@ -5,17 +5,37 @@ import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { updateResourceProgress } from "@/lib/progress";
+import { useParams } from 'next/navigation';
 
 export default function Flashcards({ cards }) {
+  // Progress tracking
+  const params = useParams();
+  const resourceId = params.id;
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
-  const currentCard = cards[currentIndex];
+  const [correctAnswers, setCorrectAnswers] = useState(Array(cards.length).fill(false));
+  const [showResults, setShowResults] = useState(false);
 
   // Navigation
   const nextCard = () => {
     if (currentIndex < cards.length - 1) {
       setCurrentIndex(currentIndex + 1);
       setIsFlipped(false);
+    } else {
+      // Show results when reaching the last card
+      setShowResults(true);
+
+      // Calculate score percentage
+      const correctCount = correctAnswers.filter(Boolean).length;
+      const scorePercentage = Math.round((correctCount / cards.length) * 100);
+
+      // Send progress to backend
+      updateResourceProgress(resourceId, {
+        flashcardScore: scorePercentage
+      });
     }
   };
 
@@ -28,6 +48,43 @@ export default function Flashcards({ cards }) {
 
   const flipCard = () => setIsFlipped(!isFlipped);
 
+  const toggleCorrect = (e) => {
+    e.stopPropagation(); // Prevent card flip for checkbox chek
+    const newCorrectAnswers = [...correctAnswers];
+    newCorrectAnswers[currentIndex] = !newCorrectAnswers[currentIndex];
+    setCorrectAnswers(newCorrectAnswers);
+  };
+
+  const restartFlashcards = () => {
+    setCurrentIndex(0);
+    setIsFlipped(false);
+    setCorrectAnswers(Array(cards.length).fill(false));
+    setShowResults(false);
+  };
+
+  // Results view
+  if (showResults) {
+    const correctCount = correctAnswers.filter(Boolean).length;
+    const scorePercentage = Math.round((correctCount / cards.length) * 100);
+
+    return (
+      <div className="w-full max-w-md">
+        <Card className="w-full">
+          <div className="p-6">
+            <h2 className="text-2xl font-bold text-center mb-4">Flashcards Completed!</h2>
+            <p className="text-center text-lg mb-6">
+              You marked <span className="font-bold">{correctCount}</span> out of {cards.length} cards as correct
+              ({scorePercentage}%)
+            </p>
+            <Button className="w-full" onClick={restartFlashcards}>
+              Restart Flashcards
+            </Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="relative w-full max-w-md">
       <FlashcardItem
@@ -37,6 +94,8 @@ export default function Flashcards({ cards }) {
         onFlip={flipCard}
         index={currentIndex}
         total={cards.length}
+        isCorrect={correctAnswers[currentIndex]}
+        onToggleCorrect={toggleCorrect}
       />
 
       <div className="w-full flex justify-between mt-12">
@@ -51,7 +110,6 @@ export default function Flashcards({ cards }) {
 
         <Button
           onClick={nextCard}
-          disabled={currentIndex === cards.length - 1}
           variant="outline"
           size="icon"
         >
@@ -63,7 +121,7 @@ export default function Flashcards({ cards }) {
 }
 
 // Flashcard item component
-function FlashcardItem({ front, back, flipped, onFlip, index, total }) {
+function FlashcardItem({ front, back, flipped, onFlip, index, total, isCorrect, onToggleCorrect }) {
   // Text sizing state
   const [frontSize, setFrontSize] = useState("text-lg");
   const [backSize, setBackSize] = useState("text-lg");
@@ -163,6 +221,28 @@ function FlashcardItem({ front, back, flipped, onFlip, index, total }) {
             className={`font-semibold p-6 w-full ${backSize} break-words`}
           >
             {back}
+          </div>
+
+          {/* Got it right checkbox */}
+          <div
+            className="absolute bottom-3 right-3 flex items-center space-x-2"
+            onClick={(e) => e.stopPropagation()} // Prevent card flip
+          >
+            <Checkbox
+              id={`correct-${index}`}
+              checked={isCorrect}
+              onCheckedChange={(e) => onToggleCorrect(e)}
+            />
+            <label
+              htmlFor={`correct-${index}`}
+              className="text-sm cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleCorrect(e);
+              }}
+            >
+              I know this!
+            </label>
           </div>
         </Card>
       </motion.div>
