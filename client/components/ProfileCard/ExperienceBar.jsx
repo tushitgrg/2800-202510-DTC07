@@ -2,7 +2,7 @@
 
 export default function ExperienceBar() {
   return (
-    <div className="flex flex-col min-w-[200px]">
+    <div className="flex flex-col w-full md:w-auto min-w-[200px]">
       <div className="flex justify-between items-end mb-2">
         <div className="text-sm font-medium">Experience</div>
         <div className="text-xs text-muted-foreground">GOLD 3 (7,530 XP)</div>
