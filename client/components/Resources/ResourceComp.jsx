@@ -50,7 +50,7 @@ const ResourceComp = ({ resourceData, userData, goToDashboard }) => {
         <p
 
           onClick={()=>window.history.back()}
-          className="flex items-center text-sm text-gray-400 hover:text-white"
+          className="flex items-center text-sm text-gray-400 hover:text-white cursor-pointer"
         >
           <ChevronLeft className="w-5 h-5 mr-1" />
           Back
