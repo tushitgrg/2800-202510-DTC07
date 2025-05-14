@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Link, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ClientUrl } from "@/lib/urls";
 
 export default function ShareDialog({
   isOpen,
@@ -64,14 +65,28 @@ export default function ShareDialog({
   );
 
   // Handle share button click
-  const handleSharePrivate = () => {
-    onShare({
-      title,
-      school: school || null,
-      course: course || null,
-      isPublic: false
-    });
-    onClose();
+  const handleSharePrivate = async () => {
+    if (navigator.share) {
+      try{
+  await navigator.share({
+    title: resource.title,
+    url: `${ClientUrl}/resource/${resource.id}`
+  })
+      }catch(e){
+        console.log("hi")
+      }
+
+ 
+} else {
+  console.log('Web Share API is not supported in this browser.');
+}
+    // onShare({
+    //   title,
+    //   school: school || null,
+    //   course: course || null,
+    //   isPublic: false
+    // });
+    // onClose();
   };
 
   const handleSharePublic = () => {
