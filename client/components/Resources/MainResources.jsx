@@ -1,8 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
-import { useState } from "react";
-
+import { useEffect, useState } from "react";
 import ResourceComp from "./ResourceComp";
 import { useRouter } from "next/navigation";
 import { ServerUrl } from "@/lib/urls";
@@ -10,30 +8,48 @@ import Loading from "../Loading";
 
 export default function MainResources({ id }) {
   const router = useRouter();
-  const [resourceData, setresourceData] = useState(null);
-  const getData = async () => {
-    try {
-      const response = await fetch(`${ServerUrl}/resources/${id}`, {
-        credentials: "include",
-      });
+  const [resourceData, setResourceData] = useState(null);
+  const [userData, setUserData] = useState(null);
 
-      const data = await response.json();
-      if (!response.ok || !data) {
+  // Fetch data when component loads
+  useEffect(() => {
+    async function getData() {
+      try {
+        // Get resource data
+        const resResource = await fetch(`${ServerUrl}/resources/${id}`, {
+          credentials: "include",
+        });
+
+        // Get user data to check ownership
+        const resUser = await fetch(`${ServerUrl}`, {
+          credentials: "include",
+        });
+
+        // Handle failed requests
+        if (!resResource.ok || !resUser.ok) {
+          router.push("/not-found");
+          return;
+        }
+
+        // Set state
+        setResourceData(await resResource.json());
+        setUserData(await resUser.json());
+      } catch (error) {
         router.push("/not-found");
       }
-      setresourceData(data);
-    } catch {
-      router.push("/not-found");
     }
-  };
-  useEffect(() => {
+
     getData();
-  }, []);
+  }, [id, router]);
 
   return (
     <div>
-      {resourceData ? (
-        <ResourceComp resourceData={resourceData} />
+      {resourceData && userData ? (
+        <ResourceComp
+          resourceData={resourceData}
+          userData={userData}
+          goToDashboard={() => router.push("/dashboard")}
+        />
       ) : (
         <Loading />
       )}
