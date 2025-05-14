@@ -85,9 +85,9 @@ const getResourceById = async function (req, res) {
       return res.status(404).json({ error: "Resource not found" });
     }
     const { quizID, flashcardID, summaryID, title, createdAt } = resource;
-    const progress = await Progress.findOne(
-          { resourceId: resourceId },
-        ).select("-_id -userId -resourceId");
+    const progress = await Progress.findOne({ resourceId: resourceId }).select(
+      "-_id -userId -resourceId"
+    );
     response.id = resourceId;
     response.title = title;
     response.createdAt = createdAt;
@@ -225,7 +225,14 @@ const deleteResource = async function (req, res) {
 
 const updateResourceInfo = async function (req, res) {
   const resourceId = req.params.id;
-  const { newTitle, newTags } = req.body;
+  const { newTitle, newTags, newSchool, newCourse, isPublic } = req.body;
+  const updatedFields = {
+    ...(newTitle !== undefined && { title: newTitle }),
+    ...(newTags !== undefined && { tags: newTags }),
+    ...(newSchool !== undefined && { school: newSchool }),
+    ...(newCourse !== undefined && { course: newCourse }),
+    ...(isPublic !== undefined && { isPublic: isPublic }),
+  };
 
   if (!resourceId) {
     res.status(400).json({ error: "Resource ID is required" });
@@ -233,10 +240,7 @@ const updateResourceInfo = async function (req, res) {
   try {
     const updatedResource = await Resource.findByIdAndUpdate(
       resourceId,
-      {
-        title: newTitle,
-        tags: newTags,
-      },
+      updatedFields,
       { new: true }
     );
     if (!updatedResource) {
