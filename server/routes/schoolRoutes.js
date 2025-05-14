@@ -9,7 +9,9 @@ router.get('/search', (req, res) => {
     if (cache.has(q)) return res.json(cache.get(q));
     const filtered = schools
         .filter(school => school.includes(q))
-        .slice(0, 10).map((n)=>{return {name:n}});
+        .slice(0, 10).map((n)=>{return {name:n.split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')}});
     if (cache.size > 1000) cache.clear();
     cache.set(q, filtered);
     res.json(filtered);
