@@ -25,7 +25,7 @@ export function getLevelInfo(xp) {
     if (xp >= levels[i].xp) {
       levelNumber = i + 1;
       levelName = levels[i].name;
-      nextLevelXp = levels[i].xp
+      nextLevelXp = levels[levelNumber].xp
     } else {
       break;
     }
