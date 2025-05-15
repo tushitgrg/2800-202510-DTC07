@@ -48,7 +48,8 @@ export default function ProfileCard({ googleUser = {} }) {
   const fetchSchools = async (query) => {
     console.log("keyword:", query);
     if (!query) return setSchoolList([]);
-    const res = await fetch(`http://localhost:3001/school/search?q=${query}`);
+    const res = await fetch(`${ServerUrl}/school/search?q=${query}`, { credentials: "include" });
+    // const res = await fetch(`${ServerUrl}/resources/public`, { credentials: "include" });
     const data = await res.json();
     setSchoolList(data);
   };
