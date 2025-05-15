@@ -1,8 +1,9 @@
+
 "use client"
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Award, X, Star, XCircle, CloudRain } from "lucide-react"
+import { Award, X, Star, XCircle, CloudRain, TrophyIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -18,18 +19,18 @@ const SuccessParticle = ({ index }) => {
   const randomDelay = Math.random() * 0.5
   const duration = 2 + Math.random() * 2
 
-  // Color palette based on #2B7FFF
+  // Golden color palette instead of blue
   const colors = [
-    "bg-[#2B7FFF]", // Main secondary color
-    "bg-blue-600",
-    "bg-blue-500",
-    "bg-blue-400",
-    "bg-sky-500",
-    "bg-slate-300",
-    "bg-slate-200",
+    "bg-[#FFD700]", // Main gold color
+    "bg-amber-500",
+    "bg-yellow-500",
+    "bg-amber-400",
+    "bg-yellow-300",
+    "bg-amber-200",
+    "bg-yellow-100",
     "bg-white",
-    "bg-[#1a65d4]", // Darker shade of #2B7FFF
-    "bg-[#5599ff]", // Lighter shade of #2B7FFF
+    "bg-[#E6B800]", // Darker shade of gold
+    "bg-[#FFDF33]", // Lighter shade of gold
   ]
 
   const color = colors[index % colors.length]
@@ -118,7 +119,7 @@ const SuccessBadge = () => {
     >
       {/* Subtle pulsing glow */}
       <motion.div
-        className="absolute inset-0 bg-gradient-to-br from-[#2B7FFF]/40 to-blue-600/30 rounded-full blur-xl"
+        className="absolute inset-0 bg-gradient-to-br from-amber-500/40 to-yellow-600/30 rounded-full blur-xl"
         animate={{
           scale: [1, 1.2, 1],
           opacity: [0.5, 0.7, 0.5],
@@ -130,8 +131,8 @@ const SuccessBadge = () => {
         }}
       />
 
-      {/* Badge background with #2B7FFF color */}
-      <div className="relative flex items-center justify-center w-full h-full bg-gradient-to-br from-[#2B7FFF] to-blue-700 rounded-full shadow-lg border border-blue-400/20">
+      {/* Badge background with golden color */}
+      <div className="relative flex items-center justify-center w-full h-full bg-gradient-to-br from-amber-400 to-yellow-700 rounded-full shadow-lg border border-yellow-400/20">
         <motion.div
           animate={{
             scale: [1, 1.05, 1],
@@ -140,7 +141,7 @@ const SuccessBadge = () => {
             scale: { duration: 2, repeat: Number.POSITIVE_INFINITY, repeatType: "reverse" },
           }}
         >
-          <Award className="w-16 h-16 text-white drop-shadow-lg" />
+          <TrophyIcon className="w-16 h-16 text-white drop-shadow-lg" />
         </motion.div>
 
         {/* Subtle shine effect */}
@@ -173,7 +174,7 @@ const SuccessBadge = () => {
               delay: i * 0.2,
             }}
           >
-            <Star className="w-4 h-4 text-blue-200 fill-blue-200" />
+            <Star className="w-4 h-4 text-yellow-200 fill-yellow-200" />
           </motion.div>
         </motion.div>
       ))}
@@ -276,8 +277,6 @@ export default function BadgeEarnedModal({ success = true }) {
   }, [success])
 
   return (
-
-
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -299,7 +298,7 @@ export default function BadgeEarnedModal({ success = true }) {
             <motion.div
               className={cn(
                 "relative w-full max-w-md p-6 overflow-hidden bg-gray-900 rounded-lg shadow-2xl",
-                success ? "border border-[#2B7FFF]/30" : "border border-red-900/30",
+                success ? "border border-amber-500/30" : "border border-red-900/30",
               )}
               initial={{ scale: 0.8, y: 20, opacity: 0 }}
               animate={{ scale: 1, y: 0, opacity: 1 }}
@@ -324,21 +323,21 @@ export default function BadgeEarnedModal({ success = true }) {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5, type: "spring" }}
                 >
-                  {success ? "Achievement Unlocked!" : "Challenge Failed"}
+                  {success ? "Challenge Succeeded!" : "Challenge Failed"}
                 </motion.div>
 
                 <motion.div
                   className={cn(
                     "mb-6 text-2xl font-extrabold text-center text-transparent bg-clip-text",
                     success
-                      ? "bg-gradient-to-r from-[#2B7FFF] via-blue-400 to-sky-400"
+                      ? "bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-300"
                       : "bg-gradient-to-r from-red-500 via-red-400 to-gray-400",
                   )}
                   initial={{ opacity: 0, scale: 0.5 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.7, type: "spring", stiffness: 500 }}
                 >
-                  {success ? "Master Coder" : "Try Again"}
+                  {success ? "You are the best" : "Try Again"}
                 </motion.div>
 
                 <motion.p
@@ -348,7 +347,7 @@ export default function BadgeEarnedModal({ success = true }) {
                   transition={{ delay: 0.9 }}
                 >
                   {success
-                    ? "You've completed 100 coding challenges! Your dedication to improving your skills is truly impressive."
+                    ? "Your dedication to improving your skills is truly impressive."
                     : "You didn't complete the challenge this time. Don't worry, every attempt brings you closer to mastery."}
                 </motion.p>
 
@@ -356,7 +355,7 @@ export default function BadgeEarnedModal({ success = true }) {
                   <Button
                     className={cn(
                       "font-bold text-white",
-                      success ? "bg-[#2B7FFF] hover:bg-[#1a65d4]" : "bg-red-600 hover:bg-red-700",
+                      success ? "bg-amber-500 hover:bg-amber-600" : "bg-red-600 hover:bg-red-700",
                     )}
                     onClick={() => setIsOpen(false)}
                   >
@@ -368,6 +367,5 @@ export default function BadgeEarnedModal({ success = true }) {
           </motion.div>
         )}
       </AnimatePresence>
-    
   )
 }
