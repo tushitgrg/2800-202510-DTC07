@@ -17,6 +17,7 @@ import {
 import { updateResourceProgress } from "@/lib/progress";
 import { useParams } from "next/navigation";
 
+import BadgeEarnedModal from "../badge/BadgeModel";
 export default function Quiz({ questions, onComplete, progress }) {
   // Loading
   const [loading, setLoading] = useState(true);
