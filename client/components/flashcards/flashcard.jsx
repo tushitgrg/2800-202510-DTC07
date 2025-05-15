@@ -8,6 +8,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { updateResourceProgress } from "@/lib/progress";
 import { useParams } from "next/navigation";
+import BadgeEarnedModal from "../badge/BadgeModel";
 
 export default function Flashcards({ cards, progress }) {
   // Progress tracking
@@ -98,6 +99,8 @@ export default function Flashcards({ cards, progress }) {
 
     return (
       <div className="w-full max-w-md">
+        {scorePercentage>70&&<BadgeEarnedModal success={true}/>}
+          {scorePercentage<30&&<BadgeEarnedModal success={false}/>}
         <Card className="w-full">
           <div className="p-6">
             <h2 className="text-2xl font-bold text-center mb-4">

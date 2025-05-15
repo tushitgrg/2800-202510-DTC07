@@ -6,7 +6,7 @@ const page = () => {
   return (
     <div>
 
-     <BadgeEarnedModal success={false}/>
+     <BadgeEarnedModal success={true}/>
 
     </div>
   )

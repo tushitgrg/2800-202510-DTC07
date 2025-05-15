@@ -17,6 +17,7 @@ import {
 import { updateResourceProgress } from "@/lib/progress";
 import { useParams } from "next/navigation";
 
+import BadgeEarnedModal from "../badge/BadgeModel";
 export default function Quiz({ questions, onComplete, progress }) {
   // Loading
   const [loading, setLoading] = useState(true);
@@ -244,17 +245,21 @@ export default function Quiz({ questions, onComplete, progress }) {
 
   // Results view
   if (showResults) {
+    const score = calculateScore()
+    const scorePercentage  = (score/questions.length) * 100
     return (
       <div className="w-full max-w-md">
         {/* Keep the timer visible on results page */}
         <Timer />
+           {scorePercentage>70&&<BadgeEarnedModal success={true}/>}
+                  {scorePercentage<30&&<BadgeEarnedModal success={false}/>}
         <Card className="w-full">
           <CardContent className="p-6">
             <h2 className="text-2xl font-bold text-center mb-4">
               Quiz Completed!
             </h2>
             <p className="text-center text-lg mb-6">
-              Your score: <span className="font-bold">{calculateScore()}</span>{" "}
+              Your score: <span className="font-bold">{score}</span>{" "}
               out of {questions.length}
             </p>
             <p className="text-center text-gray-600 mb-6">
