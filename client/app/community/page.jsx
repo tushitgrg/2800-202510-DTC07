@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import CommunityFilters from "@/components/Community/CommunityFilters";
 import CommunityCard from "@/components/Community/CommunityCard";
@@ -14,9 +14,10 @@ export default function CommunityPage() {
   const [searchQuery, setSearchQuery] = useState(""); // Text for the title search input
   const [selectedSchool, setSelectedSchool] = useState(""); // Value for school dropdown
   const [selectedCourse, setSelectedCourse] = useState(""); // Value for course dropdown
-  const [sortOption, setSortOption] = useState("newest"); // Value for active sort
+  const [sortOption, setSortOption] = useState("createdAt:desc"); // Value for active sort (default Newest)
   const [filterFunction, setFilterFunction] = useState(() => () => true); // Default allow all
   const [sortFunction, setSortFunction] = useState(() => () => 0); // Determines sort order (default original order)
+  const [filteredResources, setFilteredResources] = useState([]);
 
   const router = useRouter();
 
@@ -45,45 +46,31 @@ export default function CommunityPage() {
     fetchResources();
   }, [router]); // Only re-run if router changes
 
-  // Recompute filter flag state
+  // Send filter/sort/search query to backend and receive filtered resources
   useEffect(() => {
-    // Tests each resource to see if it matches the filter
-    const newFilter = (r) => {
-      const matchesSearch = r.title.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesSchool = !selectedSchool || r.school === selectedSchool;
-      const matchesCourse = !selectedCourse || r.course === selectedCourse;
-      return matchesSearch && matchesSchool && matchesCourse; //
-    };
-    setFilterFunction(() => newFilter);
-  }, [searchQuery, selectedSchool, selectedCourse]); // Re-run if filter changes
+    const fetchFilteredResources = async () => {
 
-  useEffect(() => {
-    // Sort depending on selected option
-    const newSort = (a, b) => {
-      switch (sortOption) {
-        case "newest":
-          return new Date(b.createdAt) - new Date(a.createdAt);
-        case "oldest":
-          return new Date(a.createdAt) - new Date(b.createdAt);
-        case "likes":
-          // Descending by likes
-          return b.likes - a.likes;
-        case "shareCount":
-          // Descending by shareCount
-          return b.shareCount - a.shareCount;
-        default:
-          return 0;
+      const filters = {
+        course: selectedCourse,
+        school: selectedSchool,
+        sort: sortOption,
+        q: searchQuery
+      };
+
+      const queryString = new URLSearchParams(filters).toString();
+
+      try {
+        const response = await fetch(`${ServerUrl}/resources/public?${queryString}`, { credentials: "include" });
+        const data = await response.json();
+        setFilteredResources(data || []);
+      } catch (error) {
+        console.error("Error fetching filtered resources:", error);
+        setFilteredResources([]);
       }
     };
-    setSortFunction(() => newSort);
-  }, [sortOption]);
 
-  // Apply the filters and sort to each resource (obtain the filtered array of resources)
-  // useMemo caches the result and only recomputes when inputs actually change
-  const filteredResources = useMemo(
-    () => (resources ? [...resources].filter(filterFunction).sort(sortFunction) : []),
-    [resources, filterFunction, sortFunction]
-  );
+    fetchFilteredResources();
+  }, [searchQuery, selectedSchool, selectedCourse, sortOption]);
 
   return resources ? (
     <div className="flex flex-col w-full justify-center items-center p-6">
