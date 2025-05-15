@@ -32,6 +32,8 @@ export default function ProfileCard({ googleUser = {} }) {
   const [school, setSchool] = useState(googleUser.name || "Enter school");
   const [schoolSearch, setSchoolSearch] = useState("");
   const [schoolList, setSchoolList] = useState([]);
+  const [avatar, setAvatar] = useState(googleUser.avatar || "");
+
 
 
   // Tracks whether profile is in editing mode (false is read only mode)
@@ -68,14 +70,11 @@ export default function ProfileCard({ googleUser = {} }) {
 
         if (res.ok) {
           const user = await res.json();
-          setDisplayName(
-            user.displayName !== undefined
-              ? user.displayName
-              : user.name || "no username"
-          );
+          setDisplayName(user.displayName !== undefined ? user.displayName : user.name || "no username");
           setFirstName(user.firstName || "");
           setLastName(user.lastName || "");
           setSchool(user.school || "");
+          setAvatar(user.avatar || googleUser.avatar || ""); // Set avatar from user or fallback to Google avatar
         }
       } catch (err) {
         console.error("Failed to fetch user:", err);
@@ -119,10 +118,10 @@ export default function ProfileCard({ googleUser = {} }) {
 
       if (!res.ok) {
         const text = await res.text();
-            toast.error(`Save failed: ${text}`, {
-            duration: 4000,
-            position: 'bottom-right',
-          })
+        toast.error(`Save failed: ${text}`, {
+          duration: 4000,
+          position: 'bottom-right',
+        })
         return;
       }
 
@@ -131,25 +130,34 @@ export default function ProfileCard({ googleUser = {} }) {
       if (res.ok && data.success) {
         setIsEditing(false);
       } else {
-             toast.error(`Save failed: ${data.error || "Unknown error"}`, {
-            duration: 4000,
-            position: 'bottom-right',
-          })
+        toast.error(`Save failed: ${data.error || "Unknown error"}`, {
+          duration: 4000,
+          position: 'bottom-right',
+        })
       }
     } catch (error) {
-          toast.error(`Save failed: ${error.message || "Unknown error"}`, {
-            duration: 4000,
-            position: 'bottom-right',
-          })
+      toast.error(`Save failed: ${error.message || "Unknown error"}`, {
+        duration: 4000,
+        position: 'bottom-right',
+      })
     }
   };
 
   return (
     <Card className="max-w-md mx-auto mt-10 shadow-lg">
       <CardHeader className="flex flex-col items-center space-y-3">
-        <div className="w-16 h-16 rounded-full bg-gray-400 flex items-center justify-center text-white text-xl">
-          👤
-        </div>
+        {avatar ? (
+          <img
+            src={avatar}
+            alt="User avatar"
+            className="w-16 h-16 rounded-full object-cover"
+          />
+        ) : (
+          <div className="w-16 h-16 rounded-full bg-gray-400 flex items-center justify-center text-white text-xl">
+            👤
+          </div>
+        )}
+
         <CardTitle>User Profile</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
