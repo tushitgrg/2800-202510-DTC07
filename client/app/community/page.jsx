@@ -7,6 +7,7 @@ import CommunityCard from "@/components/Community/CommunityCard";
 import Loading from "@/components/Loading";
 import { ServerUrl } from "@/lib/urls";
 import { useMemo } from "react";
+import { Button } from "@/components/ui/button";
 
 export default function CommunityPage() {
   const [resources, setResources] = useState(null);
@@ -124,7 +125,11 @@ export default function CommunityPage() {
             ))}
           </div>
         )}
+
       </div>
+      <Button className={"my-3"}>
+        Load More
+      </Button>
     </div>
   ) : (
     <Loading />
