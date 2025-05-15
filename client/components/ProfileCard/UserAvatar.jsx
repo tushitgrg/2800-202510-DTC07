@@ -1,6 +1,9 @@
 "use client";
 
+import { getLevelInfo } from "@/lib/progress";
+
 export default function UserAvatar({ user }) {
+  const info = getLevelInfo(user.experience)
   return (
     <div className="flex items-center space-x-4">
       <div className="relative">
@@ -19,14 +22,14 @@ export default function UserAvatar({ user }) {
                   "polygon(0% 0%, 100% 0%, 100% 100%, 50% 70%, 0% 100%)",
               }}
             >
-              <span className="text-xs font-bold mb-1">3</span>
+              <span className="text-xs font-bold mb-1">{info.level}</span>
             </div>
           </div>
         </div>
       </div>
       <div>
         <h2 className="text-xl font-bold">{user.name}</h2>
-        <p className="text-sm text-muted-foreground">{user.school?user.school:""}</p>
+        <p className="text-sm text-muted-foreground">{info.name}</p>
       </div>
     </div>
   );

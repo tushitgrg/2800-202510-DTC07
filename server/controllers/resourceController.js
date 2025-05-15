@@ -47,6 +47,9 @@ const getResourceInfo = async function (req, res) {
         info.createdAt = resource.createdAt;
         info.tags = resource.tags || [];
         info.progress = progress || {};
+        const author = await User.findById(resource.author)
+        info.school = author.school
+        console.log(info.school)
 
         return info;
       })
@@ -271,7 +274,7 @@ const getPublicResources = async function (req, res) {
 
     // Optional filters
     if (course) filters.course = course;
-    if (school) filters.school = school;
+    if (school) filters.school = { $regex: school, $options: "i" };
 
     // Text search (title, description, tags)
     if (q) {
@@ -291,13 +294,13 @@ const getPublicResources = async function (req, res) {
 
     const publicResources = await Resource.find(filters)
       .sort(sortOption)
-      .populate("author", "name school");
+      .populate("author", "name");
 
     const publicResourceInfo = publicResources.map((resource) => ({
       _id: resource._id,
       title: resource.title,
       author: resource.author?.name || null,
-      school: resource.school || resource.author?.school || null,
+      school: resource.school || null,
       course: resource.course,
       createdAt: resource.createdAt,
       shareCount: resource.shareCount || 0,

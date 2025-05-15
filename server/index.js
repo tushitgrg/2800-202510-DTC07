@@ -11,6 +11,7 @@ const progressRoutes = require("./routes/progressRoutes");
 const MongoStore = require("connect-mongo");
 const isAuthenticated = require("./controllers/authMiddleware");
 const schoolRoutes = require('./routes/schoolRoutes');
+const  calculateExperience  = require("./controllers/expMiddleware");
 require("./utils/db");
 
 const app = express();
@@ -54,8 +55,7 @@ app.get("/keep-alive", (req, res) => {
 });
 app.use("/school", schoolRoutes); 
 app.use(isAuthenticated);
-app.get("/", (req, res) => {
-  console.log(req.user)
+app.get("/", calculateExperience,(req, res) => {
   res.json(req.user);
 });
 
