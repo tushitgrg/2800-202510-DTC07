@@ -27,9 +27,6 @@ const userSchema = new mongoose.Schema(
       },
     ],
     achievements: {
-      quiz: { type: Number, default: 0 },
-      flashcard: { type: Number, default: 0 },
-      summary: { type: Number, default: 0 },
       community_resource: { type: Number, default: 0 },
       streak: { type: Number, default: 0 },
       resource: { type: Number, default: 0 },
