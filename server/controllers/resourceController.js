@@ -239,6 +239,7 @@ const updateResourceInfo = async function (req, res) {
     ...(newSchool !== undefined && { school: newSchool }),
     ...(newCourse !== undefined && { course: newCourse }),
     ...(isPublic !== undefined && { isPublic: isPublic }),
+    
   };
 
   if (!resourceId) {
@@ -300,7 +301,7 @@ const getPublicResources = async function (req, res) {
       course: resource.course,
       createdAt: resource.createdAt,
       shareCount: resource.shareCount || 0,
-      likes: resource.likes || 0,
+      likes: resource.likes?.length || 0,
     }));
 
     res.status(200).json(publicResourceInfo);

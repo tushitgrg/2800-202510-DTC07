@@ -23,6 +23,7 @@ const addResourceById = async function (req, res) {
       summaryID: summaryID,
       title: title,
       author: author,
+      originalResourceId: sharedResource._id,
     });
     await User.findByIdAndUpdate(req.user._id, {
       $push: { resources: newResource._id },

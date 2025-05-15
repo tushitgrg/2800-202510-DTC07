@@ -9,13 +9,17 @@ const resourceSchema = new mongoose.Schema(
     isPublic: { type: Boolean, default: false },
     shareCount: { type: Number, default: 0 },
     likes: {
-      type: Number,
-      default: 0,
+      type: Array,
+      default: [],
     },
     course: { type: String, default: null },
     school: { type: String, default: null },
 
     author: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    originalResourceId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Resource",
+    },
   },
   { timestamps: true }
 );
