@@ -47,9 +47,10 @@ const getResourceInfo = async function (req, res) {
         info.createdAt = resource.createdAt;
         info.tags = resource.tags || [];
         info.progress = progress || {};
-        const author = await User.findById(resource.author)
-        info.school = author.school
-        console.log(info.school)
+        info.isOwner = userId.equals(resource.author);
+        const author = await User.findById(resource.author);
+        info.school = author.school;
+        console.log(info.school);
 
         return info;
       })
@@ -182,10 +183,9 @@ const addResource = async function (req, res) {
     console.error("Failed to create resource data:", err);
     if (newResource._id) {
       await Resource.deleteOne({
-        _id: newResource._id
-      })
+        _id: newResource._id,
+      });
     }
-
 
     return res
       .status(500)
@@ -229,7 +229,9 @@ const deleteResource = async function (req, res) {
       .status(200)
       .json({ msg: `Successfully deleted resource with ID: ${resourceId}` });
   } catch (err) {
-    return res.status(500).json({ error: err, msg: "Unable to delete the provided resource" });
+    return res
+      .status(500)
+      .json({ error: err, msg: "Unable to delete the provided resource" });
   }
 };
 
@@ -242,7 +244,6 @@ const updateResourceInfo = async function (req, res) {
     ...(newSchool !== undefined && { school: newSchool }),
     ...(newCourse !== undefined && { course: newCourse }),
     ...(isPublic !== undefined && { isPublic: isPublic }),
-    
   };
 
   if (!resourceId) {
