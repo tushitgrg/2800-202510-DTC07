@@ -6,20 +6,34 @@ import CommunityFilters from "@/components/Community/CommunityFilters";
 import CommunityCard from "@/components/Community/CommunityCard";
 import Loading from "@/components/Loading";
 import { ServerUrl } from "@/lib/urls";
+import { useMemo } from "react";
 
 export default function CommunityPage() {
   const [resources, setResources] = useState(null);
-  const [allSchools, setAllSchools] = useState([]);
-  const [allCourses, setAllCourses] = useState([]);
   const [searchQuery, setSearchQuery] = useState(""); // Text for the title search input
   const [selectedSchool, setSelectedSchool] = useState(""); // Value for school dropdown
   const [selectedCourse, setSelectedCourse] = useState(""); // Value for course dropdown
   const [sortOption, setSortOption] = useState("createdAt:desc"); // Value for active sort (default Newest)
-  const [filterFunction, setFilterFunction] = useState(() => () => true); // Default allow all
-  const [sortFunction, setSortFunction] = useState(() => () => 0); // Determines sort order (default original order)
   const [filteredResources, setFilteredResources] = useState([]);
 
   const router = useRouter();
+
+  // Obtain the dropdown options from filteredResources
+  const availableCourses = useMemo(
+    () =>
+      Array.from(
+        new Set(filteredResources.map((r) => r.course).filter(Boolean))
+      ),
+    [filteredResources]
+  );
+
+  const availableSchools = useMemo(
+    () =>
+      Array.from(
+        new Set(filteredResources.map((r) => r.school).filter(Boolean))
+      ),
+    [filteredResources]
+  );
 
   // Fetch backend data on mount
   useEffect(() => {
@@ -31,14 +45,7 @@ export default function CommunityPage() {
         if (!res.ok) throw new Error("Failed to fetch resources");
         const data = await res.json();
         setResources(data); // Update state with real data
-        // Extract all avaliable school names (no dupes)
-        setAllSchools(
-          Array.from(new Set(data.map((r) => r.school).filter(Boolean)))
-        );
-        // Extract all avaliable courses (no dupes)
-        setAllCourses(
-          Array.from(new Set(data.map((r) => r.course).filter(Boolean)))
-        );
+
       } catch (err) {
         console.error("Error fetching resources:", err);
       }
@@ -63,9 +70,13 @@ export default function CommunityPage() {
         const response = await fetch(`${ServerUrl}/resources/public?${queryString}`, { credentials: "include" });
         const data = await response.json();
         setFilteredResources(data || []);
+        // Repopulate list of school/course filters
+
+
       } catch (error) {
         console.error("Error fetching filtered resources:", error);
         setFilteredResources([]);
+
       }
     };
 
@@ -79,8 +90,8 @@ export default function CommunityPage() {
           <h1 className="text-2xl font-bold">Community Resources</h1>
         </div>
         <CommunityFilters
-          allSchools={allSchools}
-          allCourses={allCourses}
+          allSchools={availableSchools}
+          allCourses={availableCourses}
           selectedSchool={selectedSchool}
           selectedCourse={selectedCourse}
           searchQuery={searchQuery}
