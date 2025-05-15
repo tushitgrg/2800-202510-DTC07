@@ -81,9 +81,12 @@ const ResourceComp = ({ resourceData, userData, goToDashboard }) => {
 
       {/* Title and date */}
       <div className="mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold mb-2">
+      <div>
+    <h1 className="text-2xl md:text-3xl font-bold mb-2">
           {resourceData.title}
         </h1>
+      </div>
+    
         <p className="text-sm text-gray-400">Created on {formattedDate}</p>
       </div>
 
