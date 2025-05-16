@@ -11,6 +11,7 @@ const Quiz = require("../models/quizModel");
 const Flashcard = require("../models/flashcardModel");
 const Summary = require("../models/summaryModel");
 const { getTranscriptAsFilePart } = require("../utils/GetYoutubeTranscript");
+const { isValidObjectId } = require("mongoose");
 
 const fetchResource = async (resourceID) => {
   const resource = await Resource.findById(resourceID);
@@ -98,6 +99,9 @@ const getResourceById = async function (req, res) {
     response.createdAt = createdAt;
     response.progress = progress || {};
     response.isOwner = author.equals(req.user._id);
+    console.log(req.user._id);
+    response.isLiked = resource.likes?.includes(req.user._id);
+    response.isPublic = resource.isPublic;
     if (quizID) {
       const quiz = await Quiz.findById(quizID);
       response.quiz = quiz;
@@ -237,19 +241,37 @@ const deleteResource = async function (req, res) {
 
 const updateResourceInfo = async function (req, res) {
   const resourceId = req.params.id;
-  const { newTitle, newTags, newSchool, newCourse, isPublic } = req.body;
+
+  const { newTitle, newTags, newSchool, newCourse, isPublic, isLiked } =
+    req.body;
   const updatedFields = {
-    ...(newTitle !== undefined && { title: newTitle }),
-    ...(newTags !== undefined && { tags: newTags }),
-    ...(newSchool !== undefined && { school: newSchool }),
-    ...(newCourse !== undefined && { course: newCourse }),
-    ...(isPublic !== undefined && { isPublic: isPublic }),
+    ...(newTitle && { title: newTitle }),
+    ...(newTags && { tags: newTags }),
+    ...(newSchool && { school: newSchool }),
+    ...(newCourse && { course: newCourse }),
+    ...(isPublic != null && { isPublic: isPublic }),
   };
 
   if (!resourceId) {
     return res.status(400).json({ error: "Resource ID is required" });
   }
   try {
+    console.log(
+      "Hello this is emanuel: ",
+      isPublic,
+      updatedFields.isPublic,
+      true
+    );
+    if (isLiked === true) {
+      await Resource.findByIdAndUpdate(resourceId, {
+        $addToSet: { likes: req.user._id },
+      });
+    } else if (isLiked === false) {
+      console.log("IS it coming from here?");
+      await Resource.findByIdAndUpdate(resourceId, {
+        $pull: { likes: req.user._id },
+      });
+    }
     const updatedResource = await Resource.findByIdAndUpdate(
       resourceId,
       updatedFields,
@@ -260,6 +282,7 @@ const updateResourceInfo = async function (req, res) {
     }
     return res.status(200).json(updatedResource);
   } catch (err) {
+    console.log(err);
     res
       .status(500)
       .json({ error: "Unable to update resource", msg: err.message || err });
@@ -269,8 +292,8 @@ const updateResourceInfo = async function (req, res) {
 const getPublicResources = async function (req, res) {
   try {
     let { course, school, q, sort, page } = req.query;
-    if(!page){
-      page = 1
+    if (!page) {
+      page = 1;
     }
     const limit = 18;
 
@@ -299,7 +322,7 @@ const getPublicResources = async function (req, res) {
 
     const publicResources = await Resource.find(filters)
       .sort(sortOption)
-      .skip(((page-1) *limit))
+      .skip((page - 1) * limit)
       .limit(limit)
       .populate("author", "name");
 
