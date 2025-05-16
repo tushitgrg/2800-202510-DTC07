@@ -19,24 +19,20 @@ export default function CommunityPage() {
   const [filteredResources, setFilteredResources] = useState([]);
   const [page, setPage] = useState(1); // Value for how many card components to load
   const [hasMore, setHasMore] = useState(true); // Disable button if there are no cards to load
+  const [allSchools, setAllSchools] = useState([]);
+  const [allCourses, setAllCourses] = useState([]);
 
   const router = useRouter();
 
   // Obtain the dropdown options from filteredResources
   const availableCourses = useMemo(
-    () =>
-      Array.from(
-        new Set(filteredResources.map((r) => r.course).filter(Boolean))
-      ),
-    [filteredResources]
+    () => Array.from(new Set(allCourses.filter(Boolean))),
+    [allCourses]
   );
 
   const availableSchools = useMemo(
-    () =>
-      Array.from(
-        new Set(filteredResources.map((r) => r.school).filter(Boolean))
-      ),
-    [filteredResources]
+    () => Array.from(new Set(allSchools.filter(Boolean))),
+    [allSchools]
   );
 
   // Load more button handle
@@ -79,16 +75,22 @@ export default function CommunityPage() {
 
     try {
       const response = await fetch(`${ServerUrl}/resources/public?${queryString}`, { credentials: "include" });
-      const data = await response.json();
+      const result = await response.json();
 
       // Appends loaded card components to current card components
       if (append) {
-        setFilteredResources((prev) => [...prev, ...data]);
+        setFilteredResources((prev) => [...prev, ...result.data]);
       } else {
-        setFilteredResources(data);
+        setFilteredResources(result.data);
       }
 
-      if (data.length < 18) setHasMore(false); // Disables button
+      // Update dropdowns
+      setAllSchools(result.allSchools || []);
+      setAllCourses(result.allCourses || []);
+
+      if (result.data.length < 18 || (pageToFetch * 18 >= result.totalCount)) {
+        setHasMore(false);
+      }
 
     } catch (error) {
       console.error("Error fetching filtered resources:", error);

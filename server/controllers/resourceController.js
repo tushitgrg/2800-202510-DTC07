@@ -293,7 +293,7 @@ const getPublicResources = async function (req, res) {
   try {
     let { course, school, q, sort, page } = req.query;
     if (!page) {
-      page = 1;
+      page = 1
     }
     const limit = 18;
 
@@ -320,9 +320,11 @@ const getPublicResources = async function (req, res) {
       sortOption[field] = order === "desc" ? -1 : 1;
     }
 
+    const totalCount = await Resource.countDocuments(filters);
+
     const publicResources = await Resource.find(filters)
       .sort(sortOption)
-      .skip((page - 1) * limit)
+      .skip(((page - 1) * limit))
       .limit(limit)
       .populate("author", "name");
 
@@ -337,7 +339,21 @@ const getPublicResources = async function (req, res) {
       likes: resource.likes?.length || 0,
     }));
 
-    res.status(200).json(publicResourceInfo);
+    // Obtain all unique schools/courses from matching full set
+    const allMatchingResources = await Resource.find(filters).select("school course");
+    const allSchools = Array.from(
+      new Set(allMatchingResources.map((r) => r.school).filter(Boolean))
+    );
+    const allCourses = Array.from(
+      new Set(allMatchingResources.map((r) => r.course).filter(Boolean))
+    );
+
+    res.status(200).json({
+      data: publicResourceInfo,
+      totalCount,
+      allSchools,
+      allCourses,
+    });
   } catch (err) {
     res.status(500).json({
       msg: "Unable to fetch public resources",
