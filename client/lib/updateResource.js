@@ -12,8 +12,8 @@ const updateResource = async (resource) => {
         ? resource.editValue
         : resource.newTitle || null,
       newTags: resource.updatedResource ? resource.updatedResource.tags : [],
-      newSchool: resource.updatedResource ? resource.school : null,
-      newCourse: resource.updatedResource ? resource.course : null,
+      newSchool: resource.newSchool ?? null,
+      newCourse: resource.newCourse ?? null,
       isPublic: resource.isPublic !== undefined ? resource.isPublic : undefined,
       isLiked: resource.isLiked !== undefined ? resource.isLiked : null,
     }),
