@@ -49,6 +49,7 @@ const getResourceInfo = async function (req, res) {
         info.tags = resource.tags || [];
         info.progress = progress || {};
         info.isOwner = userId.equals(resource.author);
+        info.isPublic = resource.isPublic;
         const author = await User.findById(resource.author);
         info.school = author.school;
         console.log(info.school);
