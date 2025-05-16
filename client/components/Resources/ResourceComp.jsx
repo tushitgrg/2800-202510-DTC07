@@ -27,16 +27,14 @@ const ResourceComp = ({ resourceData, userData, goToDashboard }) => {
   const formattedDate = new Date(resourceData.createdAt).toDateString();
 
   // Check if user already has this resource or is the owner
-  const hasResource =
-    resourceData.hasResource ||
-    (userData.resources || []).includes(resourceData.id);
+  const hasResource = resourceData.hasResource === true;
   const isOwner = resourceData.isOwner === true;
 
   // Add to dashboard
   const handleAddToDashboard = async () => {
     try {
       await addToDashboard(resourceData.id);
-      setTimeout(() => goToDashboard(), 500);
+      goToDashboard();
     } catch (error) {
       console.error("Error adding to dashboard:", error);
     }
