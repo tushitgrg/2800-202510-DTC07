@@ -9,12 +9,20 @@ import Quiz from "@/components/quizzes/quiz";
 import Flashcards from "@/components/flashcards/flashcard";
 import Markdown from "react-markdown";
 import { addToDashboard } from "@/lib/addToDashboard";
+import TogglePublicButton from "@/components/ui/toggle-public";
+import LikeButton from "@/components/ui/like";
+
 
 const ResourceComp = ({ resourceData, userData, goToDashboard }) => {
   // Check available content
   const hasQuiz = !!resourceData.quiz;
   const hasFlashcards = !!resourceData.flashcard;
   const hasSummary = !!resourceData.summary;
+
+   // State for likes and public status
+  const [liked, setLiked] = useState(resourceData.liked || false);
+  const [isPublic, setIsPublic] = useState(resourceData.isPublic || false);
+
 
   // Set default tab
   let defaultTab = "quiz";
@@ -39,6 +47,33 @@ const ResourceComp = ({ resourceData, userData, goToDashboard }) => {
       setTimeout(() => goToDashboard(), 500);
     } catch (error) {
       console.error("Error adding to dashboard:", error);
+    }
+  };
+
+
+    // Handle like toggle
+  const handleLike = async (newLikedState) => {
+    try {
+      setLiked(newLikedState);
+      // await updateLikeStatus(resourceData.id, newLikedState);
+      console.log(`Resource ${resourceData.id} like status updated to ${newLikedState}`);
+    } catch (error) {
+      // Revert state if API call fails
+      setLiked(liked);
+      console.error("Error updating like status:", error);
+    }
+  };
+
+  // Handle public/private toggle
+  const handleTogglePublic = async (newPublicState) => {
+    try {
+      setIsPublic(newPublicState);
+      // await updatePublicStatus(resourceData.id, newPublicState);
+      console.log(`Resource ${resourceData.id} public status updated to ${newPublicState}`);
+    } catch (error) {
+      // Revert state if API call fails
+      setIsPublic(isPublic);
+      console.error("Error updating public status:", error);
     }
   };
 
@@ -83,9 +118,22 @@ const ResourceComp = ({ resourceData, userData, goToDashboard }) => {
 
       {/* Title and date */}
       <div className="mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold mb-2">
+        <div className="header flex justify-between w-full">
+  <h1 className="text-2xl md:text-3xl font-bold mb-2">
+  
           {resourceData.title}
         </h1>
+        <div className="buttons flex gap-2">
+            {/* Debugging display */}
+            {/* <span className="text-xs text-gray-400">Liked: {liked ? 'true' : 'false'}</span> */}
+            
+            <LikeButton liked={liked} onChange={handleLike} />
+            {isOwner && (
+              <TogglePublicButton isPublic={isPublic} onClick={handleTogglePublic} />
+            )}
+          </div>
+        </div>
+      
         <p className="text-sm text-gray-400">Created on {formattedDate}</p>
       </div>
 
