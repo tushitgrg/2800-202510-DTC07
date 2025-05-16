@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from "react";
 import ProfileCard from "@/components/profile/profile";
+import Loading from "@/components/Loading";
+import { ServerUrl } from "@/lib/urls";
 
 export default function profilePage() {
   const [googleUser, setGoogleUser] = useState(null);
 
   useEffect(() => {
-    fetch("http://localhost:3001/", {
+    fetch(ServerUrl, {
       credentials: "include",
     })
       .then((res) => res.json())
@@ -18,13 +20,12 @@ export default function profilePage() {
             email: user.email,
           });
         } else {
-          
-          window.location.href = "http://localhost:3001/auth/google";
+          window.location.href = `${ServerUrl}/auth/google`;
         }
       });
   }, []);
 
-  if (!googleUser) return <div>Loading profile...</div>;
+  if (!googleUser) return <Loading />;
 
   return (
     <div>

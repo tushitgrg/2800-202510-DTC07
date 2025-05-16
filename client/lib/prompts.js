@@ -1,4 +1,5 @@
-export const generateQuizPrompt = (s) => `
+export const generateQuizPrompt = (s) =>
+  `
 You are an expert quiz generator.
 
 Return a single JSON object that **MUST** conform exactly to this schema
@@ -12,7 +13,8 @@ Return a single JSON object that **MUST** conform exactly to this schema
     }
   ]
 }
-
+  The input may resemble a transcript. Please ignore speaker labels or timestamps and extract meaningful content
+DO NOT SAY YOU CANNOT DO IT. It does not have to be strictly based on the transcript, but should be **clearly related** to its themes or topics. Use inferred context when needed.
 Requirements:
 1. Create **${s.questionCount}** quiz items inside "questions".
 2. Allowed question types: ${s.questionTypes.join(", ")}.
@@ -20,8 +22,8 @@ Requirements:
 4. **Do not** include explanations, markdown code fences, or extra fields.
 5. Respond with **only** the JSON—nothing else.`.trim();
 
-
-export const generateFlashcardPrompt = (s) => `
+export const generateFlashcardPrompt = (s) =>
+  `
 You are an expert flash‑card creator.
 
 Return one JSON object that fits this schema exactly
@@ -34,7 +36,8 @@ Return one JSON object that fits this schema exactly
     }
   ]
 }
-
+The input may resemble a transcript. Please ignore speaker labels or timestamps and extract meaningful content
+DO NOT SAY YOU CANNOT DO IT. It does not have to be strictly based on the transcript, but should be **clearly related** to its themes or topics. Use inferred context when needed.
 Rules:
 1. Produce **${s.cardCount}** cards.
 2. Complexity: **${s.complexity}**.
@@ -46,8 +49,8 @@ Rules:
 4. Keep each front/back under ~280 characters.
 5. Output strictly valid JSON—no code fences, no commentary.`.trim();
 
-
-export const generateSummaryPrompt = (s) => `
+export const generateSummaryPrompt = (s) =>
+  `
 You are an expert summariser.
 
 Return a JSON object matching this schema
@@ -55,7 +58,8 @@ Return a JSON object matching this schema
 {
   "content": String
 }
-
+The input may resemble a transcript. Please ignore speaker labels or timestamps and extract meaningful content
+DO NOT SAY YOU CANNOT DO IT. It does not have to be strictly based on the transcript, but should be **clearly related** to its themes or topics. Use inferred context when needed.
 Instructions:
 1. Write a **${s.length}‑length** summary (short / medium / long).
 2. Use concise, academic language; bullet points are welcome.

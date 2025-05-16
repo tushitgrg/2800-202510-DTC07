@@ -1,16 +1,16 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 let isConnected = false;
 
 export async function connectToDB() {
-    if (isConnected) return;
+  if (isConnected) return;
 
-    await mongoose.connect(process.env.MONGODB_URI, {
-        dbName: 'scholiast', 
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    });
+  await mongoose.connect(process.env.MONGODB_URI, {
+    dbName: "scholiast",
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
 
-    isConnected = true;
-    console.log('MongoDB connected');
+  isConnected = true;
+  console.log("MongoDB connected");
 }

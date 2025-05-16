@@ -8,4 +8,4 @@ const addSummaryEntry = async (summary) => {
   return newSummary._id;
 };
 
-module.exports = addSummaryEntry
+module.exports = addSummaryEntry;

@@ -17,19 +17,38 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
     displayName: String,
-    firstName: String,  // optional, user could add on profile page
+    firstName: String, // optional, user could add on profile page
     lastName: String,
-    school: String,
+    school: { type: String, default: null },
     resources: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Resource",
       },
     ],
+    achievements: {
+      community_resource: { type: Number, default: 0 },
+      streak: { type: Number, default: 0 },
+      resource: { type: Number, default: 0 },
+      totalSharesReceived: { type: Number, default: 0 }, // when others add their resource
+    },
+    equippedAchievement: {
+      type: String,
+      enum: [
+        "quiz",
+        "flashcard",
+        "summary",
+        "community_resource",
+        "streak",
+        "resource",
+        null,
+      ],
+      default: null,
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-const userModel = mongoose.model("user", userSchema);
+const userModel = mongoose.model("User", userSchema);
 // export default userModel
 module.exports = userModel;

@@ -5,17 +5,68 @@ import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { updateResourceProgress } from "@/lib/progress";
+import { useParams } from "next/navigation";
+import BadgeEarnedModal from "../badge/BadgeModel";
 
-export default function Flashcards({ cards }) {
+export default function Flashcards({ cards, progress }) {
+  // Progress tracking
+  const params = useParams();
+  const resourceId = params.id;
+
+  // State for randomized cards
+  const [randomizedCards, setRandomizedCards] = useState([]);
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
-  const currentCard = cards[currentIndex];
+  const [correctAnswers, setCorrectAnswers] = useState([]);
+  const [showResults, setShowResults] = useState(false);
+
+  // Use randomized cards or fall back to original cards
+  const cardsToUse = randomizedCards.length > 0 ? randomizedCards : cards;
+  const currentCard = cardsToUse[currentIndex];
+
+  // Shuffle cards on component mount
+  useEffect(() => {
+    if (!cards || cards.length === 0) return;
+
+    // Create a shuffled copy of the cards array
+    const shuffledCards = [...cards].sort(() => Math.random() - 0.5);
+
+    setRandomizedCards(shuffledCards);
+
+    // CorrectAnswers array based on shuffled cards
+    setCorrectAnswers(Array(shuffledCards.length).fill(false));
+  }, [cards]);
 
   // Navigation
   const nextCard = () => {
     if (currentIndex < cards.length - 1) {
       setCurrentIndex(currentIndex + 1);
       setIsFlipped(false);
+    } else {
+      // Show results when reaching the last card
+      setShowResults(true);
+
+      // Calculate score percentage
+      const correctCount = correctAnswers.filter(Boolean).length;
+      const scorePercentage = Math.round((correctCount / cards.length) * 100);
+
+      // Send progress to backend
+      if (
+        !progress ||
+        !progress.flashcardScore ||
+        scorePercentage > progress.flashcardScore
+      ) {
+        updateResourceProgress(
+          resourceId,
+          {
+            flashcardScore: scorePercentage,
+          },
+          progress,
+        );
+      }
     }
   };
 
@@ -28,6 +79,48 @@ export default function Flashcards({ cards }) {
 
   const flipCard = () => setIsFlipped(!isFlipped);
 
+  const toggleCorrect = (e) => {
+    const newCorrectAnswers = [...correctAnswers];
+    newCorrectAnswers[currentIndex] = !newCorrectAnswers[currentIndex];
+    setCorrectAnswers(newCorrectAnswers);
+  };
+
+  const restartFlashcards = () => {
+    setCurrentIndex(0);
+    setIsFlipped(false);
+    setCorrectAnswers(Array(cards.length).fill(false));
+    setShowResults(false);
+  };
+
+  // Results view
+  if (showResults) {
+    const correctCount = correctAnswers.filter(Boolean).length;
+    const scorePercentage = Math.round(
+      (correctCount / cardsToUse.length) * 100,
+    );
+
+    return (
+      <div className="w-full max-w-md">
+        {scorePercentage > 70 && <BadgeEarnedModal success={true} />}
+        {scorePercentage < 30 && <BadgeEarnedModal success={false} />}
+        <Card className="w-full">
+          <div className="p-6">
+            <h2 className="text-2xl font-bold text-center mb-4">
+              Flashcards Completed!
+            </h2>
+            <p className="text-center text-lg mb-6">
+              You marked <span className="font-bold">{correctCount}</span> out
+              of {cards.length} cards as learned ({scorePercentage}%)
+            </p>
+            <Button className="w-full" onClick={restartFlashcards}>
+              Restart Flashcards
+            </Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="relative w-full max-w-md">
       <FlashcardItem
@@ -37,6 +130,8 @@ export default function Flashcards({ cards }) {
         onFlip={flipCard}
         index={currentIndex}
         total={cards.length}
+        isCorrect={correctAnswers[currentIndex]}
+        onToggleCorrect={toggleCorrect}
       />
 
       <div className="w-full flex justify-between mt-12">
@@ -49,12 +144,7 @@ export default function Flashcards({ cards }) {
           <ChevronLeft className="h-6 w-6" />
         </Button>
 
-        <Button
-          onClick={nextCard}
-          disabled={currentIndex === cards.length - 1}
-          variant="outline"
-          size="icon"
-        >
+        <Button onClick={nextCard} variant="outline" size="icon">
           <ChevronRight className="h-6 w-6" />
         </Button>
       </div>
@@ -63,7 +153,16 @@ export default function Flashcards({ cards }) {
 }
 
 // Flashcard item component
-function FlashcardItem({ front, back, flipped, onFlip, index, total }) {
+function FlashcardItem({
+  front,
+  back,
+  flipped,
+  onFlip,
+  index,
+  total,
+  isCorrect,
+  onToggleCorrect,
+}) {
   // Text sizing state
   const [frontSize, setFrontSize] = useState("text-lg");
   const [backSize, setBackSize] = useState("text-lg");
@@ -163,6 +262,21 @@ function FlashcardItem({ front, back, flipped, onFlip, index, total }) {
             className={`font-semibold p-6 w-full ${backSize} break-words`}
           >
             {back}
+          </div>
+
+          {/* Got it right checkbox */}
+          <div
+            className="absolute bottom-3 right-3 flex items-center space-x-2"
+            onClick={(e) => e.stopPropagation()} // Prevent card flip
+          >
+            <Checkbox
+              id={`learned-${index}`}
+              checked={isCorrect}
+              onCheckedChange={(e) => onToggleCorrect(e)}
+            />
+            <label htmlFor={`learned-${index}`} className="text-sm">
+              I know this!
+            </label>
           </div>
         </Card>
       </motion.div>

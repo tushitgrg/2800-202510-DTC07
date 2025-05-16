@@ -1,13 +1,9 @@
-"use client"
-import React from 'react'
-import { motion } from "framer-motion"
-import {
-
-  ArrowRight,
-
-} from "lucide-react"
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
+"use client";
+import React from "react";
+import { motion } from "framer-motion";
+import { ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const CtaSection = () => {
   return (
@@ -28,12 +24,16 @@ const CtaSection = () => {
             Ready to Transform Your Study Habits?
           </h2>
           <p className="mx-auto max-w-[700px] text-primary-foreground/80 md:text-xl">
-            Join thousands of students who have improved their grades and reduced study time with our AI-powered
-            platform.
+            Join thousands of students who have improved their grades and
+            reduced study time with our AI-powered platform.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 mt-4">
             <Link href="/dashboard">
-              <Button size="lg" variant="secondary" className="rounded-full h-12 px-8 text-base">
+              <Button
+                size="lg"
+                variant="secondary"
+                className="rounded-full h-12 px-8 text-base"
+              >
                 Start Now!
                 <ArrowRight className="ml-2 size-4" />
               </Button>
@@ -49,7 +49,7 @@ const CtaSection = () => {
         </motion.div>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default CtaSection
+export default CtaSection;

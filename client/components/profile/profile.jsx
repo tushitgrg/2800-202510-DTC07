@@ -1,19 +1,49 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import React from "react";
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { ServerUrl } from "@/lib/urls";
+import toast from "react-hot-toast";
+
+//add debounce function to let user finish entering first
+function debounce(cb, delay) {
+  let timeoutId;
+  return function (...args) {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+    timeoutId = setTimeout(() => {
+      cb(...args);
+    }, delay);
+  };
+}
 
 export default function ProfileCard({ googleUser = {} }) {
   // Initialize state variables with default values
-  const [displayName, setDisplayName] = useState(googleUser.name || "Your display name");
-  const [firstName, setFirstName] = useState(googleUser.firstName || "Enter first name");
-  const [lastName, setLastName] = useState(googleUser.lastName || "Enter last name");
+  const [displayName, setDisplayName] = useState(
+    googleUser.name || "Your display name",
+  );
+  const [firstName, setFirstName] = useState(
+    googleUser.firstName || "Enter first name",
+  );
+  const [lastName, setLastName] = useState(
+    googleUser.lastName || "Enter last name",
+  );
   const [email, setEmail] = useState(googleUser.email || "");
   const [school, setSchool] = useState(googleUser.name || "Enter school");
+  const [schoolSearch, setSchoolSearch] = useState("");
+  const [schoolList, setSchoolList] = useState([]);
+  const [avatar, setAvatar] = useState(googleUser.avatar || "");
 
   // Tracks whether profile is in editing mode (false is read only mode)
   const [isEditing, setIsEditing] = useState(false);
@@ -25,13 +55,26 @@ export default function ProfileCard({ googleUser = {} }) {
     email: "",
     school: "",
   });
+  // The logic of searching school
+  const fetchSchools = async (query) => {
+    console.log("keyword:", query);
+    if (!query) return setSchoolList([]);
+    const res = await fetch(`${ServerUrl}/school/search?q=${query}`, {
+      credentials: "include",
+    });
+    // const res = await fetch(`${ServerUrl}/resources/public`, { credentials: "include" });
+    const data = await res.json();
+    setSchoolList(data);
+  };
+
+  const debouncedFetch = useMemo(() => debounce(fetchSchools, 500), []);
 
   useEffect(() => {
     const fetchUser = async () => {
       if (!email) return;
 
       try {
-        const res = await fetch(`http://localhost:3001/api/user/${email}`, {
+        const res = await fetch(`${ServerUrl}/api/user/${email}`, {
           credentials: "include",
         });
 
@@ -40,11 +83,12 @@ export default function ProfileCard({ googleUser = {} }) {
           setDisplayName(
             user.displayName !== undefined
               ? user.displayName
-              : user.name || "no username"
+              : user.name || "no username",
           );
           setFirstName(user.firstName || "");
           setLastName(user.lastName || "");
           setSchool(user.school || "");
+          setAvatar(user.avatar || googleUser.avatar || ""); // Set avatar from user or fallback to Google avatar
         }
       } catch (err) {
         console.error("Failed to fetch user:", err);
@@ -56,7 +100,7 @@ export default function ProfileCard({ googleUser = {} }) {
 
   const handleEdit = () => {
     setBackup({ displayName, firstName, lastName, email, school }); // Save previous values in backup object
-    setIsEditing(true); // Editing mode "On" 
+    setIsEditing(true); // Editing mode "On"
   };
 
   // Restore previous values when canceling edit
@@ -72,7 +116,7 @@ export default function ProfileCard({ googleUser = {} }) {
   // Send saved data to backend
   const handleSave = async () => {
     try {
-      const res = await fetch("http://localhost:3001/api/user/update", {
+      const res = await fetch(`${ServerUrl}/api/user/update`, {
         method: "PUT",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -81,14 +125,16 @@ export default function ProfileCard({ googleUser = {} }) {
           firstName,
           lastName,
           email,
-          school,
+          school: school || "", // allow empty
         }),
       });
 
-
       if (!res.ok) {
         const text = await res.text();
-        alert("Save failed: " + text);
+        toast.error(`Save failed: ${text}`, {
+          duration: 4000,
+          position: "bottom-right",
+        });
         return;
       }
 
@@ -97,19 +143,34 @@ export default function ProfileCard({ googleUser = {} }) {
       if (res.ok && data.success) {
         setIsEditing(false);
       } else {
-        alert("Save failed: " + (data.error || "Unknown error"));
+        toast.error(`Save failed: ${data.error || "Unknown error"}`, {
+          duration: 4000,
+          position: "bottom-right",
+        });
       }
     } catch (error) {
-      alert("Save failed: " + error.message);
+      toast.error(`Save failed: ${error.message || "Unknown error"}`, {
+        duration: 4000,
+        position: "bottom-right",
+      });
     }
   };
 
   return (
     <Card className="max-w-md mx-auto mt-10 shadow-lg">
       <CardHeader className="flex flex-col items-center space-y-3">
-        <div className="w-16 h-16 rounded-full bg-gray-400 flex items-center justify-center text-white text-xl">
-          👤
-        </div>
+        {avatar ? (
+          <img
+            src={avatar}
+            alt="User avatar"
+            className="w-16 h-16 rounded-full object-cover"
+          />
+        ) : (
+          <div className="w-16 h-16 rounded-full bg-gray-400 flex items-center justify-center text-white text-xl">
+            👤
+          </div>
+        )}
+
         <CardTitle>User Profile</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -161,13 +222,50 @@ export default function ProfileCard({ googleUser = {} }) {
 
         <div>
           <Label htmlFor="school">School</Label>
-          <Input
-            id="school"
-            value={school}
-            disabled={!isEditing}
-            className="rounded-full mt-1"
-            onChange={(e) => setSchool(e.target.value)}
-          />
+          {isEditing ? (
+            <>
+              <Input
+                id="school"
+                value={schoolSearch}
+                placeholder="Searching school..."
+                className="rounded-full mt-1"
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setSchoolSearch(value);
+                  setSchool(value); // Always sync school with search
+                  if (value) {
+                    debouncedFetch(value);
+                  } else {
+                    setSchoolList([]);
+                  }
+                }}
+              />
+              {schoolList.length > 0 && (
+                <div className="border rounded-md max-h-40 overflow-y-auto mt-1">
+                  {schoolList.map((s) => (
+                    <div
+                      key={s.name}
+                      className="p-2 cursor-pointer hover:font-bold"
+                      onClick={() => {
+                        setSchool(s.name);
+                        setSchoolSearch(s.name);
+                        setSchoolList([]); // Clear dropdown after select
+                      }}
+                    >
+                      {s.name}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
+          ) : (
+            <Input
+              id="school"
+              value={school}
+              disabled
+              className="rounded-full mt-1"
+            />
+          )}
         </div>
       </CardContent>
       <CardFooter className="justify-end space-x-2">
@@ -179,7 +277,9 @@ export default function ProfileCard({ googleUser = {} }) {
             <Button onClick={handleSave}>Save</Button>
           </>
         ) : (
-          <Button onClick={handleEdit} className="rounded-full">Edit</Button>
+          <Button onClick={handleEdit} className="rounded-full">
+            Edit
+          </Button>
         )}
       </CardFooter>
     </Card>

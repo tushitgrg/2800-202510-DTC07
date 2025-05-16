@@ -145,3 +145,15 @@
     background: var(--accent-foreground);
   }
 }
+
+.input-valid:focus {
+  outline: none;
+  border-color: #22c55e;
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.6);
+}
+
+.input-invalid:focus {
+  outline: none;
+  border-color: #ef4444;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.6);
+}

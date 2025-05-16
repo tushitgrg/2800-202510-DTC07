@@ -1,12 +1,12 @@
-function processFile(file){
-    const pdfBuffer = file.buffer;
+function processFile(file) {
+  const pdfBuffer = file.buffer;
 
-    const filePart = {
-      inlineData: {
-        data: pdfBuffer.toString("base64"),
-        mimeType: "application/pdf",
-      },
-    };
-    return filePart
+  const filePart = {
+    inlineData: {
+      data: pdfBuffer.toString("base64"),
+      mimeType: "application/pdf",
+    },
+  };
+  return filePart;
 }
-module.exports = {processFile}
+module.exports = { processFile };

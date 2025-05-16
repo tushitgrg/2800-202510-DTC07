@@ -1,72 +1,198 @@
-"use client"
-import React from 'react'
-import { useState } from 'react';
+"use client";
+
+import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Check, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Quiz from "@/components/quizzes/quiz";
 import Flashcards from "@/components/flashcards/flashcard";
-import Markdown from 'react-markdown';
+import Summary from "@/components/summaries/summary";
+import { addToDashboard } from "@/lib/addToDashboard";
+import TogglePublicButton from "@/components/ui/toggle-public";
+import LikeButton from "@/components/ui/like";
+import updateResource from "@/lib/updateResource";
 
-const ResourceComp = ({resourceData}) => {
-    const hasQuiz = !!resourceData.quiz;
-    const hasFlashcards = !!resourceData.flashcard;
-    const hasSummary = !!resourceData.summary;
+const ResourceComp = ({ resourceData, userData, goToDashboard }) => {
+  console.log(resourceData);
+  // Check available content
+  const hasQuiz = !!resourceData.quiz;
+  const hasFlashcards = !!resourceData.flashcard;
+  const hasSummary = !!resourceData.summary;
 
-    // Make tab on what's available
-    let defaultTab = 'quiz';
-    if (!hasQuiz && hasFlashcards) defaultTab = 'flashcard';
-    else if (!hasQuiz && !hasFlashcards && hasSummary) defaultTab = 'summary';
+  // State for likes and public status
+  const [liked, setLiked] = useState(resourceData.isLiked || false);
+  const [isPublic, setIsPublic] = useState(resourceData.isPublic || false);
 
-    const [activeTab, setActiveTab] = useState(defaultTab);
+  // Set default tab
+  let defaultTab = "quiz";
+  if (!hasQuiz && hasFlashcards) defaultTab = "flashcard";
+  else if (!hasQuiz && !hasFlashcards && hasSummary) defaultTab = "summary";
+
+  const [activeTab, setActiveTab] = useState(defaultTab);
+
+  // Format date
+  const formattedDate = new Date(resourceData.createdAt).toDateString();
+
+  // Check if user already has this resource or is the owner
+  const hasResource = resourceData.hasResource === true;
+  const isOwner = resourceData.isOwner === true;
+
+  // Add to dashboard
+  const handleAddToDashboard = async () => {
+    try {
+      await addToDashboard(resourceData.id);
+      goToDashboard();
+    } catch (error) {
+      console.error("Error adding to dashboard:", error);
+    }
+  };
+
+  // Handle like toggle
+  const handleLike = async (newLikedState) => {
+    try {
+      setLiked(newLikedState);
+      await updateResource({
+        editingId: resourceData.id,
+        isLiked: newLikedState,
+      });
+      console.log(
+        `Resource ${resourceData.id} like status updated to ${newLikedState}`,
+      );
+    } catch (error) {
+      // Revert state if API call fails
+      setLiked(liked);
+      console.error("Error updating like status:", error);
+    }
+  };
+
+  // Handle public/private toggle
+  const handleTogglePublic = async (newPublicState) => {
+    try {
+      setIsPublic(newPublicState);
+      await updateResource({
+        editingId: resourceData.id,
+        isPublic: newPublicState,
+      });
+      console.log(
+        `Resource ${resourceData.id} public status updated to ${newPublicState}`,
+      );
+    } catch (error) {
+      // Revert state if API call fails
+      setIsPublic(isPublic);
+      console.error("Error updating public status:", error);
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl w-screen">
-      {/* Back button */}
-      <Link href="/dashboard" className="flex items-left text-sm text-gray-400 hover:text-white mb-6 w-fit">
-        <ChevronLeft className="w-5 h-5 mr-1" />
-        Back to Dashboard
-      </Link>
+      {/* Back button and Add to Dashboard */}
+      <div className="flex justify-between items-center mb-6">
+        <p
+          onClick={() => window.history.back()}
+          className="flex items-center text-sm text-gray-400 hover:text-white cursor-pointer"
+        >
+          <ChevronLeft className="w-5 h-5 mr-1" />
+          Back
+        </p>
 
-      {/* Resource title and creation date */}
-      <div className="mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold mb-2">{resourceData.title}</h1>
-        <p className="text-sm text-gray-400">Created on {new Date(resourceData.createdAt).toDateString()}</p>
+        {/* Add button if not owner and not already added */}
+        {!isOwner && !hasResource && (
+          <Button
+            variant="outline"
+            className="w-fit"
+            onClick={handleAddToDashboard}
+          >
+            <Plus className="mr-1 h-3 w-3" />
+            Add to my Dashboard
+          </Button>
+        )}
+
+        {/* Already added and not owner */}
+        {!isOwner && hasResource && (
+          <Button
+            variant="outline"
+            className="w-fit cursor-not-allowed opacity-70 text-xs"
+            disabled
+          >
+            <Check className="mr-1 h-3 w-3" />
+            Added to my Dashboard
+          </Button>
+        )}
       </div>
 
-      {/* Tabs for different content types */}
-      <Tabs defaultValue={defaultTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className={`grid w-full mb-6 ${
-          [hasQuiz, hasFlashcards, hasSummary].filter(Boolean).length === 1 ? 'grid-cols-1' :
-          [hasQuiz, hasFlashcards, hasSummary].filter(Boolean).length === 2 ? 'grid-cols-2' :
-          'grid-cols-3'}`} >
+      {/* Title and date */}
+      <div className="mb-8">
+        <div className="header flex justify-between w-full">
+          <h1 className="text-2xl md:text-3xl font-bold mb-2">
+            {resourceData.title}
+          </h1>
+          <div className="buttons flex gap-2">
+            {/* Debugging display */}
+
+            <LikeButton liked={liked} onChange={handleLike} />
+            {isOwner && (
+              <TogglePublicButton
+                isPublic={isPublic}
+                onClick={handleTogglePublic}
+              />
+            )}
+          </div>
+        </div>
+
+        <p className="text-sm text-gray-400">Created on {formattedDate}</p>
+      </div>
+
+      {/* Content tabs */}
+      <Tabs
+        defaultValue={defaultTab}
+        onValueChange={setActiveTab}
+        className="w-full"
+      >
+        <TabsList
+          className={`grid w-full mb-6 ${
+            [hasQuiz, hasFlashcards, hasSummary].filter(Boolean).length === 1
+              ? "grid-cols-1"
+              : [hasQuiz, hasFlashcards, hasSummary].filter(Boolean).length ===
+                  2
+                ? "grid-cols-2"
+                : "grid-cols-3"
+          }`}
+        >
           {hasQuiz && <TabsTrigger value="quiz">Quiz</TabsTrigger>}
-          {hasFlashcards && <TabsTrigger value="flashcard">Flashcards</TabsTrigger>}
+          {hasFlashcards && (
+            <TabsTrigger value="flashcard">Flashcards</TabsTrigger>
+          )}
           {hasSummary && <TabsTrigger value="summary">Summary</TabsTrigger>}
         </TabsList>
 
+        {/* Quiz content */}
         {hasQuiz && (
           <TabsContent value="quiz" className="py-4 flex justify-center">
-            <Quiz questions={resourceData.quiz.questions}/>
+            <Quiz questions={resourceData.quiz.questions} />
           </TabsContent>
         )}
 
+        {/* Flashcards content */}
         {hasFlashcards && (
           <TabsContent value="flashcard" className="py-4 flex justify-center">
             <Flashcards cards={resourceData.flashcard.cards} />
           </TabsContent>
         )}
 
+        {/* Summary content */}
         {hasSummary && (
           <TabsContent value="summary" className="py-4 flex justify-center">
-            <div className="bg-slate-800 rounded-lg p-6 shadow-md">
-                <Markdown>{resourceData.summary.content}</Markdown>
-              {/* <p className="text-white">{JSON.stringify(resourceData.summary.content)}</p> */}
-            </div>
+            {/* <div className="bg-slate-800 rounded-lg p-6 shadow-md w-full max-w-3xl"> */}
+            <Summary
+              content={resourceData.summary.content}
+              progress={resourceData.progress.summaryCompletion}
+            />
           </TabsContent>
         )}
       </Tabs>
     </div>
-  )
-}
+  );
+};
 
-export default ResourceComp
+export default ResourceComp;

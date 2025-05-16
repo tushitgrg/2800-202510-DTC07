@@ -5,10 +5,13 @@ const addFlashcardEntry = require("../utils/addFlashcardEntry");
 const addSummaryEntry = require("../utils/addSummaryEntry");
 
 const User = require("../models/userModel");
+const Progress = require("../models/progressModel");
 const Resource = require("../models/resourceModel");
 const Quiz = require("../models/quizModel");
 const Flashcard = require("../models/flashcardModel");
 const Summary = require("../models/summaryModel");
+const { getTranscriptAsFilePart } = require("../utils/GetYoutubeTranscript");
+const { isValidObjectId } = require("mongoose");
 
 const fetchResource = async (resourceID) => {
   const resource = await Resource.findById(resourceID);
@@ -31,22 +34,33 @@ const getResourceInfo = async function (req, res) {
   try {
     const user = await User.findById(userId);
     const userResources = user.resources;
+
     const result = await Promise.all(
       userResources.map(async (resourceID) => {
         const resource = await Resource.findById(resourceID);
+        const progress = await Progress.findOne({
+          $and: [{ userId: userId }, { resourceId: resourceID }],
+        }).select("-_id -userId -resourceId");
         if (!resource) return null;
         const info = {};
         info.id = resourceID;
         info.title = resource.title;
         info.createdAt = resource.createdAt;
         info.tags = resource.tags || [];
+        info.progress = progress || {};
+        info.isOwner = userId.equals(resource.author);
+        info.isPublic = resource.isPublic;
+        const author = await User.findById(resource.author);
+        info.school = author.school;
+        console.log(info.school);
+
         return info;
-      })
+      }),
     );
-    res.status(200).json({ resources: result });
+    return res.status(200).json({ resources: result });
   } catch (err) {
     console.error("Failed to fetch user resources:", err);
-    res.status(500).json({ error: "Failed to fetch resources" });
+    return res.status(500).json({ error: "Failed to fetch resources" });
   }
 };
 
@@ -57,12 +71,12 @@ const getResources = async function (req, res) {
     const user = await User.findById(userId);
     const userResources = user.resources;
     const result = await Promise.all(
-      userResources.map((resourceID) => fetchResource(resourceID))
+      userResources.map((resourceID) => fetchResource(resourceID)),
     );
-    res.status(200).json(result);
+    return res.status(200).json(result);
   } catch (err) {
     console.error("Failed to fetch user resources:", err);
-    res.status(500).json({ error: "Failed to fetch resources" });
+    return res.status(500).json({ error: "Failed to fetch resources" });
   }
 };
 
@@ -76,9 +90,19 @@ const getResourceById = async function (req, res) {
     if (!resource) {
       return res.status(404).json({ error: "Resource not found" });
     }
-    const { quizID, flashcardID, summaryID, title, createdAt } = resource;
+    const { quizID, flashcardID, summaryID, title, createdAt, author } =
+      resource;
+    const progress = await Progress.findOne({ resourceId: resourceId }).select(
+      "-_id -userId -resourceId",
+    );
+    response.id = resourceId;
     response.title = title;
     response.createdAt = createdAt;
+    response.progress = progress || {};
+    response.isOwner = author.equals(req.user._id);
+    console.log(req.user._id);
+    response.isLiked = resource.likes?.includes(req.user._id);
+    response.isPublic = resource.isPublic;
     if (quizID) {
       const quiz = await Quiz.findById(quizID);
       response.quiz = quiz;
@@ -101,12 +125,17 @@ const getResourceById = async function (req, res) {
 //POST request handler for creating a resource
 const addResource = async function (req, res) {
   const userId = req.user._id;
-  const { title, quizPrompt, flashcardPrompt, summaryPrompt } = req.body;
-  if (!req.file) {
-    return res.status(400).json({ error: "No file uploaded" });
-  }
+  const user = await User.findById(userId);
 
-  const file = await processFile(req.file);
+  const { title, quizPrompt, flashcardPrompt, summaryPrompt, youtubeUrl } =
+    req.body;
+  if (!req.file) {
+    if (!youtubeUrl)
+      return res.status(500).json({ error: "No file or youtube URL uploaded" });
+    file = await getTranscriptAsFilePart(youtubeUrl);
+  } else {
+    file = processFile(req.file);
+  }
 
   if (!file) {
     return res.status(500).json({ error: "Failed to process file" });
@@ -116,6 +145,8 @@ const addResource = async function (req, res) {
     quizID: null,
     flashcardID: null,
     summaryID: null,
+    author: userId,
+    school: user.school || null,
   });
 
   try {
@@ -155,15 +186,25 @@ const addResource = async function (req, res) {
     await Promise.all(tasks);
   } catch (err) {
     console.error("Failed to create resource data:", err);
-    res
+    if (newResource._id) {
+      await Resource.deleteOne({
+        _id: newResource._id,
+      });
+    }
+
+    return res
       .status(500)
       .json({ error: "Failed to create one or more parts of the resource." });
   }
 
-  const user = await User.findById(userId);
   user.resources.push(newResource._id);
   await user.save();
-  res.status(201).json({
+  await Progress.create({
+    userId: userId,
+    resourceId: newResource._id,
+  });
+
+  return res.status(201).json({
     msg: `Successfully created resource with id:${newResource._id}`,
     resourceID: newResource._id,
   });
@@ -172,26 +213,28 @@ const addResource = async function (req, res) {
 const deleteResource = async function (req, res) {
   const resourceId = req.params.id;
   if (!resourceId) {
-    res.status(400).json({ error: "Resource ID is required" });
+    return res.status(400).json({ error: "Resource ID is required" });
   }
 
   const user = await User.findById(req.user._id);
   if (!user) {
-    res.status(404).json({ error: "User not found" });
+    return res.status(404).json({ error: "User not found" });
   }
-  if (!user.hasResource) {
+
+  if (!req.hasResource) {
     return res
       .status(403)
       .json({ msg: "User has no authorization to delete this resource" });
   }
+
   try {
     await Resource.findByIdAndDelete(resourceId);
     await user.updateOne({ $pull: { resources: resourceId } });
-    res
+    return res
       .status(200)
       .json({ msg: `Successfully deleted resource with ID: ${resourceId}` });
   } catch (err) {
-    res
+    return res
       .status(500)
       .json({ error: err, msg: "Unable to delete the provided resource" });
   }
@@ -199,30 +242,132 @@ const deleteResource = async function (req, res) {
 
 const updateResourceInfo = async function (req, res) {
   const resourceId = req.params.id;
-  const { newTitle, newTags } = req.body;
+
+  const { newTitle, newTags, newSchool, newCourse, isPublic, isLiked } =
+    req.body;
+  const updatedFields = {
+    ...(newTitle && { title: newTitle }),
+    ...(newTags && { tags: newTags }),
+    ...(newSchool && { school: newSchool }),
+    ...(newCourse && { course: newCourse }),
+    ...(isPublic != null && { isPublic: isPublic }),
+  };
 
   if (!resourceId) {
-    res.status(400).json({ error: "Resource ID is required" });
+    return res.status(400).json({ error: "Resource ID is required" });
   }
   try {
+    console.log(
+      "Hello this is emanuel: ",
+      isPublic,
+      updatedFields.isPublic,
+      true,
+    );
+    if (isLiked === true) {
+      await Resource.findByIdAndUpdate(resourceId, {
+        $addToSet: { likes: req.user._id },
+      });
+    } else if (isLiked === false) {
+      console.log("IS it coming from here?");
+      await Resource.findByIdAndUpdate(resourceId, {
+        $pull: { likes: req.user._id },
+      });
+    }
     const updatedResource = await Resource.findByIdAndUpdate(
       resourceId,
-      {
-        title: newTitle,
-        tags: newTags,
-      },
-      { new: true }
+      updatedFields,
+      { new: true },
     );
     if (!updatedResource) {
       return res.status(404).json({ error: "Resource not found" });
     }
     return res.status(200).json(updatedResource);
-  } catch (err) {}
+  } catch (err) {
+    console.log(err);
+    res
+      .status(500)
+      .json({ error: "Unable to update resource", msg: err.message || err });
+  }
+};
+
+const getPublicResources = async function (req, res) {
+  try {
+    let { course, school, q, sort, page } = req.query;
+    if (!page) {
+      page = 1;
+    }
+    const limit = 18;
+
+    // Always filter for public resources
+    const filters = { isPublic: true };
+
+    // Optional filters
+    if (course) filters.course = course;
+    if (school) filters.school = { $regex: school, $options: "i" };
+
+    // Text search (title, description, tags)
+    if (q) {
+      filters.$or = [
+        { title: { $regex: q, $options: "i" } },
+        { description: { $regex: q, $options: "i" } },
+        { tags: { $regex: q, $options: "i" } },
+      ];
+    }
+
+    // Optional sorting
+    let sortOption = {};
+    if (sort) {
+      const [field, order] = sort.split(":");
+      sortOption[field] = order === "desc" ? -1 : 1;
+    }
+
+    const totalCount = await Resource.countDocuments(filters);
+
+    const publicResources = await Resource.find(filters)
+      .sort(sortOption)
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .populate("author", "name");
+
+    const publicResourceInfo = publicResources.map((resource) => ({
+      _id: resource._id,
+      title: resource.title,
+      author: resource.author?.name || null,
+      school: resource.school || null,
+      course: resource.course,
+      createdAt: resource.createdAt,
+      shareCount: resource.shareCount || 0,
+      likes: resource.likes?.length || 0,
+    }));
+
+    // Obtain all unique schools/courses from matching full set
+    const allMatchingResources =
+      await Resource.find(filters).select("school course");
+    const allSchools = Array.from(
+      new Set(allMatchingResources.map((r) => r.school).filter(Boolean)),
+    );
+    const allCourses = Array.from(
+      new Set(allMatchingResources.map((r) => r.course).filter(Boolean)),
+    );
+
+    res.status(200).json({
+      data: publicResourceInfo,
+      totalCount,
+      allSchools,
+      allCourses,
+    });
+  } catch (err) {
+    res.status(500).json({
+      msg: "Unable to fetch public resources",
+      error: err.message || err,
+    });
+  }
 };
 
 module.exports = {
   getResources,
   getResourceInfo,
+  getPublicResources,
   getResourceById,
   addResource,
   deleteResource,
