@@ -89,7 +89,6 @@ export default function ResourceCard({
             resource={resource}
             handleEdit={handleEdit}
             handleDelete={handleDelete}
-            handleShare={handleShare}
             onOpenShareDialog={onOpenShareDialog}
           />
         </div>
@@ -124,13 +123,7 @@ export default function ResourceCard({
               isOpen={isSharing}
               onClose={onCloseShareDialog}
               resource={resource}
-              onShare={(data) => {
-                handleShare(
-                  resource.id,
-                  data.title !== resource.title ? data.title : null,
-                  data.isPublic
-                );
-              }}
+              handleShare={handleShare}
             />
           )}
         </>
