@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { ClientUrl } from "@/lib/urls";
 import toast from "react-hot-toast";
 
-export default function ShareDialog({ isOpen, onClose, resource, onShare }) {
+export default function ShareDialog({ isOpen, onClose, resource, handleShare }) {
   const [title, setTitle] = useState(resource?.title || "");
   const [school, setSchool] = useState("");
   const [course, setCourse] = useState("");
@@ -63,55 +63,46 @@ export default function ShareDialog({ isOpen, onClose, resource, onShare }) {
   const handlecopylink = async () => {
     if (navigator.clipboard) {
       try {
-        await navigator.clipboard.writeText(`${ClientUrl}/resource/${resource.id}`)
-        toast.success('Copied!', {
+        await navigator.clipboard.writeText(
+          `${ClientUrl}/resource/${resource.id}`
+        );
+        toast.success("Copied!", {
           duration: 4000,
-          position: 'bottom-right',
-        })
+          position: "bottom-right",
+        });
       } catch {
-        toast.error('Could not copy to clipboard.', {
+        toast.error("Could not copy to clipboard.", {
           duration: 4000,
-          position: 'bottom-right',
-        })
+          position: "bottom-right",
+        });
       }
-
     }
-  }
+  };
   // Handle share button click
   const handleSharePrivate = async () => {
     if (navigator.share) {
       try {
-
         await navigator.share({
           title: resource.title,
           url: `${ClientUrl}/resource/${resource.id}`,
         });
-
-      } catch (e) {
-     
-      }
+      } catch (e) {}
     } else {
-      toast.error('Web Share API is not supported in this browser.', {
+      toast.error("Web Share API is not supported in this browser.", {
         duration: 4000,
-        position: 'bottom-right',
-      })
+        position: "bottom-right",
+      });
     }
-    // onShare({
-    //   title,
-    //   school: school || null,
-    //   course: course || null,
-    //   isPublic: false
-    // });
-    // onClose();
   };
 
   const handleSharePublic = () => {
-    onShare({
+    handleShare(
+      resource.id,
       title,
-      school: school || null,
-      course: course || null,
-      isPublic: true,
-    });
+      school? school : null,
+      course? course : null,
+      true
+    );
     onClose();
   };
 
@@ -168,7 +159,7 @@ export default function ShareDialog({ isOpen, onClose, resource, onShare }) {
             <div className="relative">
               <Input
                 id="school-search"
-                value={searchSchool}
+                value={resource.school ? resource.school : searchSchool}
                 onChange={(e) => setSearchSchool(e.target.value)}
                 placeholder="Search for a school"
                 className="mb-1"
@@ -240,30 +231,45 @@ export default function ShareDialog({ isOpen, onClose, resource, onShare }) {
 
           {/* Action Buttons */}
           <div className="flex justify-between pt-4">
-
             <div className="flex gap-2">
               <Button
                 variant="outline"
-                className="space-x-2 cursor-pointer"
+                className="space-x-1 cursor-pointer"
                 onClick={handlecopylink}
               >
                 <Clipboard className="h-4 w-4" />
+                <span>Copy</span>
               </Button>
 
               <Button
                 variant="outline"
-                className="space-x-2 cursor-pointer"
+                className="space-x-1 cursor-pointer"
                 onClick={handleSharePrivate}
               >
                 <Link className="h-4 w-4" />
-                <span>Private Link</span>
+                <span>Share</span>
               </Button>
             </div>
 
-            <Button className="space-x-2" onClick={handleSharePublic}>
-              <Globe className="h-4 w-4" />
-              <span>Share to Public</span>
-            </Button>
+            {!resource.isOwner ? (
+              <div className="relative group cursor-not-allowed">
+                <Button className="space-x-2" disabled>
+                  <Globe className="h-4 w-4" />
+                  <span>Share to Public</span>
+                </Button>
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-gray-800 text-xs text-white rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+                  You can only share resources that you have created!
+                </div>
+              </div>
+            ) : (
+              <Button
+                className="space-x-2 cursor-pointer"
+                onClick={handleSharePublic}
+              >
+                <Globe className="h-4 w-4" />
+                <span>Share to Public</span>
+              </Button>
+            )}
           </div>
         </div>
       </div>

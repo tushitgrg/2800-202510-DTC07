@@ -9,6 +9,7 @@ import Loading from "@/components/Loading";
 import ResourceCard from "@/components/dashboard/ResourceCard";
 import MiniProfileCard from "@/components/ProfileCard/MiniProfileCard";
 import DashboardFilters from "@/components/dashboard/DashboardFilters";
+import updateResource from "@/lib/updateResource";
 
 export default function DashboardPage() {
   const [resources, setResources] = useState(null);
@@ -111,21 +112,12 @@ export default function DashboardPage() {
       const updatedResource = resources.find((r) => r.id === editingId);
       if (!updatedResource) return;
 
-      const response = await fetch(`${ServerUrl}/resources/${editingId}`, {
-        method: "PUT",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          newTitle: editValue,
-          newTags: updatedResource.tags || [],
-        }),
+      // Update db
+      updateResource({
+        editingId: editingId,
+        editValue: editValue,
+        updatedResource: updatedResource,
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to update resource");
-      }
 
       setResources(
         resources.map((resource) =>
@@ -179,21 +171,47 @@ export default function DashboardPage() {
     }
   };
 
-  const handleShare = async (id, newTitle, isPublic) => {
+  const handleShare = async (
+    id,
+    newTitle,
+    schoolData,
+    courseData,
+    isPublicData
+  ) => {
     try {
-      // Set the sharing resource ID to null to close the dialog
-      setSharingResourceId(null);
+      console.log(
+        "Sharing resource:",
+        id,
+        newTitle,
+        schoolData,
+        courseData,
+        isPublicData
+      );
+      // Update the resource in the database
+      updateResource({
+        editingId: id,
+        editValue: newTitle,
+        newSchool: schoolData,
+        newCourse: courseData,
+        isPublic: isPublicData,
+      });
 
+      setSharingResourceId(null);
       // If a new title was provided, update the title
-      if (newTitle) {
-        // Update db
-        setResources(
-          resources.map((resource) =>
-            resource.id === id ? { ...resource, title: newTitle } : resource
-          )
-        );
-      }
-      // Update db
+      // Update local state
+      setResources(
+        resources.map((resource) =>
+          resource.id === id
+            ? {
+                ...resource,
+                title: newTitle,
+                school: schoolData,
+                course: courseData,
+                isPublic: isPublicData,
+              }
+            : resource
+        )
+      );
     } catch (error) {
       console.error("Error sharing resource:", error);
     }
