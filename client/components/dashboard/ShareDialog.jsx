@@ -169,7 +169,7 @@ export default function ShareDialog({ isOpen, onClose, resource, handleShare }) 
               />
               {searchSchool && (
                 <div className="absolute z-10 w-full bg-background rounded-md max-h-48 overflow-y-auto">
-                  {schoolList.length > 0 ? schoolList.map((s, index )=> (
+                  {schoolList.length > 0 ? schoolList.map((s, index) => (
                     <div
                       key={`${s.name}-${index}`}
                       className="p-2 hover:bg-muted cursor-pointer"
@@ -231,23 +231,33 @@ export default function ShareDialog({ isOpen, onClose, resource, handleShare }) 
               </Button>
             </div>
 
-            {!resource.isOwner|| resource.isPublic ? (
+            {!resource.isOwner || resource.isPublic ? (
               <div className="relative group cursor-not-allowed">
                 <Button className="space-x-2" disabled>
                   <Globe className="h-4 w-4" />
                   <span>Share to Public</span>
                 </Button>
-                {!resource.isOwner?  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-gray-800 text-xs text-white rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+                {!resource.isOwner ? <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-gray-800 text-xs text-white rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
                   You can only share resources that you have created!
-                </div>:  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-gray-800 text-xs text-white rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+                </div> : <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-gray-800 text-xs text-white rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
                   This resource is already public!
                 </div>}
-              
+
               </div>
             ) : (
               <Button
                 className="space-x-2 cursor-pointer"
-                onClick={handleSharePublic}
+                onClick={() => {
+                  if (title) {
+                    handleSharePublic()
+                  } else {
+                    toast.error('Cannot set empty title!', {
+                      duration: 4000,
+                      position: 'bottom-right',
+                    })
+                  }
+
+                }}
               >
                 <Globe className="h-4 w-4" />
                 <span>Share to Public</span>
