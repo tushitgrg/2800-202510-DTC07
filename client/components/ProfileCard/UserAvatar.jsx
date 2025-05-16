@@ -1,6 +1,7 @@
 "use client";
 
 import { getLevelInfo } from "@/lib/progress";
+import Image from "next/image";
 
 export default function UserAvatar({ user }) {
   const info = getLevelInfo(user.experience)
@@ -9,7 +10,7 @@ export default function UserAvatar({ user }) {
       <div className="relative">
         <div className="h-16 w-16 rounded-full bg-gradient-to-r from-primary to-purple-600 flex items-center justify-center">
           <span className="text-primary-foreground text-lg font-bold">
-            <img src={user.avatar} className="rounded-full"/>
+      <Image src={user.avatar} className="rounded-full" width={100} height={100} alt={user.name}/>
           </span>
         </div>
         {/* Level chevron */}

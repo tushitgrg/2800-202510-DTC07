@@ -6,6 +6,7 @@ import { ChevronRight, LogOut } from 'lucide-react';
 import { getUserClient } from '@/lib/clientAuth';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '../ui/dropdown-menu';
 import { ServerUrl } from '@/lib/urls';
+import Image from 'next/image';
 
 
 const AuthButton = ({ className = "" }) => {
@@ -30,7 +31,7 @@ const AuthButton = ({ className = "" }) => {
                           ${className}`}
             >
                 {user.name}
-                <img src={user.avatar} className="rounded-full w-7 h-7 ml-2" />
+                <Image src={user.avatar} className="rounded-full w-7 h-7 ml-2" width={100} height={100} alt={user.name}/>
             </Button>
 
                 </DropdownMenuTrigger>
