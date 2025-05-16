@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Quiz from "@/components/quizzes/quiz";
 import Flashcards from "@/components/flashcards/flashcard";
-import Markdown from "react-markdown";
+import Summary from "@/components/summaries/summary";
 import { addToDashboard } from "@/lib/addToDashboard";
 import TogglePublicButton from "@/components/ui/toggle-public";
 import LikeButton from "@/components/ui/like";
@@ -16,6 +16,7 @@ import updateResource from "@/lib/updateResource";
 
 
 const ResourceComp = ({ resourceData, userData, goToDashboard }) => {
+  console.log(resourceData)
   // Check available content
   const hasQuiz = !!resourceData.quiz;
   const hasFlashcards = !!resourceData.flashcard;
@@ -83,8 +84,7 @@ const ResourceComp = ({ resourceData, userData, goToDashboard }) => {
       {/* Back button and Add to Dashboard */}
       <div className="flex justify-between items-center mb-6">
         <p
-
-          onClick={()=>window.history.back()}
+          onClick={() => window.history.back()}
           className="flex items-center text-sm text-gray-400 hover:text-white cursor-pointer"
         >
           <ChevronLeft className="w-5 h-5 mr-1" />
@@ -119,20 +119,22 @@ const ResourceComp = ({ resourceData, userData, goToDashboard }) => {
       {/* Title and date */}
       <div className="mb-8">
         <div className="header flex justify-between w-full">
-  <h1 className="text-2xl md:text-3xl font-bold mb-2">
-  
-          {resourceData.title}
-        </h1>
-        <div className="buttons flex gap-2">
+          <h1 className="text-2xl md:text-3xl font-bold mb-2">
+            {resourceData.title}
+          </h1>
+          <div className="buttons flex gap-2">
             {/* Debugging display */}
-            
+
             <LikeButton liked={liked} onChange={handleLike} />
             {isOwner && (
-              <TogglePublicButton isPublic={isPublic} onClick={handleTogglePublic} />
+              <TogglePublicButton
+                isPublic={isPublic}
+                onClick={handleTogglePublic}
+              />
             )}
           </div>
         </div>
-      
+
         <p className="text-sm text-gray-400">Created on {formattedDate}</p>
       </div>
 
@@ -176,9 +178,11 @@ const ResourceComp = ({ resourceData, userData, goToDashboard }) => {
         {/* Summary content */}
         {hasSummary && (
           <TabsContent value="summary" className="py-4 flex justify-center">
-            <div className="bg-slate-800 rounded-lg p-6 shadow-md w-full max-w-3xl">
-              <Markdown>{resourceData.summary.content}</Markdown>
-            </div>
+            {/* <div className="bg-slate-800 rounded-lg p-6 shadow-md w-full max-w-3xl"> */}
+            <Summary
+              content={resourceData.summary.content}
+              progress={resourceData.progress.summaryCompletion}
+            />
           </TabsContent>
         )}
       </Tabs>
