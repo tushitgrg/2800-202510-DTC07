@@ -58,7 +58,7 @@ export default function DashboardPage() {
   // Update filter function when search query or selected tags change
   useEffect(() => {
     const newFilterFunction = (resource) => {
-      const matchesSearch = resource.title
+      const matchesSearch = (resource.title || "")
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
       const matchesTags =
