@@ -11,6 +11,8 @@ import Markdown from "react-markdown";
 import { addToDashboard } from "@/lib/addToDashboard";
 import TogglePublicButton from "@/components/ui/toggle-public";
 import LikeButton from "@/components/ui/like";
+import updateResource from "@/lib/updateResource";
+
 
 
 const ResourceComp = ({ resourceData, userData, goToDashboard }) => {
@@ -20,7 +22,7 @@ const ResourceComp = ({ resourceData, userData, goToDashboard }) => {
   const hasSummary = !!resourceData.summary;
 
    // State for likes and public status
-  const [liked, setLiked] = useState(resourceData.liked || false);
+  const [liked, setLiked] = useState(resourceData.isLiked || false);
   const [isPublic, setIsPublic] = useState(resourceData.isPublic || false);
 
 
@@ -53,7 +55,7 @@ const ResourceComp = ({ resourceData, userData, goToDashboard }) => {
   const handleLike = async (newLikedState) => {
     try {
       setLiked(newLikedState);
-      // await updateLikeStatus(resourceData.id, newLikedState);
+      await updateResource({editingId:resourceData.id, isLiked: newLikedState});
       console.log(`Resource ${resourceData.id} like status updated to ${newLikedState}`);
     } catch (error) {
       // Revert state if API call fails
@@ -66,7 +68,7 @@ const ResourceComp = ({ resourceData, userData, goToDashboard }) => {
   const handleTogglePublic = async (newPublicState) => {
     try {
       setIsPublic(newPublicState);
-      // await updatePublicStatus(resourceData.id, newPublicState);
+      await updateResource({editingId:resourceData.id, isPublic:newPublicState});
       console.log(`Resource ${resourceData.id} public status updated to ${newPublicState}`);
     } catch (error) {
       // Revert state if API call fails
@@ -123,7 +125,6 @@ const ResourceComp = ({ resourceData, userData, goToDashboard }) => {
         </h1>
         <div className="buttons flex gap-2">
             {/* Debugging display */}
-            {/* <span className="text-xs text-gray-400">Liked: {liked ? 'true' : 'false'}</span> */}
             
             <LikeButton liked={liked} onChange={handleLike} />
             {isOwner && (

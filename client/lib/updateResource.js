@@ -14,7 +14,8 @@ const updateResource = async (resource) => {
       newTags: resource.updatedResource ? resource.updatedResource.tags : [],
       newSchool: resource.updatedResource ? resource.school : null,
       newCourse: resource.updatedResource ? resource.course : null,
-      isPublic: resource.isPublic ? resource.isPublic : false,
+      isPublic: resource.isPublic !== undefined ? resource.isPublic : undefined,
+      isLiked: resource.isLiked !== undefined ? resource.isLiked : null,
     }),
   });
 
@@ -22,6 +23,5 @@ const updateResource = async (resource) => {
     throw new Error("Failed to update resource");
   }
 };
-
 
 export default updateResource;
