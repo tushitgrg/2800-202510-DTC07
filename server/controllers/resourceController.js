@@ -55,7 +55,7 @@ const getResourceInfo = async function (req, res) {
         console.log(info.school);
 
         return info;
-      })
+      }),
     );
     return res.status(200).json({ resources: result });
   } catch (err) {
@@ -71,7 +71,7 @@ const getResources = async function (req, res) {
     const user = await User.findById(userId);
     const userResources = user.resources;
     const result = await Promise.all(
-      userResources.map((resourceID) => fetchResource(resourceID))
+      userResources.map((resourceID) => fetchResource(resourceID)),
     );
     return res.status(200).json(result);
   } catch (err) {
@@ -93,7 +93,7 @@ const getResourceById = async function (req, res) {
     const { quizID, flashcardID, summaryID, title, createdAt, author } =
       resource;
     const progress = await Progress.findOne({ resourceId: resourceId }).select(
-      "-_id -userId -resourceId"
+      "-_id -userId -resourceId",
     );
     response.id = resourceId;
     response.title = title;
@@ -261,7 +261,7 @@ const updateResourceInfo = async function (req, res) {
       "Hello this is emanuel: ",
       isPublic,
       updatedFields.isPublic,
-      true
+      true,
     );
     if (isLiked === true) {
       await Resource.findByIdAndUpdate(resourceId, {
@@ -276,7 +276,7 @@ const updateResourceInfo = async function (req, res) {
     const updatedResource = await Resource.findByIdAndUpdate(
       resourceId,
       updatedFields,
-      { new: true }
+      { new: true },
     );
     if (!updatedResource) {
       return res.status(404).json({ error: "Resource not found" });
@@ -294,7 +294,7 @@ const getPublicResources = async function (req, res) {
   try {
     let { course, school, q, sort, page } = req.query;
     if (!page) {
-      page = 1
+      page = 1;
     }
     const limit = 18;
 
@@ -325,7 +325,7 @@ const getPublicResources = async function (req, res) {
 
     const publicResources = await Resource.find(filters)
       .sort(sortOption)
-      .skip(((page - 1) * limit))
+      .skip((page - 1) * limit)
       .limit(limit)
       .populate("author", "name");
 
@@ -341,12 +341,13 @@ const getPublicResources = async function (req, res) {
     }));
 
     // Obtain all unique schools/courses from matching full set
-    const allMatchingResources = await Resource.find(filters).select("school course");
+    const allMatchingResources =
+      await Resource.find(filters).select("school course");
     const allSchools = Array.from(
-      new Set(allMatchingResources.map((r) => r.school).filter(Boolean))
+      new Set(allMatchingResources.map((r) => r.school).filter(Boolean)),
     );
     const allCourses = Array.from(
-      new Set(allMatchingResources.map((r) => r.course).filter(Boolean))
+      new Set(allMatchingResources.map((r) => r.course).filter(Boolean)),
     );
 
     res.status(200).json({

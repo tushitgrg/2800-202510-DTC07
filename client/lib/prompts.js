@@ -1,4 +1,5 @@
-export const generateQuizPrompt = (s) => `
+export const generateQuizPrompt = (s) =>
+  `
 You are an expert quiz generator.
 
 Return a single JSON object that **MUST** conform exactly to this schema
@@ -21,8 +22,8 @@ Requirements:
 4. **Do not** include explanations, markdown code fences, or extra fields.
 5. Respond with **only** the JSON—nothing else.`.trim();
 
-
-export const generateFlashcardPrompt = (s) => `
+export const generateFlashcardPrompt = (s) =>
+  `
 You are an expert flash‑card creator.
 
 Return one JSON object that fits this schema exactly
@@ -48,8 +49,8 @@ Rules:
 4. Keep each front/back under ~280 characters.
 5. Output strictly valid JSON—no code fences, no commentary.`.trim();
 
-
-export const generateSummaryPrompt = (s) => `
+export const generateSummaryPrompt = (s) =>
+  `
 You are an expert summariser.
 
 Return a JSON object matching this schema

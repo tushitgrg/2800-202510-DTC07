@@ -63,12 +63,12 @@ export default function Quiz({ questions, onComplete, progress }) {
         question.options.length === 2 &&
         question.options.every(
           (option) =>
-            option.toLowerCase() === "true" || option.toLowerCase() === "false"
+            option.toLowerCase() === "true" || option.toLowerCase() === "false",
         );
 
       // Shuffle the options
       const shuffledOptions = [...question.options].sort(
-        () => Math.random() - 0.5
+        () => Math.random() - 0.5,
       );
 
       return {
@@ -157,7 +157,7 @@ export default function Quiz({ questions, onComplete, progress }) {
       if (answer === null) {
         const correctAnswer = questionsToUse[index].answer;
         const incorrectChoice = questionsToUse[index].options.find(
-          (choice) => choice !== correctAnswer
+          (choice) => choice !== correctAnswer,
         );
         return incorrectChoice || questionsToUse[index].options[0];
       }
@@ -179,7 +179,7 @@ export default function Quiz({ questions, onComplete, progress }) {
       {
         quizScore: scorePercentage,
       },
-      progress
+      progress,
     );
   };
 
@@ -245,22 +245,22 @@ export default function Quiz({ questions, onComplete, progress }) {
 
   // Results view
   if (showResults) {
-    const score = calculateScore()
-    const scorePercentage  = (score/questions.length) * 100
+    const score = calculateScore();
+    const scorePercentage = (score / questions.length) * 100;
     return (
       <div className="w-full max-w-md">
         {/* Keep the timer visible on results page */}
         <Timer />
-           {scorePercentage>70&&<BadgeEarnedModal success={true}/>}
-                  {scorePercentage<30&&<BadgeEarnedModal success={false}/>}
+        {scorePercentage > 70 && <BadgeEarnedModal success={true} />}
+        {scorePercentage < 30 && <BadgeEarnedModal success={false} />}
         <Card className="w-full">
           <CardContent className="p-6">
             <h2 className="text-2xl font-bold text-center mb-4">
               Quiz Completed!
             </h2>
             <p className="text-center text-lg mb-6">
-              Your score: <span className="font-bold">{score}</span>{" "}
-              out of {questions.length}
+              Your score: <span className="font-bold">{score}</span> out of{" "}
+              {questions.length}
             </p>
             <p className="text-center text-gray-600 mb-6">
               Time taken: {formatTime(elapsedTime)}

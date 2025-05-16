@@ -153,7 +153,7 @@ export default function TagsManager({
                   <div className="max-h-32 overflow-y-auto">
                     {allTags
                       .filter((tag) =>
-                        tag.toLowerCase().includes(tagInputValue.toLowerCase())
+                        tag.toLowerCase().includes(tagInputValue.toLowerCase()),
                       )
                       .map((tag) => (
                         <div

@@ -12,7 +12,7 @@ const hasResource = async function (req, res, next) {
     }
 
     const alreadyHas = user.resources.some(
-      (r) => r._id.equals(targetId) || r.originalResourceId?.equals(targetId)
+      (r) => r._id.equals(targetId) || r.originalResourceId?.equals(targetId),
     );
 
     req.hasResource = alreadyHas;

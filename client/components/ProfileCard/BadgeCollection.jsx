@@ -284,7 +284,7 @@ export default function BadgeCollection() {
       userBadges.map((badge) => ({
         ...badge,
         equipped: badge.id === badgeId,
-      }))
+      })),
     );
   };
 
@@ -313,14 +313,14 @@ export default function BadgeCollection() {
                 <p>
                   {badge.description.replace(
                     "{threshold}",
-                    tiers[badge.tier].threshold
+                    tiers[badge.tier].threshold,
                   )}
                 </p>
               ) : (
                 <p>
                   {badge.description.replace(
                     "{threshold}",
-                    tiers.bronze.threshold
+                    tiers.bronze.threshold,
                   )}
                 </p>
               )}
@@ -390,14 +390,14 @@ export default function BadgeCollection() {
                       <p>
                         {badge.description.replace(
                           "{threshold}",
-                          tiers[badge.tier].threshold
+                          tiers[badge.tier].threshold,
                         )}
                       </p>
                     ) : (
                       <p>
                         {badge.description.replace(
                           "{threshold}",
-                          tiers.bronze.threshold
+                          tiers.bronze.threshold,
                         )}
                       </p>
                     )}

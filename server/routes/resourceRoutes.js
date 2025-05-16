@@ -12,7 +12,10 @@ const {
   updateResourceInfo,
 } = require("../controllers/resourceController");
 const { hasResource } = require("../controllers/sharedResourceMiddleware");
-const { addResourceById, updateResourceSchoolInfo } = require("../controllers/shareController");
+const {
+  addResourceById,
+  updateResourceSchoolInfo,
+} = require("../controllers/shareController");
 
 //GET Routers
 router.get("/", getResources);

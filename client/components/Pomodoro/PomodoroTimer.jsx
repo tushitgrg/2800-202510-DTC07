@@ -1,11 +1,9 @@
-"use client"
+"use client";
 
-import { useEffect } from "react"
-import { Play, Pause, SkipForward } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
-
-
+import { useEffect } from "react";
+import { Play, Pause, SkipForward } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export default function PomodoroTimer({
   timerActive,
@@ -22,30 +20,30 @@ export default function PomodoroTimer({
 
     if (timerActive && timeRemaining > 0) {
       interval = setInterval(() => {
-        setTimeRemaining(timeRemaining - 1)
-      }, 1000)
+        setTimeRemaining(timeRemaining - 1);
+      }, 1000);
     } else if (timeRemaining === 0) {
       // Play sound when timer ends
-      const audio = new Audio("/notification.mp3")
-      audio.play()
+      const audio = new Audio("/notification.mp3");
+      audio.play();
 
       // Auto switch to the other mode
-      switchMode()
+      switchMode();
     }
 
-    return () => clearInterval(interval)
-  }, [timerActive, timeRemaining, setTimeRemaining, switchMode])
+    return () => clearInterval(interval);
+  }, [timerActive, timeRemaining, setTimeRemaining, switchMode]);
 
   // Format time as MM:SS
   const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60)
-    const secs = seconds % 60
-    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`
-  }
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+  };
 
   // Calculate progress percentage
-  const totalTime = timerMode === "work" ? 25 * 60 : 5 * 60
-  const progress = (timeRemaining / totalTime) * 100
+  const totalTime = timerMode === "work" ? 25 * 60 : 5 * 60;
+  const progress = (timeRemaining / totalTime) * 100;
 
   return (
     <div className="flex flex-col items-center">
@@ -59,8 +57,8 @@ export default function PomodoroTimer({
           )}
           onClick={() => {
             if (timerMode !== "work") {
-              setTimeRemaining(25 * 60)
-              switchMode()
+              setTimeRemaining(25 * 60);
+              switchMode();
             }
           }}
         >
@@ -74,8 +72,8 @@ export default function PomodoroTimer({
           )}
           onClick={() => {
             if (timerMode !== "break") {
-              setTimeRemaining(5 * 60)
-              switchMode()
+              setTimeRemaining(5 * 60);
+              switchMode();
             }
           }}
         >
@@ -87,7 +85,14 @@ export default function PomodoroTimer({
       <div className="relative w-64 h-64 flex items-center justify-center mb-6">
         {/* Progress Circle */}
         <svg className="absolute w-full h-full -rotate-90">
-          <circle cx="50%" cy="50%" r="45%" fill="transparent" stroke="rgba(255, 255, 255, 0.1)" strokeWidth="8" />
+          <circle
+            cx="50%"
+            cy="50%"
+            r="45%"
+            fill="transparent"
+            stroke="rgba(255, 255, 255, 0.1)"
+            strokeWidth="8"
+          />
           <circle
             cx="50%"
             cy="50%"
@@ -102,7 +107,9 @@ export default function PomodoroTimer({
         </svg>
 
         {/* Time Display */}
-        <div className="text-6xl font-light z-10">{formatTime(timeRemaining)}</div>
+        <div className="text-6xl font-light z-10">
+          {formatTime(timeRemaining)}
+        </div>
       </div>
 
       {/* Timer Controls */}
@@ -125,5 +132,5 @@ export default function PomodoroTimer({
         </Button>
       </div>
     </div>
-  )
+  );
 }

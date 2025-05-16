@@ -64,7 +64,7 @@ export default function Flashcards({ cards, progress }) {
           {
             flashcardScore: scorePercentage,
           },
-          progress
+          progress,
         );
       }
     }
@@ -95,12 +95,14 @@ export default function Flashcards({ cards, progress }) {
   // Results view
   if (showResults) {
     const correctCount = correctAnswers.filter(Boolean).length;
-    const scorePercentage = Math.round((correctCount / cardsToUse.length) * 100);
+    const scorePercentage = Math.round(
+      (correctCount / cardsToUse.length) * 100,
+    );
 
     return (
       <div className="w-full max-w-md">
-        {scorePercentage>70&&<BadgeEarnedModal success={true}/>}
-          {scorePercentage<30&&<BadgeEarnedModal success={false}/>}
+        {scorePercentage > 70 && <BadgeEarnedModal success={true} />}
+        {scorePercentage < 30 && <BadgeEarnedModal success={false} />}
         <Card className="w-full">
           <div className="p-6">
             <h2 className="text-2xl font-bold text-center mb-4">

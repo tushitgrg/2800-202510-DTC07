@@ -13,19 +13,16 @@ import TogglePublicButton from "@/components/ui/toggle-public";
 import LikeButton from "@/components/ui/like";
 import updateResource from "@/lib/updateResource";
 
-
-
 const ResourceComp = ({ resourceData, userData, goToDashboard }) => {
-  console.log(resourceData)
+  console.log(resourceData);
   // Check available content
   const hasQuiz = !!resourceData.quiz;
   const hasFlashcards = !!resourceData.flashcard;
   const hasSummary = !!resourceData.summary;
 
-   // State for likes and public status
+  // State for likes and public status
   const [liked, setLiked] = useState(resourceData.isLiked || false);
   const [isPublic, setIsPublic] = useState(resourceData.isPublic || false);
-
 
   // Set default tab
   let defaultTab = "quiz";
@@ -51,13 +48,17 @@ const ResourceComp = ({ resourceData, userData, goToDashboard }) => {
     }
   };
 
-
-    // Handle like toggle
+  // Handle like toggle
   const handleLike = async (newLikedState) => {
     try {
       setLiked(newLikedState);
-      await updateResource({editingId:resourceData.id, isLiked: newLikedState});
-      console.log(`Resource ${resourceData.id} like status updated to ${newLikedState}`);
+      await updateResource({
+        editingId: resourceData.id,
+        isLiked: newLikedState,
+      });
+      console.log(
+        `Resource ${resourceData.id} like status updated to ${newLikedState}`,
+      );
     } catch (error) {
       // Revert state if API call fails
       setLiked(liked);
@@ -69,15 +70,19 @@ const ResourceComp = ({ resourceData, userData, goToDashboard }) => {
   const handleTogglePublic = async (newPublicState) => {
     try {
       setIsPublic(newPublicState);
-      await updateResource({editingId:resourceData.id, isPublic:newPublicState});
-      console.log(`Resource ${resourceData.id} public status updated to ${newPublicState}`);
+      await updateResource({
+        editingId: resourceData.id,
+        isPublic: newPublicState,
+      });
+      console.log(
+        `Resource ${resourceData.id} public status updated to ${newPublicState}`,
+      );
     } catch (error) {
       // Revert state if API call fails
       setIsPublic(isPublic);
       console.error("Error updating public status:", error);
     }
   };
-
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl w-screen">
@@ -149,9 +154,9 @@ const ResourceComp = ({ resourceData, userData, goToDashboard }) => {
             [hasQuiz, hasFlashcards, hasSummary].filter(Boolean).length === 1
               ? "grid-cols-1"
               : [hasQuiz, hasFlashcards, hasSummary].filter(Boolean).length ===
-                2
-              ? "grid-cols-2"
-              : "grid-cols-3"
+                  2
+                ? "grid-cols-2"
+                : "grid-cols-3"
           }`}
         >
           {hasQuiz && <TabsTrigger value="quiz">Quiz</TabsTrigger>}
