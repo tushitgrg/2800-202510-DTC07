@@ -27,7 +27,7 @@ export default function Summary({ content, progress }) {
       {
         summaryCompletion: isChecked,
       },
-      progress
+      progress,
     );
   };
 

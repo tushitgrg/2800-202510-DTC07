@@ -14,16 +14,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const CommunityFilters = ({
-  allSchools,      // List of all school options
-  allCourses,      // List of all course options
-  selectedSchool,  // Currently selected school filter
-  selectedCourse,  // Currently selected course filter
-  searchQuery,     // Current search input
-  sortOption,      // Current sort selection
-  onFilterChange,  // Function to update filters
-  onSortChange     // Function to update sort
+  allSchools, // List of all school options
+  allCourses, // List of all course options
+  selectedSchool, // Currently selected school filter
+  selectedCourse, // Currently selected course filter
+  searchQuery, // Current search input
+  sortOption, // Current sort selection
+  onFilterChange, // Function to update filters
+  onSortChange, // Function to update sort
 }) => {
-
   // Local input state for filtering dropdown list of schools/courses dynamically
   const [schoolSearch, setSchoolSearch] = useState("");
   const [courseSearch, setCourseSearch] = useState("");
@@ -32,14 +31,14 @@ const CommunityFilters = ({
   const filteredSchools = useMemo(() => {
     if (!schoolSearch.trim()) return allSchools;
     return allSchools.filter((school) =>
-      school.toLowerCase().includes(schoolSearch.toLowerCase())
+      school.toLowerCase().includes(schoolSearch.toLowerCase()),
     );
   }, [schoolSearch, allSchools]);
 
   const filteredCourses = useMemo(() => {
     if (!courseSearch.trim()) return allCourses;
     return allCourses.filter((course) =>
-      course.toLowerCase().includes(courseSearch.toLowerCase())
+      course.toLowerCase().includes(courseSearch.toLowerCase()),
     );
   }, [courseSearch, allCourses]);
 
@@ -115,16 +114,28 @@ const CommunityFilters = ({
           <DropdownMenuContent align="start">
             <DropdownMenuLabel>Sort by</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => onSortChange("createdAt:desc")} className="cursor-pointer">
+            <DropdownMenuItem
+              onClick={() => onSortChange("createdAt:desc")}
+              className="cursor-pointer"
+            >
               Newest
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onSortChange("createdAt:asc")} className="cursor-pointer">
+            <DropdownMenuItem
+              onClick={() => onSortChange("createdAt:asc")}
+              className="cursor-pointer"
+            >
               Oldest
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onSortChange("likes:desc")} className="cursor-pointer">
+            <DropdownMenuItem
+              onClick={() => onSortChange("likes:desc")}
+              className="cursor-pointer"
+            >
               Likes
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onSortChange("shareCount:desc")} className="cursor-pointer">
+            <DropdownMenuItem
+              onClick={() => onSortChange("shareCount:desc")}
+              className="cursor-pointer"
+            >
               Share Count
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -276,4 +287,4 @@ const CommunityFilters = ({
   );
 };
 
-export default CommunityFilters
+export default CommunityFilters;

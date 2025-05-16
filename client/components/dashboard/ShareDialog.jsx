@@ -21,8 +21,13 @@ function debounce(cb, delay) {
   };
 }
 
-export default function ShareDialog({ isOpen, onClose, resource, handleShare }) {
-  console.log(resource)
+export default function ShareDialog({
+  isOpen,
+  onClose,
+  resource,
+  handleShare,
+}) {
+  console.log(resource);
   const [title, setTitle] = useState(resource?.title || "");
   const [school, setSchool] = useState("");
   const [course, setCourse] = useState("");
@@ -36,15 +41,15 @@ export default function ShareDialog({ isOpen, onClose, resource, handleShare }) 
       setSchoolList([]);
       return;
     }
-    const res = await fetch(`${ServerUrl}/school/search?q=${encodeURIComponent(q)}`, { credentials: "include" });
+    const res = await fetch(
+      `${ServerUrl}/school/search?q=${encodeURIComponent(q)}`,
+      { credentials: "include" },
+    );
     const data = await res.json();
     setSchoolList(data);
   };
 
-  const debouncedFetchSchools = useMemo(
-    () => debounce(fetchSchools, 500),
-    []
-  );
+  const debouncedFetchSchools = useMemo(() => debounce(fetchSchools, 500), []);
 
   useEffect(() => {
     if (resource) {
@@ -52,12 +57,11 @@ export default function ShareDialog({ isOpen, onClose, resource, handleShare }) 
     }
   }, [resource]);
 
-
   const handlecopylink = async () => {
     if (navigator.clipboard) {
       try {
         await navigator.clipboard.writeText(
-          `${ClientUrl}/resource/${resource.id}`
+          `${ClientUrl}/resource/${resource.id}`,
         );
         toast.success("Copied!", {
           duration: 4000,
@@ -79,7 +83,7 @@ export default function ShareDialog({ isOpen, onClose, resource, handleShare }) 
           title: resource.title,
           url: `${ClientUrl}/resource/${resource.id}`,
         });
-      } catch (e) { }
+      } catch (e) {}
     } else {
       toast.error("Web Share API is not supported in this browser.", {
         duration: 4000,
@@ -94,7 +98,7 @@ export default function ShareDialog({ isOpen, onClose, resource, handleShare }) 
       title,
       school ? school : null,
       course ? course : null,
-      true
+      true,
     );
     onClose();
   };
@@ -154,12 +158,14 @@ export default function ShareDialog({ isOpen, onClose, resource, handleShare }) 
                 id="school-search"
                 value={searchSchool}
                 placeholder="Search for a school"
-                onChange={e => {
+                onChange={(e) => {
                   const v = e.target.value;
                   setSearchSchool(v);
-                  setSchool(v)
+                  setSchool(v);
                   // clear any previously selected school ID if user is typing
-                  if (v !== (schools.find(s => s.id === school)?.name || "")) {
+                  if (
+                    v !== (schools.find((s) => s.id === school)?.name || "")
+                  ) {
                     setSchool("");
                     setCourse("");
                   }
@@ -169,19 +175,23 @@ export default function ShareDialog({ isOpen, onClose, resource, handleShare }) 
               />
               {searchSchool && (
                 <div className="absolute z-10 w-full bg-background rounded-md max-h-48 overflow-y-auto">
-                  {schoolList.length > 0 ? schoolList.map((s, index) => (
-                    <div
-                      key={`${s.name}-${index}`}
-                      className="p-2 hover:bg-muted cursor-pointer"
-                      onClick={() => {
-                        setSchool(s.name);
-                        setSearchSchool(s.name);
-                        setSchoolList([]);
-                      }}
-                    >
-                      {s.name}
-                    </div>
-                  )) : (<span className="hidden"></span>)}
+                  {schoolList.length > 0 ? (
+                    schoolList.map((s, index) => (
+                      <div
+                        key={`${s.name}-${index}`}
+                        className="p-2 hover:bg-muted cursor-pointer"
+                        onClick={() => {
+                          setSchool(s.name);
+                          setSearchSchool(s.name);
+                          setSchoolList([]);
+                        }}
+                      >
+                        {s.name}
+                      </div>
+                    ))
+                  ) : (
+                    <span className="hidden"></span>
+                  )}
                 </div>
               )}
             </div>
@@ -196,7 +206,7 @@ export default function ShareDialog({ isOpen, onClose, resource, handleShare }) 
               <Input
                 id="course-input"
                 value={course}
-                onChange={e => {
+                onChange={(e) => {
                   const input = e.target.value.replace(/\s/g, "");
                   if (input.length <= 15) {
                     setCourse(input);
@@ -237,26 +247,28 @@ export default function ShareDialog({ isOpen, onClose, resource, handleShare }) 
                   <Globe className="h-4 w-4" />
                   <span>Share to Public</span>
                 </Button>
-                {!resource.isOwner ? <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-gray-800 text-xs text-white rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
-                  You can only share resources that you have created!
-                </div> : <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-gray-800 text-xs text-white rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
-                  This resource is already public!
-                </div>}
-
+                {!resource.isOwner ? (
+                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-gray-800 text-xs text-white rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+                    You can only share resources that you have created!
+                  </div>
+                ) : (
+                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-gray-800 text-xs text-white rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+                    This resource is already public!
+                  </div>
+                )}
               </div>
             ) : (
               <Button
                 className="space-x-2 cursor-pointer"
                 onClick={() => {
                   if (title) {
-                    handleSharePublic()
+                    handleSharePublic();
                   } else {
-                    toast.error('Cannot set empty title!', {
+                    toast.error("Cannot set empty title!", {
                       duration: 4000,
-                      position: 'bottom-right',
-                    })
+                      position: "bottom-right",
+                    });
                   }
-
                 }}
               >
                 <Globe className="h-4 w-4" />

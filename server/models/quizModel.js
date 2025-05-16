@@ -22,12 +22,12 @@ const quizCollectionSchema = new mongoose.Schema(
       },
     ],
   },
-  { _id: true, timestamps: true }
+  { _id: true, timestamps: true },
 );
 
 const quizCollectionModel = mongoose.model(
   "quizCollection",
-  quizCollectionSchema
+  quizCollectionSchema,
 );
 // export default userModel
 module.exports = quizCollectionModel;

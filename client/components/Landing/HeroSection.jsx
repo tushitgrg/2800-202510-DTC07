@@ -1,34 +1,29 @@
-"use client"
+"use client";
 
-import { useRef, useState, useEffect } from "react"
+import { useRef, useState, useEffect } from "react";
 
-import { motion, useScroll, useTransform } from "framer-motion"
+import { motion, useScroll, useTransform } from "framer-motion";
 import {
   Check,
-
   ArrowRight,
-
   Brain,
   FileText,
   Sparkles,
   Lightbulb,
-} from "lucide-react"
-import { Button } from "@/components/ui/button"
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
 
-import { Badge } from "@/components/ui/badge"
-import Link from "next/link" 
-
-
+import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 
 const HeroSection = () => {
-
-  const { scrollYProgress } = useScroll()
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0])
-  const heroScale = useTransform(scrollYProgress, [0, 0.2], [1, 0.95])
-  const heroRef = useRef(null)
+  const { scrollYProgress } = useScroll();
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
+  const heroScale = useTransform(scrollYProgress, [0, 0.2], [1, 0.95]);
+  const heroRef = useRef(null);
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
-  if (!mounted) return <div></div>
+  if (!mounted) return <div></div>;
   return (
     <section
       className="relative w-full min-h-[90vh] flex items-center justify-center overflow-hidden"
@@ -47,7 +42,11 @@ const HeroSection = () => {
             y: [0, -20, 0],
             scale: [1, 1.1, 1],
           }}
-          transition={{ duration: 8, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+          transition={{
+            duration: 8,
+            repeat: Number.POSITIVE_INFINITY,
+            ease: "easeInOut",
+          }}
         />
         <motion.div
           className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full bg-purple-600/20 blur-3xl opacity-60"
@@ -56,7 +55,12 @@ const HeroSection = () => {
             y: [0, 20, 0],
             scale: [1, 1.15, 1],
           }}
-          transition={{ duration: 10, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut", delay: 1 }}
+          transition={{
+            duration: 10,
+            repeat: Number.POSITIVE_INFINITY,
+            ease: "easeInOut",
+            delay: 1,
+          }}
         />
         <motion.div
           className="absolute top-2/3 left-1/3 w-40 h-40 rounded-full bg-pink-600/20 blur-3xl opacity-60"
@@ -65,7 +69,12 @@ const HeroSection = () => {
             y: [0, -15, 0],
             scale: [1, 1.05, 1],
           }}
-          transition={{ duration: 7, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut", delay: 2 }}
+          transition={{
+            duration: 7,
+            repeat: Number.POSITIVE_INFINITY,
+            ease: "easeInOut",
+            delay: 2,
+          }}
         />
       </div>
 
@@ -80,7 +89,11 @@ const HeroSection = () => {
             rotateX: [0, 5, 0],
             rotateY: [0, 5, 0],
           }}
-          transition={{ duration: 20, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+          transition={{
+            duration: 20,
+            repeat: Number.POSITIVE_INFINITY,
+            ease: "easeInOut",
+          }}
         >
           {/* Horizontal lines */}
           {Array.from({ length: 10 }).map((_, i) => (
@@ -149,12 +162,20 @@ const HeroSection = () => {
           <motion.div
             className="absolute inset-0 rounded-3xl bg-gradient-to-br from-primary to-purple-600"
             animate={{ rotate: 360 }}
-            transition={{ duration: 20, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
+            transition={{
+              duration: 20,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "linear",
+            }}
           />
           <motion.div
             className="absolute inset-2 rounded-2xl bg-black"
             animate={{ rotate: -360 }}
-            transition={{ duration: 30, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
+            transition={{
+              duration: 30,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "linear",
+            }}
           />
           <motion.div
             className="absolute inset-0 flex items-center justify-center"
@@ -172,7 +193,10 @@ const HeroSection = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
-          <Badge className="mb-6 rounded-full px-4 py-1.5 text-sm font-medium" variant="secondary">
+          <Badge
+            className="mb-6 rounded-full px-4 py-1.5 text-sm font-medium"
+            variant="secondary"
+          >
             AI-Powered Learning
           </Badge>
         </motion.div>
@@ -209,8 +233,8 @@ const HeroSection = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.8 }}
         >
-          Scholiast transforms how you study with AI-generated quizzes, flashcards, and summaries. Master any
-          subject in half the time.
+          Scholiast transforms how you study with AI-generated quizzes,
+          flashcards, and summaries. Master any subject in half the time.
         </motion.p>
 
         {/* Animated cards */}
@@ -231,7 +255,10 @@ const HeroSection = () => {
               initial={{ x: -50, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ duration: 0.5, delay: 1 + i * 0.2 }}
-              whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.1)" }}
+              whileHover={{
+                scale: 1.05,
+                backgroundColor: "rgba(255,255,255,0.1)",
+              }}
             >
               <div className="text-primary">{item.icon}</div>
               <span className="font-medium">{item.label}</span>
@@ -247,7 +274,10 @@ const HeroSection = () => {
           transition={{ duration: 0.8, delay: 1.2 }}
         >
           <Link href="/dashboard">
-            <Button size="lg" className="rounded-full h-14 px-8 text-base relative overflow-hidden group">
+            <Button
+              size="lg"
+              className="rounded-full h-14 px-8 text-base relative overflow-hidden group"
+            >
               <motion.span
                 className="absolute inset-0 bg-gradient-to-r from-primary/50 to-purple-500/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                 animate={{
@@ -291,7 +321,11 @@ const HeroSection = () => {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 1.4 }}
         >
-          {["Upload or Paste Any Material", "Auto-Generate Learning Aids", "Study Smarter, Not Harder"].map((feature, i) => (
+          {[
+            "Upload or Paste Any Material",
+            "Auto-Generate Learning Aids",
+            "Study Smarter, Not Harder",
+          ].map((feature, i) => (
             <div key={i} className="flex items-center gap-1.5">
               <Check className="size-4 text-primary" />
               <span>{feature}</span>
@@ -309,18 +343,26 @@ const HeroSection = () => {
           <motion.div
             className="w-6 h-10 rounded-full border-2 border-white/20 flex items-center justify-center"
             animate={{ y: [0, 10, 0] }}
-            transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+            transition={{
+              duration: 1.5,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "easeInOut",
+            }}
           >
             <motion.div
               className="w-1.5 h-1.5 rounded-full bg-primary"
               animate={{ y: [0, 4, 0] }}
-              transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+              transition={{
+                duration: 1.5,
+                repeat: Number.POSITIVE_INFINITY,
+                ease: "easeInOut",
+              }}
             />
           </motion.div>
         </motion.div>
       </motion.div>
     </section>
-  )
-}
+  );
+};
 
-export default HeroSection
+export default HeroSection;

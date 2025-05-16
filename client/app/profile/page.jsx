@@ -20,13 +20,12 @@ export default function profilePage() {
             email: user.email,
           });
         } else {
-          
           window.location.href = `${ServerUrl}/auth/google`;
         }
       });
   }, []);
 
-  if (!googleUser) return <Loading/>;
+  if (!googleUser) return <Loading />;
 
   return (
     <div>

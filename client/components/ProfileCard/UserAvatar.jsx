@@ -4,13 +4,19 @@ import { getLevelInfo } from "@/lib/progress";
 import Image from "next/image";
 
 export default function UserAvatar({ user }) {
-  const info = getLevelInfo(user.experience)
+  const info = getLevelInfo(user.experience);
   return (
     <div className="flex items-center space-x-4">
       <div className="relative">
         <div className="h-16 w-16 rounded-full bg-gradient-to-r from-primary to-purple-600 flex items-center justify-center">
           <span className="text-primary-foreground text-lg font-bold">
-      <Image src={user.avatar} className="rounded-full" width={100} height={100} alt={user.name}/>
+            <Image
+              src={user.avatar}
+              className="rounded-full"
+              width={100}
+              height={100}
+              alt={user.name}
+            />
           </span>
         </div>
         {/* Level chevron */}

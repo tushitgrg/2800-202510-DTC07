@@ -27,12 +27,12 @@ export default function CommunityPage() {
   // Obtain the dropdown options from filteredResources
   const availableCourses = useMemo(
     () => Array.from(new Set(allCourses.filter(Boolean))),
-    [allCourses]
+    [allCourses],
   );
 
   const availableSchools = useMemo(
     () => Array.from(new Set(allSchools.filter(Boolean))),
-    [allSchools]
+    [allSchools],
   );
 
   // Load more button handle
@@ -47,12 +47,14 @@ export default function CommunityPage() {
     const fetchResources = async () => {
       try {
         // URL to public resources endpoint (Obtain all public resources)
-        const res = await fetch(`${ServerUrl}/resources/public`, { credentials: "include" });
-        if ([401, 201].includes(res.status)) return router.push(`${ServerUrl}/auth/google`);
+        const res = await fetch(`${ServerUrl}/resources/public`, {
+          credentials: "include",
+        });
+        if ([401, 201].includes(res.status))
+          return router.push(`${ServerUrl}/auth/google`);
         if (!res.ok) throw new Error("Failed to fetch resources");
         const data = await res.json();
         setResources(data); // Update state with real data
-
       } catch (err) {
         console.error("Error fetching resources:", err);
       }
@@ -62,7 +64,6 @@ export default function CommunityPage() {
 
   // Send filter/sort/search query to backend and receive filtered resources
   const fetchFilteredResources = async (pageToFetch = 1, append = false) => {
-
     const filters = {
       course: selectedCourse,
       school: selectedSchool,
@@ -74,7 +75,10 @@ export default function CommunityPage() {
     const queryString = new URLSearchParams(filters).toString();
 
     try {
-      const response = await fetch(`${ServerUrl}/resources/public?${queryString}`, { credentials: "include" });
+      const response = await fetch(
+        `${ServerUrl}/resources/public?${queryString}`,
+        { credentials: "include" },
+      );
       const result = await response.json();
 
       // Appends loaded card components to current card components
@@ -88,10 +92,9 @@ export default function CommunityPage() {
       setAllSchools(result.allSchools || []);
       setAllCourses(result.allCourses || []);
 
-      if (result.data.length < 18 || (pageToFetch * 18 >= result.totalCount)) {
+      if (result.data.length < 18 || pageToFetch * 18 >= result.totalCount) {
         setHasMore(false);
       }
-
     } catch (error) {
       console.error("Error fetching filtered resources:", error);
       if (!append) setFilteredResources([]);
@@ -145,7 +148,6 @@ export default function CommunityPage() {
             ))}
           </div>
         )}
-
       </div>
       <Button
         onClick={handleLoadMore}

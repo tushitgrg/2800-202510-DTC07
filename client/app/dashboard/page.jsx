@@ -44,8 +44,8 @@ export default function DashboardPage() {
           new Set(
             data.resources
               .flatMap((resource) => resource.tags || [])
-              .filter((tag) => tag)
-          )
+              .filter((tag) => tag),
+          ),
         );
         setAllTags(uniqueTags);
       } catch (error) {
@@ -123,8 +123,8 @@ export default function DashboardPage() {
         resources.map((resource) =>
           resource.id === editingId
             ? { ...resource, title: editValue }
-            : resource
-        )
+            : resource,
+        ),
       );
       setEditingId(null);
     } catch (error) {
@@ -134,8 +134,8 @@ export default function DashboardPage() {
         resources.map((resource) =>
           resource.id === editingId
             ? { ...resource, title: editValue }
-            : resource
-        )
+            : resource,
+        ),
       );
       setEditingId(null);
     }
@@ -176,7 +176,7 @@ export default function DashboardPage() {
     newTitle,
     schoolData,
     courseData,
-    isPublicData
+    isPublicData,
   ) => {
     try {
       console.log(
@@ -185,7 +185,7 @@ export default function DashboardPage() {
         newTitle,
         schoolData,
         courseData,
-        isPublicData
+        isPublicData,
       );
       // Update the resource in the database
       updateResource({
@@ -209,19 +209,19 @@ export default function DashboardPage() {
                 course: courseData,
                 isPublic: isPublicData,
               }
-            : resource
-        )
+            : resource,
+        ),
       );
-         toast.success("Your resource is now public!", {
-          duration: 4000,
-          position: "bottom-right",
-        });
+      toast.success("Your resource is now public!", {
+        duration: 4000,
+        position: "bottom-right",
+      });
     } catch (error) {
       console.error("Error sharing resource:", error);
-        toast.error("There was some error!", {
-          duration: 4000,
-          position: "bottom-right",
-        });
+      toast.error("There was some error!", {
+        duration: 4000,
+        position: "bottom-right",
+      });
     }
   };
 
@@ -286,8 +286,8 @@ export default function DashboardPage() {
       new Set(
         currentResources
           .flatMap((resource) => resource.tags || [])
-          .filter((tag) => tag)
-      )
+          .filter((tag) => tag),
+      ),
     );
     setAllTags(uniqueTags);
   };

@@ -51,7 +51,7 @@ export function BadgeDialog({
                 <p className="text-sm text-muted-foreground">
                   {selectedBadge.description.replace(
                     "{threshold}",
-                    selectedBadge.count
+                    selectedBadge.count,
                   )}
                 </p>
 

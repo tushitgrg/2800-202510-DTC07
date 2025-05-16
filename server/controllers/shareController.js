@@ -36,8 +36,8 @@ const addResourceById = async function (req, res) {
     });
   }
 };
-const updateResourceSchoolInfo = async function(req, res){
- const resourceId = req.params.id;
+const updateResourceSchoolInfo = async function (req, res) {
+  const resourceId = req.params.id;
   const { newCourse, newSchool } = req.body;
 
   if (!resourceId) {
@@ -50,15 +50,16 @@ const updateResourceSchoolInfo = async function(req, res){
         school: newSchool,
         course: newCourse,
       },
-      { new: true }
+      { new: true },
     );
     if (!updatedResource) {
       return res.status(404).json({ error: "Resource not found" });
     }
     return res.status(200).json(updatedResource);
   } catch (err) {
-    res.status(500).json({error:"Unable to update resource", msg:err.message || err})
+    res
+      .status(500)
+      .json({ error: "Unable to update resource", msg: err.message || err });
   }
-
-}
+};
 module.exports = { addResourceById, updateResourceSchoolInfo };

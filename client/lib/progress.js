@@ -19,13 +19,13 @@ export function getLevelInfo(xp) {
   ];
   let levelNumber = 1;
   let levelName = levels[0].name;
-  let nextLevelXp = levels[1].xp
+  let nextLevelXp = levels[1].xp;
 
   for (let i = 0; i < levels.length; i++) {
     if (xp >= levels[i].xp) {
       levelNumber = i + 1;
       levelName = levels[i].name;
-      nextLevelXp = levels[levelNumber].xp
+      nextLevelXp = levels[levelNumber].xp;
     } else {
       break;
     }
@@ -36,7 +36,7 @@ export function getLevelInfo(xp) {
 export const updateResourceProgress = async (
   resourceId,
   progressData,
-  currentProgress
+  currentProgress,
 ) => {
   try {
     console.log("Progress data before processing:", progressData);
