@@ -267,7 +267,11 @@ const updateResourceInfo = async function (req, res) {
 
 const getPublicResources = async function (req, res) {
   try {
-    const { course, school, q, sort } = req.query;
+    let { course, school, q, sort, page } = req.query;
+    if(!page){
+      page = 1
+    }
+    const limit = 18;
 
     // Always filter for public resources
     const filters = { isPublic: true };
@@ -294,6 +298,8 @@ const getPublicResources = async function (req, res) {
 
     const publicResources = await Resource.find(filters)
       .sort(sortOption)
+      .skip(((page-1) *limit))
+      .limit(limit)
       .populate("author", "name");
 
     const publicResourceInfo = publicResources.map((resource) => ({
