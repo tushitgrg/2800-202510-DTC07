@@ -1,20 +1,49 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link, Globe, Clipboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ClientUrl } from "@/lib/urls";
+import { ServerUrl } from "@/lib/urls";
 import toast from "react-hot-toast";
+
+//add debounce function to let user finish entering first
+function debounce(cb, delay) {
+  let timeoutId;
+  return function (...args) {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+    timeoutId = setTimeout(() => {
+      cb(...args);
+    }, delay);
+  };
+}
 
 export default function ShareDialog({ isOpen, onClose, resource, handleShare }) {
   const [title, setTitle] = useState(resource?.title || "");
   const [school, setSchool] = useState("");
   const [course, setCourse] = useState("");
   const [schools, setSchools] = useState([]);
-  const [courses, setCourses] = useState([]);
   const [searchSchool, setSearchSchool] = useState("");
-  const [searchCourse, setSearchCourse] = useState("");
+  const [schoolList, setSchoolList] = useState([]);
+
+  // fetch matching schools
+  const fetchSchools = async (q) => {
+    if (!q) {
+      setSchoolList([]);
+      return;
+    }
+    const res = await fetch(`${ServerUrl}/school/search?q=${encodeURIComponent(q)}`, { credentials: "include" });
+    const data = await res.json();
+    setSchoolList(data);
+  };
+
+  const debouncedFetchSchools = useMemo(
+    () => debounce(fetchSchools, 500),
+    []
+  );
 
   useEffect(() => {
     if (resource) {
@@ -22,43 +51,6 @@ export default function ShareDialog({ isOpen, onClose, resource, handleShare }) 
     }
   }, [resource]);
 
-  // Mock data for schools
-  useEffect(() => {
-    const mockSchools = [
-      { id: "1", name: "University of Washington" },
-      { id: "2", name: "Stanford University" },
-      { id: "3", name: "Massachusetts Institute of Technology" },
-      { id: "4", name: "Harvard University" },
-      { id: "5", name: "British Columbia Institute of Technology" },
-    ];
-    setSchools(mockSchools);
-  }, []);
-
-  // Mock data for courses
-  useEffect(() => {
-    if (school) {
-      const mockCourses = [
-        { id: "1", name: "Introduction to Computer Science" },
-        { id: "2", name: "Data Structures and Algorithms" },
-        { id: "3", name: "Machine Learning" },
-        { id: "4", name: "Web Development" },
-        { id: "5", name: "Database Systems" },
-      ];
-      setCourses(mockCourses);
-    } else {
-      setCourses([]);
-    }
-  }, [school]);
-
-  // Filter schools based on search
-  const filteredSchools = schools.filter((s) =>
-    s.name.toLowerCase().includes(searchSchool.toLowerCase())
-  );
-
-  // Filter courses based on search
-  const filteredCourses = courses.filter((c) =>
-    c.name.toLowerCase().includes(searchCourse.toLowerCase())
-  );
 
   const handlecopylink = async () => {
     if (navigator.clipboard) {
@@ -86,7 +78,7 @@ export default function ShareDialog({ isOpen, onClose, resource, handleShare }) 
           title: resource.title,
           url: `${ClientUrl}/resource/${resource.id}`,
         });
-      } catch (e) {}
+      } catch (e) { }
     } else {
       toast.error("Web Share API is not supported in this browser.", {
         duration: 4000,
@@ -99,8 +91,8 @@ export default function ShareDialog({ isOpen, onClose, resource, handleShare }) 
     handleShare(
       resource.id,
       title,
-      school? school : null,
-      course? course : null,
+      school ? school : null,
+      course ? course : null,
       true
     );
     onClose();
@@ -159,31 +151,36 @@ export default function ShareDialog({ isOpen, onClose, resource, handleShare }) 
             <div className="relative">
               <Input
                 id="school-search"
-                value={resource.school ? resource.school : searchSchool}
-                onChange={(e) => setSearchSchool(e.target.value)}
+                value={searchSchool}
                 placeholder="Search for a school"
+                onChange={e => {
+                  const v = e.target.value;
+                  setSearchSchool(v);
+                  setSchool(v)
+                  // clear any previously selected school ID if user is typing
+                  if (v !== (schools.find(s => s.id === school)?.name || "")) {
+                    setSchool("");
+                    setCourse("");
+                  }
+                  debouncedFetchSchools(v);
+                }}
                 className="mb-1"
               />
               {searchSchool && (
-                <div className="absolute z-10 w-full bg-background border rounded-md max-h-48 overflow-y-auto">
-                  {filteredSchools.length > 0 ? (
-                    filteredSchools.map((s) => (
-                      <div
-                        key={s.id}
-                        className="p-2 hover:bg-muted cursor-pointer"
-                        onClick={() => {
-                          setSchool(s.id);
-                          setSearchSchool(s.name);
-                        }}
-                      >
-                        {s.name}
-                      </div>
-                    ))
-                  ) : (
-                    <div className="p-2 text-muted-foreground">
-                      No schools found
+                <div className="absolute z-10 w-full bg-background rounded-md max-h-48 overflow-y-auto">
+                  {schoolList.length > 0 ? schoolList.map(s => (
+                    <div
+                      key={s.name}
+                      className="p-2 hover:bg-muted cursor-pointer"
+                      onClick={() => {
+                        setSchool(s.name);
+                        setSearchSchool(s.name);
+                        setSchoolList([]);
+                      }}
+                    >
+                      {s.name}
                     </div>
-                  )}
+                  )) : (<span className="hidden"></span>)}
                 </div>
               )}
             </div>
@@ -192,40 +189,22 @@ export default function ShareDialog({ isOpen, onClose, resource, handleShare }) 
           {/* Course Selection - Only show if school is selected */}
           {school && (
             <div className="space-y-2">
-              <label htmlFor="course-select" className="text-sm font-medium">
+              <label htmlFor="course-input" className="text-sm font-medium">
                 Course (optional)
               </label>
-              <div className="relative">
-                <Input
-                  id="course-search"
-                  value={searchCourse}
-                  onChange={(e) => setSearchCourse(e.target.value)}
-                  placeholder="Search for a course"
-                  className="mb-1"
-                />
-                {searchCourse && (
-                  <div className="absolute z-10 w-full bg-background border rounded-md max-h-48 overflow-y-auto">
-                    {filteredCourses.length > 0 ? (
-                      filteredCourses.map((c) => (
-                        <div
-                          key={c.id}
-                          className="p-2 hover:bg-muted cursor-pointer"
-                          onClick={() => {
-                            setCourse(c.id);
-                            setSearchCourse(c.name);
-                          }}
-                        >
-                          {c.name}
-                        </div>
-                      ))
-                    ) : (
-                      <div className="p-2 text-muted-foreground">
-                        No courses found
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
+              <Input
+                id="course-input"
+                value={course}
+                onChange={e => {
+                  const input = e.target.value.replace(/\s/g, "");
+                  if (input.length <= 15) {
+                    setCourse(input);
+                  }
+                }}
+                placeholder="example: COMP150"
+                className="rounded-full mt-1"
+                maxLength={15}
+              />
             </div>
           )}
 
