@@ -168,9 +168,9 @@ export default function ShareDialog({ isOpen, onClose, resource, handleShare }) 
               />
               {searchSchool && (
                 <div className="absolute z-10 w-full bg-background rounded-md max-h-48 overflow-y-auto">
-                  {schoolList.length > 0 ? schoolList.map(s => (
+                  {schoolList.length > 0 ? schoolList.map((s, index )=> (
                     <div
-                      key={s.name}
+                      key={`${s.name}-${index}`}
                       className="p-2 hover:bg-muted cursor-pointer"
                       onClick={() => {
                         setSchool(s.name);
