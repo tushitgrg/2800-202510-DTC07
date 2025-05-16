@@ -10,7 +10,7 @@ import ResourceCard from "@/components/dashboard/ResourceCard";
 import MiniProfileCard from "@/components/ProfileCard/MiniProfileCard";
 import DashboardFilters from "@/components/dashboard/DashboardFilters";
 import updateResource from "@/lib/updateResource";
-
+import toast from "react-hot-toast";
 export default function DashboardPage() {
   const [resources, setResources] = useState(null);
   const [editingId, setEditingId] = useState(null);
@@ -212,8 +212,16 @@ export default function DashboardPage() {
             : resource
         )
       );
+         toast.success("Your resource is now public!", {
+          duration: 4000,
+          position: "bottom-right",
+        });
     } catch (error) {
       console.error("Error sharing resource:", error);
+        toast.error("There was some error!", {
+          duration: 4000,
+          position: "bottom-right",
+        });
     }
   };
 
