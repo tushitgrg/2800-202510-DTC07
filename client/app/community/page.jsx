@@ -8,6 +8,7 @@ import Loading from "@/components/Loading";
 import { ServerUrl } from "@/lib/urls";
 import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
+import { ChevronsDown } from "lucide-react";
 
 export default function CommunityPage() {
   const [resources, setResources] = useState(null);
@@ -16,6 +17,8 @@ export default function CommunityPage() {
   const [selectedCourse, setSelectedCourse] = useState(""); // Value for course dropdown
   const [sortOption, setSortOption] = useState("createdAt:desc"); // Value for active sort (default Newest)
   const [filteredResources, setFilteredResources] = useState([]);
+  const [page, setPage] = useState(1); // Value for how many card components to load
+  const [hasMore, setHasMore] = useState(true); // Disable button if there are no cards to load
 
   const router = useRouter();
 
@@ -36,6 +39,13 @@ export default function CommunityPage() {
     [filteredResources]
   );
 
+  // Load more button handle
+  const handleLoadMore = () => {
+    const nextPage = page + 1;
+    fetchFilteredResources(nextPage, true);
+    setPage(nextPage);
+  };
+
   // Fetch backend data on mount
   useEffect(() => {
     const fetchResources = async () => {
@@ -55,33 +65,41 @@ export default function CommunityPage() {
   }, [router]); // Only re-run if router changes
 
   // Send filter/sort/search query to backend and receive filtered resources
-  useEffect(() => {
-    const fetchFilteredResources = async () => {
+  const fetchFilteredResources = async (pageToFetch = 1, append = false) => {
 
-      const filters = {
-        course: selectedCourse,
-        school: selectedSchool,
-        sort: sortOption,
-        q: searchQuery
-      };
-
-      const queryString = new URLSearchParams(filters).toString();
-
-      try {
-        const response = await fetch(`${ServerUrl}/resources/public?${queryString}`, { credentials: "include" });
-        const data = await response.json();
-        setFilteredResources(data || []);
-        // Repopulate list of school/course filters
-
-
-      } catch (error) {
-        console.error("Error fetching filtered resources:", error);
-        setFilteredResources([]);
-
-      }
+    const filters = {
+      course: selectedCourse,
+      school: selectedSchool,
+      sort: sortOption,
+      q: searchQuery,
+      page: pageToFetch,
     };
 
-    fetchFilteredResources();
+    const queryString = new URLSearchParams(filters).toString();
+
+    try {
+      const response = await fetch(`${ServerUrl}/resources/public?${queryString}`, { credentials: "include" });
+      const data = await response.json();
+
+      // Appends loaded card components to current card components
+      if (append) {
+        setFilteredResources((prev) => [...prev, ...data]);
+      } else {
+        setFilteredResources(data);
+      }
+
+      if (data.length < 18) setHasMore(false); // Disables button
+
+    } catch (error) {
+      console.error("Error fetching filtered resources:", error);
+      if (!append) setFilteredResources([]);
+    }
+  };
+
+  useEffect(() => {
+    setPage(1); // Reset to page 1
+    setHasMore(true); // Reset load more button
+    fetchFilteredResources(1, false); // Replace data
   }, [searchQuery, selectedSchool, selectedCourse, sortOption]);
 
   return resources ? (
@@ -127,7 +145,14 @@ export default function CommunityPage() {
         )}
 
       </div>
-      <Button className={"my-3"}>
+      <Button
+        onClick={handleLoadMore}
+        variant="outline"
+        size="md"
+        className="my-3 px-6 py-3 rounded-full text-white font-semibold shadow-lg hover:shadow-xl 
+            transform hover:-translate-y-0.5 active:scale-95 transition-all duration-200 bg-gradient-to-r"
+      >
+        <ChevronsDown className="mr-2 h-4 w-4" />
         Load More
       </Button>
     </div>

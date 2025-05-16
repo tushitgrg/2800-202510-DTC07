@@ -295,7 +295,6 @@ const getPublicResources = async function (req, res) {
       const [field, order] = sort.split(":");
       sortOption[field] = order === "desc" ? -1 : 1;
     }
-   
 
     const publicResources = await Resource.find(filters)
       .sort(sortOption)
