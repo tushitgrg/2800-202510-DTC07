@@ -13,7 +13,7 @@ export default function Summary({ content, progress }) {
 
   // Initialize completion state from existing progress
   useEffect(() => {
-    if (progress && progress.summaryCompletion) {
+    if (progress === true) {
       setCompleted(true);
     }
   }, [progress]);
@@ -21,7 +21,6 @@ export default function Summary({ content, progress }) {
   // Handle completion checkbox change
   const handleCompletionChange = (isChecked) => {
     setCompleted(isChecked);
-
     updateResourceProgress(
       resourceId,
       {

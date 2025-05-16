@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import CommunityFilters from "@/components/Community/CommunityFilters";
 import CommunityCard from "@/components/Community/CommunityCard";
+import CommunityRec from "@/components/Community/CommunityRec";
 import Loading from "@/components/Loading";
 import { ServerUrl } from "@/lib/urls";
 import { useMemo } from "react";
@@ -21,6 +22,7 @@ export default function CommunityPage() {
   const [hasMore, setHasMore] = useState(true); // Disable button if there are no cards to load
   const [allSchools, setAllSchools] = useState([]);
   const [allCourses, setAllCourses] = useState([]);
+  const [user, setUser] = useState(null);
 
   const router = useRouter();
 
@@ -61,6 +63,23 @@ export default function CommunityPage() {
     };
     fetchResources();
   }, [router]); // Only re-run if router changes
+
+  // Fetch user data
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await fetch(`${ServerUrl}`, { credentials: "include" });
+        if (!res.ok) throw new Error("Failed to fetch user info");
+        const userData = await res.json();
+        console.log("Fetched user from root:", userData);
+        setUser(userData);
+      } catch (err) {
+        console.error("Error fetching user info:", err);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   // Send filter/sort/search query to backend and receive filtered resources
   const fetchFilteredResources = async (pageToFetch = 1, append = false) => {
@@ -113,6 +132,7 @@ export default function CommunityPage() {
         <div className="flex justify-between w-full items-center mb-6">
           <h1 className="text-2xl font-bold">Community Resources</h1>
         </div>
+        <CommunityRec userSchool={user?.school} />
         <CommunityFilters
           allSchools={availableSchools}
           allCourses={availableCourses}

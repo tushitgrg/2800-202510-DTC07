@@ -7,13 +7,14 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Quiz from "@/components/quizzes/quiz";
 import Flashcards from "@/components/flashcards/flashcard";
-import Markdown from "react-markdown";
+import Summary from "@/components/summaries/summary";
 import { addToDashboard } from "@/lib/addToDashboard";
 import TogglePublicButton from "@/components/ui/toggle-public";
 import LikeButton from "@/components/ui/like";
 import updateResource from "@/lib/updateResource";
 
 const ResourceComp = ({ resourceData, userData, goToDashboard }) => {
+  console.log(resourceData);
   // Check available content
   const hasQuiz = !!resourceData.quiz;
   const hasFlashcards = !!resourceData.flashcard;
@@ -182,9 +183,11 @@ const ResourceComp = ({ resourceData, userData, goToDashboard }) => {
         {/* Summary content */}
         {hasSummary && (
           <TabsContent value="summary" className="py-4 flex justify-center">
-            <div className="bg-slate-800 rounded-lg p-6 shadow-md w-full max-w-3xl">
-              <Markdown>{resourceData.summary.content}</Markdown>
-            </div>
+            {/* <div className="bg-slate-800 rounded-lg p-6 shadow-md w-full max-w-3xl"> */}
+            <Summary
+              content={resourceData.summary.content}
+              progress={resourceData.progress.summaryCompletion}
+            />
           </TabsContent>
         )}
       </Tabs>
