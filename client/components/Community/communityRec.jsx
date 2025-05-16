@@ -5,8 +5,9 @@ import { useRouter } from "next/navigation";
 
 const CommunityRecomm = ({ userSchool, resources}) => {
     const router = useRouter();
+    const normalizedUserSchool = userSchool?.trim();
 
-    if (!userSchool) {
+    if (!normalizedUserSchool) {
         return (
             <div className="border border-dashed border-gray-600 rounded-2xl p-10 mt-4 bg-gradient-to-b from-gray-900 to-black flex flex-col items-center space-y-4">
                 <h2 className="text-md text-white">
@@ -22,14 +23,16 @@ const CommunityRecomm = ({ userSchool, resources}) => {
         );
     }    
 
+    const normalize = (str) => (str ? str.trim().toLowerCase() : "");
     const schoolResources = resources.filter(
-        (resource) => resource.school?.toLowerCase().trim() === userSchool.toLowerCase().trim()
+        (resource) => normalize(resource.school) === normalize(normalizedUserSchool)
     );
+    
 
     return (
         <div className="border border-dashed border-gray-600 rounded-2xl p-10 mt-4 bg-gradient-to-b from-gray-900 to-black">
             <h2 className="text-md text-white mb-4">
-                Here are some recommended resources from your school "{userSchool}" you might find helpful.
+                Here are some recommended resources from your school "{normalizedUserSchool}" you might find helpful.
             </h2>
 
             {schoolResources.length > 0 ? (
