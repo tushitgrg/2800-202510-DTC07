@@ -3,7 +3,10 @@ const userModel = require("../models/userModel");
 
 require("dotenv").config();
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
-
+/**
+ * Configures Passport.js for Google OAuth authentication.
+ * @param {Object} passport - The Passport.js instance to configure.
+ */
 module.exports = function (passport) {
   passport.use(
     new GoogleStrategy(
