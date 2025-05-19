@@ -1,6 +1,15 @@
 const PDFDocument = require("pdfkit");
 const { PassThrough } = require("stream");
 const { YoutubeTranscript } = require("youtube-transcript");
+
+/**
+ * Fetches a YouTube video transcript, converts it into a PDF, and returns it as a file part
+ * suitable for API consumption (e.g., Google Generative AI).
+ *
+ * @param {string} videoId - The ID of the YouTube video.
+ * @returns {Promise<Object|null>} A Promise that resolves to an object containing base64 encoded PDF data
+ * and its MIME type, or `null` if an error occurs.
+ */
 async function getTranscriptAsFilePart(videoId) {
   try {
     let transcript = await YoutubeTranscript.fetchTranscript(videoId);
