@@ -1,4 +1,12 @@
 import { ServerUrl } from "./urls";
+
+/**
+ * Calculates a user's current level information based on their experience points.
+ *
+ * @param {number} xp - The user's current experience points.
+ * @returns {{level: number, name: string, nextLevelXp: number}} An object containing
+ * the current level number, level name, and XP needed for the next level.
+ */
 export function getLevelInfo(xp) {
   const levels = [
     { xp: 0, name: "Newbie" },
