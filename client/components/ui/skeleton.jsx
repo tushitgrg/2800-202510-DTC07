@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-
+// Component Imported from Shadcn (ui.shadcn.com)
 function Skeleton({ className, ...props }) {
   return (
     <div

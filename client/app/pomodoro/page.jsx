@@ -7,6 +7,14 @@ import { fetchUserWeather } from "@/lib/userLocation";
 import MusicBackground from "@/components/Pomodoro/MusicBackground";
 import Loading from "@/components/Loading";
 
+/**
+ * WeatherPomodoroPage Component
+ *
+ * This page integrates a Pomodoro timer with dynamic background music and video
+ * based on the user's local weather conditions. It fetches weather data on load.
+ * 
+ * @returns {JSX.Element} The WeatherPomodoroPage Component.
+ */
 export default function WeatherPomodoroPage() {
   // Initial state is null. After fetching weather data, it will hold { city, country, temp, weather, humidity, speed }
   const [weatherData, setweatherData] = useState(null);
