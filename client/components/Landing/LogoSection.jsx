@@ -1,6 +1,14 @@
 "use client";
 import { motion } from "framer-motion";
 
+/**
+ * LogoSection component
+ * 
+ * Displays a section with a message and logos of institutions/brands.
+ * Animates logos into view using Framer Motion when they appear in the viewport.
+ *
+ * @returns {JSX.Element} The rendered logo section component
+ */
 const LogoSection = () => {
   let images = [
     "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/BCIT_logo.svg/1200px-BCIT_logo.svg.png",

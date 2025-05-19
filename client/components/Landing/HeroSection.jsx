@@ -16,6 +16,17 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 
+/**
+ * HeroSection component
+ *
+ * This is the hero section of the homepage, featuring:
+ * - Scroll-based animation
+ * - Abstract animated background
+ * - Animated text and icons
+ * - Introduction to AI-powered learning features
+ *
+ * @returns {JSX.Element} The rendered hero section
+ */
 const HeroSection = () => {
   const { scrollYProgress } = useScroll();
   const heroOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
