@@ -1,5 +1,5 @@
 "use client";
-
+// Component Imported from Shadcn (ui.shadcn.com)
 import * as React from "react";
 import * as SliderPrimitive from "@radix-ui/react-slider";
 

@@ -1,5 +1,5 @@
 "use client";
-
+// Component Imported from Shadcn (ui.shadcn.com)
 import * as React from "react";
 import { GripVerticalIcon } from "lucide-react";
 import * as ResizablePrimitive from "react-resizable-panels";
