@@ -1,10 +1,23 @@
-"use client";
+"use client"; // Marks this as a Client Component, enabling hooks and interactivity.
 
 import { useEffect } from "react";
 import { Play, Pause, SkipForward } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
+/**
+ * PomodoroTimer Component
+ * Implements a Pomodoro timer with work and break modes, countdown, and controls.
+ *
+ * @param {Object} props - Component properties.
+ * @param {boolean} props.timerActive - True if the timer is currently running.
+ * @param {'work' | 'break'} props.timerMode - Current mode of the timer ('work' or 'break').
+ * @param {number} props.timeRemaining - Seconds remaining on the timer.
+ * @param {Function} props.setTimeRemaining - Setter for timeRemaining state.
+ * @param {Function} props.toggleTimer - Function to start/pause the timer.
+ * @param {Function} props.resetTimer - Function to reset the timer.
+ * @param {Function} props.switchMode - Function to switch between work and break modes.
+ */
 export default function PomodoroTimer({
   timerActive,
   timerMode,

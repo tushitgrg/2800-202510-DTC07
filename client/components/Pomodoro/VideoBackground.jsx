@@ -1,8 +1,9 @@
-"use client";
+"use client"; // Marks this as a Client Component, enabling hooks and interactivity.
 
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 
+// Mapping of weather conditions to their corresponding video file paths.
 const videoFiles = {
   sunny: "/videos/sunny.mp4",
   rainy: "/videos/rainy.mp4",
@@ -10,6 +11,15 @@ const videoFiles = {
   snowy: "/videos/snowy.mp4",
 };
 
+/**
+ * DirectVideoBackground Component
+ * Displays a full-screen looping video background based on the provided weather condition.
+ * Includes fallback colors and a loading indicator.
+ *
+ * @param {Object} props - Component properties.
+ * @param {string} props.weatherCondition - The current weather condition (e.g., "sunny", "rainy").
+ * @returns {JSX.Element} A div containing the video background and an overlay.
+ */
 export default function DirectVideoBackground({ weatherCondition }) {
   const [isLoading, setIsLoading] = useState(true);
   const videoRef = useRef(null);
