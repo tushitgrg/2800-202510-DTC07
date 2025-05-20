@@ -11,6 +11,7 @@ import MiniProfileCard from "@/components/ProfileCard/MiniProfileCard";
 import DashboardFilters from "@/components/dashboard/DashboardFilters";
 import updateResource from "@/lib/updateResource";
 import toast from "react-hot-toast";
+
 export default function DashboardPage() {
   const [resources, setResources] = useState(null);
   const [editingId, setEditingId] = useState(null);
@@ -22,7 +23,6 @@ export default function DashboardPage() {
   const [selectedTags, setSelectedTags] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState("newest");
-  const [progressData, setProgressData] = useState({});
   const router = useRouter();
 
   // Fetch resources when component mounts
@@ -44,8 +44,8 @@ export default function DashboardPage() {
           new Set(
             data.resources
               .flatMap((resource) => resource.tags || [])
-              .filter((tag) => tag),
-          ),
+              .filter((tag) => tag)
+          )
         );
         setAllTags(uniqueTags);
       } catch (error) {
@@ -53,7 +53,7 @@ export default function DashboardPage() {
       }
     };
     fetchResources();
-  }, []);
+  }, [router]);
 
   // Update filter function when search query or selected tags change
   useEffect(() => {
@@ -123,8 +123,8 @@ export default function DashboardPage() {
         resources.map((resource) =>
           resource.id === editingId
             ? { ...resource, title: editValue }
-            : resource,
-        ),
+            : resource
+        )
       );
       setEditingId(null);
     } catch (error) {
@@ -134,8 +134,8 @@ export default function DashboardPage() {
         resources.map((resource) =>
           resource.id === editingId
             ? { ...resource, title: editValue }
-            : resource,
-        ),
+            : resource
+        )
       );
       setEditingId(null);
     }
@@ -176,17 +176,9 @@ export default function DashboardPage() {
     newTitle,
     schoolData,
     courseData,
-    isPublicData,
+    isPublicData
   ) => {
     try {
-      console.log(
-        "Sharing resource:",
-        id,
-        newTitle,
-        schoolData,
-        courseData,
-        isPublicData,
-      );
       // Update the resource in the database
       updateResource({
         editingId: id,
@@ -197,7 +189,6 @@ export default function DashboardPage() {
       });
 
       setSharingResourceId(null);
-      // If a new title was provided, update the title
       // Update local state
       setResources(
         resources.map((resource) =>
@@ -209,8 +200,8 @@ export default function DashboardPage() {
                 course: courseData,
                 isPublic: isPublicData,
               }
-            : resource,
-        ),
+            : resource
+        )
       );
       toast.success("Your resource is now public!", {
         duration: 4000,
@@ -286,8 +277,8 @@ export default function DashboardPage() {
       new Set(
         currentResources
           .flatMap((resource) => resource.tags || [])
-          .filter((tag) => tag),
-      ),
+          .filter((tag) => tag)
+      )
     );
     setAllTags(uniqueTags);
   };
@@ -381,7 +372,7 @@ export default function DashboardPage() {
                     isSharing={sharingResourceId === resource.id}
                     onOpenShareDialog={() => handleOpenShareDialog(resource.id)}
                     onCloseShareDialog={handleCloseShareDialog}
-                    onTagClick={handleTagClick} // Pass the tag click handler
+                    onTagClick={handleTagClick}
                   />
                 ))}
               </div>
