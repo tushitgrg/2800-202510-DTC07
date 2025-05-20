@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import CommunityFilters from "@/components/Community/CommunityFilters";
 import CommunityCard from "@/components/Community/CommunityCard";
-import CommunityRec from "@/components/Community/community-rec";
+import CommunityRec from "@/components/Community/CommunityRec";
 import Loading from "@/components/Loading";
 import { ServerUrl } from "@/lib/urls";
 import { useMemo } from "react";
