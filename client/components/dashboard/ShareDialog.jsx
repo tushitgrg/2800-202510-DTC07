@@ -4,11 +4,10 @@ import { useState, useEffect, useMemo } from "react";
 import { Link, Globe, Clipboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ClientUrl } from "@/lib/urls";
-import { ServerUrl } from "@/lib/urls";
+import { ClientUrl, ServerUrl } from "@/lib/urls";
 import toast from "react-hot-toast";
 
-//add debounce function to let user finish entering first
+// Debounce function to let user finish entering first
 function debounce(cb, delay) {
   let timeoutId;
   return function (...args) {
@@ -27,15 +26,13 @@ export default function ShareDialog({
   resource,
   handleShare,
 }) {
-  console.log(resource);
   const [title, setTitle] = useState(resource?.title || "");
   const [school, setSchool] = useState("");
   const [course, setCourse] = useState("");
-  const [schools, setSchools] = useState([]);
   const [searchSchool, setSearchSchool] = useState("");
   const [schoolList, setSchoolList] = useState([]);
 
-  // fetch matching schools
+  // Fetch matching schools
   const fetchSchools = async (q) => {
     if (!q) {
       setSchoolList([]);
@@ -43,7 +40,7 @@ export default function ShareDialog({
     }
     const res = await fetch(
       `${ServerUrl}/school/search?q=${encodeURIComponent(q)}`,
-      { credentials: "include" },
+      { credentials: "include" }
     );
     const data = await res.json();
     setSchoolList(data);
@@ -57,11 +54,11 @@ export default function ShareDialog({
     }
   }, [resource]);
 
-  const handlecopylink = async () => {
+  const handleCopyLink = async () => {
     if (navigator.clipboard) {
       try {
         await navigator.clipboard.writeText(
-          `${ClientUrl}/resource/${resource.id}`,
+          `${ClientUrl}/resource/${resource.id}`
         );
         toast.success("Copied!", {
           duration: 4000,
@@ -75,6 +72,7 @@ export default function ShareDialog({
       }
     }
   };
+
   // Handle share button click
   const handleSharePrivate = async () => {
     if (navigator.share) {
@@ -83,7 +81,9 @@ export default function ShareDialog({
           title: resource.title,
           url: `${ClientUrl}/resource/${resource.id}`,
         });
-      } catch (e) {}
+      } catch (e) {
+        // Silently handle rejection (user canceled)
+      }
     } else {
       toast.error("Web Share API is not supported in this browser.", {
         duration: 4000,
@@ -93,13 +93,7 @@ export default function ShareDialog({
   };
 
   const handleSharePublic = () => {
-    handleShare(
-      resource.id,
-      title,
-      school ? school : null,
-      course ? course : null,
-      true,
-    );
+    handleShare(resource.id, title, school || null, course || null, true);
     onClose();
   };
 
@@ -162,13 +156,6 @@ export default function ShareDialog({
                   const v = e.target.value;
                   setSearchSchool(v);
                   setSchool(v);
-                  // clear any previously selected school ID if user is typing
-                  if (
-                    v !== (schools.find((s) => s.id === school)?.name || "")
-                  ) {
-                    setSchool("");
-                    setCourse("");
-                  }
                   debouncedFetchSchools(v);
                 }}
                 className="mb-1"
@@ -225,7 +212,7 @@ export default function ShareDialog({
               <Button
                 variant="outline"
                 className="space-x-1 cursor-pointer"
-                onClick={handlecopylink}
+                onClick={handleCopyLink}
               >
                 <Clipboard className="h-4 w-4" />
                 <span>Copy</span>
