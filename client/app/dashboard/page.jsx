@@ -12,20 +12,31 @@ import DashboardFilters from "@/components/dashboard/DashboardFilters";
 import updateResource from "@/lib/updateResource";
 import toast from "react-hot-toast";
 
+/**
+ * Dashboard page component that displays user's learning resources
+ * Provides filtering, sorting, editing, and tagging functionalities
+ * @returns {JSX.Element} The dashboard UI with resource cards
+ */
 export default function DashboardPage() {
+  // State for resource data and UI operations
   const [resources, setResources] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [editValue, setEditValue] = useState("");
   const [allTags, setAllTags] = useState([]);
   const [sharingResourceId, setSharingResourceId] = useState(null);
+
+  // State for filtering and sorting
   const [filterFunction, setFilterFunction] = useState(() => () => true);
   const [sortFunction, setSortFunction] = useState(() => () => 0);
   const [selectedTags, setSelectedTags] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState("newest");
+
   const router = useRouter();
 
-  // Fetch resources when component mounts
+  /**
+   * Fetches user's resources and extracts unique tags
+   */
   useEffect(() => {
     const fetchResources = async () => {
       try {
@@ -55,7 +66,9 @@ export default function DashboardPage() {
     fetchResources();
   }, [router]);
 
-  // Update filter function when search query or selected tags change
+  /**
+   * Updates filter function when search query or selected tags change
+   */
   useEffect(() => {
     const newFilterFunction = (resource) => {
       const matchesSearch = (resource.title || "")
@@ -70,7 +83,9 @@ export default function DashboardPage() {
     setFilterFunction(() => newFilterFunction);
   }, [searchQuery, selectedTags]);
 
-  // Update sort function when sort option changes
+  /**
+   * Updates sort function when sort option changes
+   */
   useEffect(() => {
     const newSortFunction = (a, b) => {
       switch (sortOption) {
@@ -90,21 +105,33 @@ export default function DashboardPage() {
     setSortFunction(() => newSortFunction);
   }, [sortOption]);
 
-  // Filtered and sorted resources
+  // Get filtered and sorted resources
   const filteredResources = useMemo(() => {
     if (!resources) return [];
     return [...resources].filter(filterFunction).sort(sortFunction);
   }, [resources, filterFunction, sortFunction]);
 
+  /**
+   * Navigates to the create page
+   */
   const handleCreateClick = () => {
     router.push("/create");
   };
 
+  /**
+   * Starts editing a resource title
+   * @param {string} id - Resource ID
+   * @param {string} title - Current resource title
+   */
   const handleEdit = (id, title) => {
     setEditingId(id);
     setEditValue(title);
   };
 
+  /**
+   * Saves edits to resource title
+   * Updates both local state and backend database
+   */
   const handleSaveEdit = async () => {
     if (editValue.trim() === "") return;
 
@@ -129,7 +156,7 @@ export default function DashboardPage() {
       setEditingId(null);
     } catch (error) {
       console.error("Error updating resource:", error);
-      // Update UI
+      // Update UI even if server update fails
       setResources(
         resources.map((resource) =>
           resource.id === editingId
@@ -141,10 +168,17 @@ export default function DashboardPage() {
     }
   };
 
+  /**
+   * Cancels the current edit operation
+   */
   const handleCancelEdit = () => {
     setEditingId(null);
   };
 
+  /**
+   * Deletes a resource after confirmation
+   * @param {string} id - Resource ID to delete
+   */
   const handleDelete = async (id) => {
     if (confirm("Are you sure you want to delete this resource?")) {
       try {
@@ -164,13 +198,21 @@ export default function DashboardPage() {
         updateAllTagsAfterResourceChange();
       } catch (error) {
         console.error("Error deleting resource:", error);
-        // Update UI
+        // Update UI even if server delete fails
         setResources(resources.filter((resource) => resource.id !== id));
         updateAllTagsAfterResourceChange();
       }
     }
   };
 
+  /**
+   * Shares a resource by updating its properties in the database
+   * @param {string} id - Resource ID
+   * @param {string} newTitle - Updated title
+   * @param {string|null} schoolData - School association
+   * @param {string|null} courseData - Course association
+   * @param {boolean} isPublicData - Public visibility flag
+   */
   const handleShare = async (
     id,
     newTitle,
@@ -216,15 +258,26 @@ export default function DashboardPage() {
     }
   };
 
-  // Functions to track when a share dialog opens or closes
+  /**
+   * Opens the share dialog for a resource
+   * @param {string} id - Resource ID
+   */
   const handleOpenShareDialog = (id) => {
     setSharingResourceId(id);
   };
 
+  /**
+   * Closes the share dialog
+   */
   const handleCloseShareDialog = () => {
     setSharingResourceId(null);
   };
 
+  /**
+   * Adds a tag to a resource
+   * @param {string} resourceId - Resource ID
+   * @param {string} tag - Tag to add
+   */
   const handleAddTag = (resourceId, tag) => {
     // Find the resource
     const resource = resources.find((r) => r.id === resourceId);
@@ -253,6 +306,11 @@ export default function DashboardPage() {
     }
   };
 
+  /**
+   * Removes a tag from a resource
+   * @param {string} resourceId - Resource ID
+   * @param {string} tagToRemove - Tag to remove
+   */
   const handleRemoveTag = (resourceId, tagToRemove) => {
     // Update resources by removing tag
     const updatedResources = resources.map((r) => {
@@ -271,7 +329,10 @@ export default function DashboardPage() {
     updateAllTagsAfterResourceChange(updatedResources);
   };
 
-  // Helper function to update allTags based on current resources
+  /**
+   * Updates the allTags array based on current resources
+   * @param {Array} currentResources - Resources to extract tags from
+   */
   const updateAllTagsAfterResourceChange = (currentResources = resources) => {
     const uniqueTags = Array.from(
       new Set(
@@ -283,7 +344,11 @@ export default function DashboardPage() {
     setAllTags(uniqueTags);
   };
 
-  // Format date helper function
+  /**
+   * Formats a date string to a user-friendly format
+   * @param {string} dateString - ISO date string
+   * @returns {string} Formatted date string
+   */
   const formatDate = (dateString) => {
     if (!dateString) return "";
 
@@ -299,18 +364,27 @@ export default function DashboardPage() {
     }
   };
 
-  // Handle filter changes from DashboardFilters component
+  /**
+   * Updates search query and selected tags filters
+   * Memoized to avoid unnecessary re-renders
+   */
   const handleFilterChange = useCallback((newSearchQuery, newSelectedTags) => {
     setSearchQuery(newSearchQuery);
     setSelectedTags(newSelectedTags);
   }, []);
 
-  // Handle sort changes from DashboardFilters component
+  /**
+   * Updates sort option for resources
+   * Memoized to avoid unnecessary re-renders
+   */
   const handleSortChange = useCallback((newSortOption) => {
     setSortOption(newSortOption);
   }, []);
 
-  // Handle tag click from resource card
+  /**
+   * Adds a tag to the selected tags when clicked in a resource card
+   * @param {string} tag - Tag to add to filter
+   */
   const handleTagClick = (tag) => {
     // Only add the tag if it's not already in the selected tags
     if (!selectedTags.includes(tag)) {
