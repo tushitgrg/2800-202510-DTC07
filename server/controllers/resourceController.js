@@ -1,11 +1,8 @@
-
 const {
   processUploadedContent,
   createResourceShell,
   handleGeminiTasks,
 } = require("./resourceUtils");
-
-
 
 const User = require("../models/userModel");
 const Progress = require("../models/progressModel");
@@ -252,6 +249,15 @@ const deleteResource = async function (req, res) {
   }
 };
 
+/**
+ * Updates a resource's metadata and like status.
+ *
+ * @async
+ * @function updateResourceInfo
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Promise<void>}
+ */
 const updateResourceInfo = async function (req, res) {
   const resourceId = req.params.id;
 
