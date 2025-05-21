@@ -132,6 +132,7 @@ export default function TagsManager({
                   className="w-full focus:outline-none bg-transparent"
                   placeholder="Search or create tag..."
                   value={tagInputValue}
+                  maxLength={10}
                   onChange={(e) => setTagInputValue(e.target.value)}
                   onClick={(e) => {
                     // Prevent clicking in input from closing popover
