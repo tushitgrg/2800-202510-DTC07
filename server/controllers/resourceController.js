@@ -13,6 +13,15 @@ const Summary = require("../models/summaryModel");
 const { getTranscriptAsFilePart } = require("../utils/GetYoutubeTranscript");
 const { isValidObjectId } = require("mongoose");
 
+
+/**
+ * Fetches a resource by its ID and populates its associated content.
+ *
+ * @async
+ * @function fetchResource
+ * @param {string} resourceID - The ID of the resource to fetch
+ * @returns {Promise<Object|null>} Resolves to the resource object with populated content or null if not found
+ */
 const fetchResource = async (resourceID) => {
   const resource = await Resource.findById(resourceID);
   if (!resource) return null;
@@ -28,6 +37,7 @@ const fetchResource = async (resourceID) => {
     summary: summaryID ? await Summary.findById(summaryID) : null,
   };
 };
+
 
 const getResourceInfo = async function (req, res) {
   const userId = req.user._id;
