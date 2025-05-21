@@ -39,6 +39,16 @@ const fetchResource = async (resourceID) => {
 };
 
 
+/**
+ * Retrieves detailed information about a user's resources.
+ * Feeds the dashboard with resource metadata and progress.
+ *
+ * @async
+ * @function getResourceInfo
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Promise<void>}
+ */
 const getResourceInfo = async function (req, res) {
   const userId = req.user._id;
   try {
@@ -63,7 +73,6 @@ const getResourceInfo = async function (req, res) {
         info.isPublic = resource.isPublic;
         const author = await User.findById(resource.author);
         info.school = author.school;
-        console.log(info.school);
 
         return info;
       })
@@ -74,6 +83,7 @@ const getResourceInfo = async function (req, res) {
     return res.status(500).json({ error: "Failed to fetch resources" });
   }
 };
+
 
 // GET request handler for all resources under the current user
 const getResources = async function (req, res) {
