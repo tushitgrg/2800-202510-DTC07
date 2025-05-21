@@ -165,7 +165,7 @@ const HeroSection = () => {
       >
         {/* Abstract geometric shape */}
         <motion.div
-          className="relative mb-12 w-32 h-32"
+          className="relative mb-12 mt-6 w-32 h-32"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8 }}
