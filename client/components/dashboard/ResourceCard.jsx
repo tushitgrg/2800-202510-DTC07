@@ -117,7 +117,7 @@ export default function ResourceCard({
             </div>
           ) : (
             // Show title when not editing
-            <h2 className="text-lg font-semibold">{resource.title}</h2>
+            <h2 className="text-lg font-semibold break-words line-clamp-2">{resource.title}</h2>
           )}
 
           {/* Actions menu (edit, delete, share) */}

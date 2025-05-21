@@ -17,7 +17,9 @@ export default function CommunityCard({
     <Link href={`/resource/${_id}`} className="h-full">
       <div className="block border-2 rounded-lg hover:shadow-md transition-shadow overflow-hidden h-full">
         <div className="flex flex-col justify-between p-4 h-full">
-          <h2 className="text-lg font-semibold mb-2">{title}</h2>
+          <h2 className="text-lg font-semibold mb-2 break-words line-clamp-2">
+            {title}
+          </h2>
 
           <div className="text-sm text-gray-600 space-y-2 mb-4">
             {school && (
