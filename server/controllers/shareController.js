@@ -47,6 +47,16 @@ const addResourceById = async function (req, res) {
     });
   }
 };
+
+/**
+ * Updates the school and course info for a given resource.
+ *
+ * @async
+ * @function updateResourceSchoolInfo
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Promise<void>}
+ */
 const updateResourceSchoolInfo = async function (req, res) {
   const resourceId = req.params.id;
   const { newCourse, newSchool } = req.body;
