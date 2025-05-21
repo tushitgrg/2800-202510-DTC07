@@ -1,5 +1,17 @@
 const Progress = require("../models/progressModel");
 
+/**
+ * Middleware to calculate total experience (XP) for a user
+ * based on resources, shares, streaks, and progress.
+ * Attaches XP to req.user and req.experience.
+ *
+ * @async
+ * @function calculateExperience
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware
+ * @returns {Promise<void>}
+ */
 const calculateExperience = async (req, res, next) => {
   let resourceXP = 20;
   let shareXP = 10;
