@@ -13,7 +13,6 @@ const Summary = require("../models/summaryModel");
 const { getTranscriptAsFilePart } = require("../utils/GetYoutubeTranscript");
 const { isValidObjectId } = require("mongoose");
 
-
 /**
  * Fetches a resource by its ID and populates its associated content.
  *
@@ -37,7 +36,6 @@ const fetchResource = async (resourceID) => {
     summary: summaryID ? await Summary.findById(summaryID) : null,
   };
 };
-
 
 /**
  * Retrieves detailed information about a user's resources.
@@ -84,8 +82,16 @@ const getResourceInfo = async function (req, res) {
   }
 };
 
-
-// GET request handler for all resources under the current user
+/**
+ * Handles GET request for all resources owned by the user.
+ * Uses fetchResource to retrieve full resource content.
+ *
+ * @async
+ * @function getResources
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Promise<void>}
+ */
 const getResources = async function (req, res) {
   const userId = req.user._id;
   try {
