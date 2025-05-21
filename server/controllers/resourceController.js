@@ -44,6 +44,7 @@ const getResourceInfo = async function (req, res) {
         if (!resource) return null;
         const info = {};
         info.id = resourceID;
+        info.originalResourceId = resource.originalResourceId || null;
         info.title = resource.title;
         info.createdAt = resource.createdAt;
         info.tags = resource.tags || [];
@@ -55,7 +56,7 @@ const getResourceInfo = async function (req, res) {
         console.log(info.school);
 
         return info;
-      }),
+      })
     );
     return res.status(200).json({ resources: result });
   } catch (err) {
@@ -71,7 +72,7 @@ const getResources = async function (req, res) {
     const user = await User.findById(userId);
     const userResources = user.resources;
     const result = await Promise.all(
-      userResources.map((resourceID) => fetchResource(resourceID)),
+      userResources.map((resourceID) => fetchResource(resourceID))
     );
     return res.status(200).json(result);
   } catch (err) {
@@ -90,10 +91,14 @@ const getResourceById = async function (req, res) {
     if (!resource) {
       return res.status(404).json({ error: "Resource not found" });
     }
+    const originalResource = await Resource.findById(
+      resource.originalResourceId
+    );
+    console.log("aaaaa", originalResource);
     const { quizID, flashcardID, summaryID, title, createdAt, author } =
       resource;
     const progress = await Progress.findOne({ resourceId: resourceId }).select(
-      "-_id -userId -resourceId",
+      "-_id -userId -resourceId"
     );
     response.id = resourceId;
     response.title = title;
@@ -101,7 +106,9 @@ const getResourceById = async function (req, res) {
     response.progress = progress || {};
     response.isOwner = author.equals(req.user._id);
     console.log(req.user._id);
-    response.isLiked = resource.likes?.includes(req.user._id);
+    if (originalResource) {
+      response.isLiked = originalResource.likes?.includes(req.user._id);
+    } else response.isLiked = resource.likes?.includes(req.user._id);
     response.isPublic = resource.isPublic;
     if (quizID) {
       const quiz = await Quiz.findById(quizID);
@@ -261,22 +268,29 @@ const updateResourceInfo = async function (req, res) {
       "Hello this is emanuel: ",
       isPublic,
       updatedFields.isPublic,
-      true,
+      true
     );
     if (isLiked === true) {
-      await Resource.findByIdAndUpdate(resourceId, {
+      const currentResource = await Resource.findByIdAndUpdate(resourceId, {
         $addToSet: { likes: req.user._id },
       });
+      if (currentResource.originalResourceId)
+        await Resource.findByIdAndUpdate(currentResource.originalResourceId, {
+          $addToSet: { likes: req.user._id },
+        });
     } else if (isLiked === false) {
-      console.log("IS it coming from here?");
-      await Resource.findByIdAndUpdate(resourceId, {
+      const currentResource = await Resource.findByIdAndUpdate(resourceId, {
         $pull: { likes: req.user._id },
       });
+      if (currentResource.originalResourceId)
+        await Resource.findByIdAndUpdate(currentResource.originalResourceId, {
+          $pull: { likes: req.user._id },
+        });
     }
     const updatedResource = await Resource.findByIdAndUpdate(
       resourceId,
       updatedFields,
-      { new: true },
+      { new: true }
     );
     if (!updatedResource) {
       return res.status(404).json({ error: "Resource not found" });
@@ -341,13 +355,14 @@ const getPublicResources = async function (req, res) {
     }));
 
     // Obtain all unique schools/courses from matching full set
-    const allMatchingResources =
-      await Resource.find(filters).select("school course");
+    const allMatchingResources = await Resource.find(filters).select(
+      "school course"
+    );
     const allSchools = Array.from(
-      new Set(allMatchingResources.map((r) => r.school).filter(Boolean)),
+      new Set(allMatchingResources.map((r) => r.school).filter(Boolean))
     );
     const allCourses = Array.from(
-      new Set(allMatchingResources.map((r) => r.course).filter(Boolean)),
+      new Set(allMatchingResources.map((r) => r.course).filter(Boolean))
     );
 
     res.status(200).json({

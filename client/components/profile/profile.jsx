@@ -271,13 +271,15 @@ export default function ProfileCard({ googleUser = {} }) {
       <CardFooter className="justify-end space-x-2">
         {isEditing ? (
           <>
-            <Button variant="outline" onClick={handleCancel}>
+            <Button variant="outline" onClick={handleCancel} className="cursor-pointer">
               Cancel
             </Button>
-            <Button onClick={handleSave}>Save</Button>
+            <Button onClick={handleSave} className="cursor-pointer">
+              Save
+            </Button>
           </>
         ) : (
-          <Button onClick={handleEdit} className="rounded-full">
+          <Button onClick={handleEdit} className="rounded-full cursor-pointer">
             Edit
           </Button>
         )}

@@ -4,38 +4,55 @@ import { useState, useEffect, useMemo } from "react";
 import { Link, Globe, Clipboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ClientUrl } from "@/lib/urls";
-import { ServerUrl } from "@/lib/urls";
+import { ClientUrl, ServerUrl } from "@/lib/urls";
 import toast from "react-hot-toast";
 
-//add debounce function to let user finish entering first
-function debounce(cb, delay) {
+/**
+ * Debounce function to limit the frequency of function calls
+ * @param {Function} callback - Callback function to debounce
+ * @param {number} delay - Delay in milliseconds
+ * @returns {Function} Debounced function
+ */
+function debounce(callback, delay) {
   let timeoutId;
   return function (...args) {
     if (timeoutId) {
       clearTimeout(timeoutId);
     }
     timeoutId = setTimeout(() => {
-      cb(...args);
+      callback(...args);
     }, delay);
   };
 }
 
+/**
+ * Dialog component for sharing resources
+ * Allows private sharing via link and public sharing with metadata
+ *
+ * @param {Object} props - Component props
+ * @param {boolean} props.isOpen - Whether the dialog is open
+ * @param {Function} props.onClose - Function to call when dialog is closed
+ * @param {Object} props.resource - Resource object to be shared
+ * @param {Function} props.handleShare - Function to handle sharing the resource
+ * @returns {JSX.Element|null} The share dialog or null if not open
+ */
 export default function ShareDialog({
   isOpen,
   onClose,
   resource,
   handleShare,
 }) {
-  console.log(resource);
+  // State for form fields
   const [title, setTitle] = useState(resource?.title || "");
   const [school, setSchool] = useState("");
   const [course, setCourse] = useState("");
-  const [schools, setSchools] = useState([]);
   const [searchSchool, setSearchSchool] = useState("");
   const [schoolList, setSchoolList] = useState([]);
 
-  // fetch matching schools
+  /**
+   * Fetches matching schools based on search query
+   * @param {string} q - Search query
+   */
   const fetchSchools = async (q) => {
     if (!q) {
       setSchoolList([]);
@@ -43,25 +60,32 @@ export default function ShareDialog({
     }
     const res = await fetch(
       `${ServerUrl}/school/search?q=${encodeURIComponent(q)}`,
-      { credentials: "include" },
+      { credentials: "include" }
     );
     const data = await res.json();
     setSchoolList(data);
   };
 
+  // Create memoized debounced fetch function to prevent excessive API calls
   const debouncedFetchSchools = useMemo(() => debounce(fetchSchools, 500), []);
 
+  // Initialize form with resource title when resource changes
   useEffect(() => {
     if (resource) {
       setTitle(resource.title);
     }
   }, [resource]);
 
-  const handlecopylink = async () => {
+  /**
+   * Copies the resource URL to clipboard
+   */
+  const handleCopyLink = async () => {
     if (navigator.clipboard) {
       try {
+        const resourceId = resource.originalResourceId || resource.id 
+
         await navigator.clipboard.writeText(
-          `${ClientUrl}/resource/${resource.id}`,
+          `${ClientUrl}/resource/${resourceId}`
         );
         toast.success("Copied!", {
           duration: 4000,
@@ -75,15 +99,23 @@ export default function ShareDialog({
       }
     }
   };
-  // Handle share button click
+
+  /**
+   * Shares the resource using Web Share API if available
+   */
   const handleSharePrivate = async () => {
     if (navigator.share) {
       try {
+        const resourceId = resource.originalResourceId || resource.id 
+        console.log("Emanuel in frontend",resource.originalResourceId)
+
         await navigator.share({
           title: resource.title,
-          url: `${ClientUrl}/resource/${resource.id}`,
+          url: `${ClientUrl}/resource/${resourceId}`,
         });
-      } catch (e) {}
+      } catch (e) {
+        // Silently handle rejection (user canceled)
+      }
     } else {
       toast.error("Web Share API is not supported in this browser.", {
         duration: 4000,
@@ -92,17 +124,17 @@ export default function ShareDialog({
     }
   };
 
+  /**
+   * Makes the resource public and adds metadata
+   */
   const handleSharePublic = () => {
-    handleShare(
-      resource.id,
-      title,
-      school ? school : null,
-      course ? course : null,
-      true,
-    );
+    const resourceId = resource.originalResourceId || resource.id 
+
+    handleShare(resourceId, title, school || null, course || null, true);
     onClose();
   };
 
+  // Don't render anything if dialog is not open
   if (!isOpen) return null;
 
   return (
@@ -111,6 +143,7 @@ export default function ShareDialog({
       onClick={(e) => e.stopPropagation()}
     >
       <div className="bg-background rounded-lg w-full max-w-md p-6 relative">
+        {/* Close button */}
         <button
           className="absolute right-4 top-4 p-1 rounded-md hover:bg-muted"
           onClick={onClose}
@@ -162,13 +195,6 @@ export default function ShareDialog({
                   const v = e.target.value;
                   setSearchSchool(v);
                   setSchool(v);
-                  // clear any previously selected school ID if user is typing
-                  if (
-                    v !== (schools.find((s) => s.id === school)?.name || "")
-                  ) {
-                    setSchool("");
-                    setCourse("");
-                  }
                   debouncedFetchSchools(v);
                 }}
                 className="mb-1"
@@ -225,7 +251,7 @@ export default function ShareDialog({
               <Button
                 variant="outline"
                 className="space-x-1 cursor-pointer"
-                onClick={handlecopylink}
+                onClick={handleCopyLink}
               >
                 <Clipboard className="h-4 w-4" />
                 <span>Copy</span>

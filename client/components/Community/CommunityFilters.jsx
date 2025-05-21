@@ -1,5 +1,6 @@
-import { useState, useMemo } from "react";
-import { useEffect } from "react";
+"use client";
+
+import { useState, useMemo, useEffect } from "react";
 import { Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +14,21 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 
+/**
+ * Component for filtering and sorting community resources
+ * Provides search input, dynamic school/course dropdown filters, and sorting controls
+ *
+ * @param {Object} props - Component props
+ * @param {string[]} props.allSchools - List of all available schools
+ * @param {string[]} props.allCourses - List of all available courses
+ * @param {string} props.selectedSchool - Currently selected school filter
+ * @param {string} props.selectedCourse - Currently selected course filter
+ * @param {string} props.searchQuery - Current search query input
+ * @param {string} props.sortOption - Current sorting option key
+ * @param {(search: string, school: string, course: string) => void} props.onFilterChange - Callback to update filters
+ * @param {(sortOption: string) => void} props.onSortChange - Callback to update sorting
+ * @returns {JSX.Element} CommunityFilters UI component
+ */
 const CommunityFilters = ({
   allSchools, // List of all school options
   allCourses, // List of all course options
@@ -23,50 +39,54 @@ const CommunityFilters = ({
   onFilterChange, // Function to update filters
   onSortChange, // Function to update sort
 }) => {
-  // Local input state for filtering dropdown list of schools/courses dynamically
+  // Local input state for filtering dropdown options dynamically
   const [schoolSearch, setSchoolSearch] = useState("");
   const [courseSearch, setCourseSearch] = useState("");
 
-  // useMemo prevents re-calculation unless schoolSearch/allSchools or courseSearch/allCourses changes
+  /** Memoized list of schools matching the schoolSearch input */
   const filteredSchools = useMemo(() => {
     if (!schoolSearch.trim()) return allSchools;
     return allSchools.filter((school) =>
-      school.toLowerCase().includes(schoolSearch.toLowerCase()),
+      school.toLowerCase().includes(schoolSearch.toLowerCase())
     );
   }, [schoolSearch, allSchools]);
 
+  /** Memoized list of courses matching the courseSearch input */
   const filteredCourses = useMemo(() => {
     if (!courseSearch.trim()) return allCourses;
     return allCourses.filter((course) =>
-      course.toLowerCase().includes(courseSearch.toLowerCase()),
+      course.toLowerCase().includes(courseSearch.toLowerCase())
     );
   }, [courseSearch, allCourses]);
 
-  // Automatically applies filtering logic whenever the query or selected filters change
+  /** Apply filters whenever searchQuery, selectedSchool, or selectedCourse changes */
   useEffect(() => {
     onFilterChange(searchQuery, selectedSchool, selectedCourse);
   }, [searchQuery, selectedSchool, selectedCourse, onFilterChange]);
 
-  // The handles update filters or clear them. All call onFilterChange with updated values
+  /** Update school filter */
   const handleSchoolSelect = (school) => {
     onFilterChange(searchQuery, school, selectedCourse);
   };
 
+  /** Update course filter */
   const handleCourseSelect = (course) => {
     onFilterChange(searchQuery, selectedSchool, course);
   };
 
+  /** Update search query filter */
   const handleSearchChange = (e) => {
     onFilterChange(e.target.value, selectedSchool, selectedCourse);
   };
 
+  /** Clear all filters and reset sort to default */
   const handleClearFilters = () => {
     onFilterChange("", "", "");
-    onSortChange("newest");
+    onSortChange("createdAt:desc");
   };
 
   return (
-    <div className="w-full mb-6 space-y-4">
+    <div className="w-full my-6 space-y-4">
       {/* Search bar */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -94,7 +114,7 @@ const CommunityFilters = ({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="h-9 cursor-pointer">
-              {/* Icon logic*/}
+              {/* Determine label based on sortOption */}
               {(() => {
                 switch (sortOption) {
                   case "createdAt:desc":
@@ -114,30 +134,10 @@ const CommunityFilters = ({
           <DropdownMenuContent align="start">
             <DropdownMenuLabel>Sort by</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => onSortChange("createdAt:desc")}
-              className="cursor-pointer"
-            >
-              Newest
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => onSortChange("createdAt:asc")}
-              className="cursor-pointer"
-            >
-              Oldest
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => onSortChange("likes:desc")}
-              className="cursor-pointer"
-            >
-              Likes
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => onSortChange("shareCount:desc")}
-              className="cursor-pointer"
-            >
-              Share Count
-            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onSortChange("createdAt:desc")}>Newest</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onSortChange("createdAt:asc")}>Oldest</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onSortChange("likes:desc")}>Likes</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onSortChange("shareCount:desc")}>Share Count</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
@@ -149,6 +149,7 @@ const CommunityFilters = ({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-64">
+            {/* Input for school search */}
             <div className="px-2 pt-2">
               <input
                 type="text"
@@ -159,14 +160,12 @@ const CommunityFilters = ({
               />
             </div>
             <DropdownMenuSeparator />
+            {/* List of filtered schools */}
             {filteredSchools.length > 0 ? (
               filteredSchools.map((school) => (
                 <DropdownMenuItem
                   key={school}
-                  onClick={() => {
-                    handleSchoolSelect(school);
-                    setSchoolSearch("");
-                  }}
+                  onClick={() => { handleSchoolSelect(school); setSchoolSearch(""); }}
                   disabled={selectedSchool === school}
                   className="cursor-pointer hover:bg-zinc-700"
                 >
@@ -180,10 +179,7 @@ const CommunityFilters = ({
             )}
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onClick={() => {
-                handleSchoolSelect("");
-                setSchoolSearch("");
-              }}
+              onClick={() => { handleSchoolSelect(""); setSchoolSearch(""); }}
               disabled={!selectedSchool}
               className="cursor-pointer"
             >
@@ -200,6 +196,7 @@ const CommunityFilters = ({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-64">
+            {/* Input for course search */}
             <div className="px-2 pt-2">
               <input
                 type="text"
@@ -210,16 +207,14 @@ const CommunityFilters = ({
               />
             </div>
             <DropdownMenuSeparator />
+            {/* List of filtered courses */}
             {filteredCourses.length > 0 ? (
               filteredCourses.map((course) => (
                 <DropdownMenuItem
                   key={course}
-                  onClick={() => {
-                    handleCourseSelect(course);
-                    setCourseSearch("");
-                  }}
+                  onClick={() => { handleCourseSelect(course); setCourseSearch(""); }}
                   disabled={selectedCourse === course}
-                  className="cursor-pointer"
+                  className="cursor-pointer hover:bg-zinc-700"
                 >
                   {course}
                 </DropdownMenuItem>
@@ -231,10 +226,7 @@ const CommunityFilters = ({
             )}
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onClick={() => {
-                handleCourseSelect("");
-                setCourseSearch("");
-              }}
+              onClick={() => { handleCourseSelect(""); setCourseSearch(""); }}
               disabled={!selectedCourse}
               className="cursor-pointer"
             >
@@ -251,7 +243,7 @@ const CommunityFilters = ({
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => handleSchoolSelect("")}
+                onClick={() => handleSchoolSelect("")} // Remove school filter badge
                 className="h-5 w-5 p-0 ml-1 rounded-full hover:text-red-600 cursor-pointer"
               >
                 <X className="h-3 w-3" />
@@ -264,7 +256,7 @@ const CommunityFilters = ({
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => handleCourseSelect("")}
+                onClick={() => handleCourseSelect("")} // Remove course filter badge
                 className="h-5 w-5 p-0 ml-1 rounded-full hover:text-red-600 cursor-pointer"
               >
                 <X className="h-3 w-3" />
@@ -275,7 +267,7 @@ const CommunityFilters = ({
             <Button
               variant="ghost"
               size="sm"
-              onClick={handleClearFilters}
+              onClick={handleClearFilters} // Clear all filters
               className="h-9 cursor-pointer text-slate-300"
             >
               Clear filters

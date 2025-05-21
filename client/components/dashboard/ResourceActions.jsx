@@ -9,6 +9,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+/**
+ * Component that provides a dropdown menu of actions for a resource
+ * Includes options to edit, delete, and share a resource
+ *
+ * @param {Object} props - Component props
+ * @param {Object} props.resource - The resource to perform actions on
+ * @param {Function} props.handleEdit - Function to handle editing the resource
+ * @param {Function} props.handleDelete - Function to handle deleting the resource
+ * @param {Function} props.onOpenShareDialog - Function to handle opening the share dialog
+ * @returns {JSX.Element} Dropdown menu of resource actions
+ */
 export default function ResourceActions({
   resource,
   handleEdit,
@@ -18,6 +29,7 @@ export default function ResourceActions({
   return (
     <div className="relative" onClick={(e) => e.stopPropagation()}>
       <DropdownMenu>
+        {/* Dropdown trigger button */}
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
@@ -28,7 +40,10 @@ export default function ResourceActions({
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
+
+        {/* Dropdown menu content */}
         <DropdownMenuContent align="end">
+          {/* Edit option */}
           <DropdownMenuItem
             onClick={(e) => {
               e.stopPropagation();
@@ -39,6 +54,8 @@ export default function ResourceActions({
             <Edit className="mr-2 h-4 w-4" />
             Edit
           </DropdownMenuItem>
+
+          {/* Delete option */}
           <DropdownMenuItem
             onClick={(e) => {
               e.stopPropagation();
@@ -49,6 +66,8 @@ export default function ResourceActions({
             <Trash className="mr-2 h-4 w-4" />
             Delete
           </DropdownMenuItem>
+
+          {/* Share option */}
           <DropdownMenuItem
             onClick={(e) => {
               e.stopPropagation();

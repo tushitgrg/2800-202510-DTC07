@@ -19,6 +19,20 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 
+/**
+ * Component for filtering and sorting resources in the dashboard
+ * Provides search, tag filtering, and sorting functionality
+ *
+ * @param {Object} props - Component props
+ * @param {Array} props.resources - List of resources to filter
+ * @param {Array} props.allTags - List of all available tags
+ * @param {Array} props.selectedTags - Currently selected tags for filtering
+ * @param {string} props.searchQuery - Current search query
+ * @param {string} props.sortOption - Current sort option
+ * @param {Function} props.onFilterChange - Callback when filters change
+ * @param {Function} props.onSortChange - Callback when sort option changes
+ * @returns {JSX.Element} The filter bar UI
+ */
 const DashboardFilters = ({
   resources,
   allTags,
@@ -28,12 +42,17 @@ const DashboardFilters = ({
   onFilterChange,
   onSortChange,
 }) => {
-  // Update parent component when filters change
+  /**
+   * Notify parent component when filters change
+   */
   useEffect(() => {
     onFilterChange(searchQuery, selectedTags);
   }, [searchQuery, selectedTags, onFilterChange]);
 
-  // Handle adding a tag to the filter
+  /**
+   * Add a tag to the active filters
+   * @param {string} tag - Tag to add to filter
+   */
   const handleAddTag = (tag) => {
     if (!selectedTags.includes(tag)) {
       const newSelectedTags = [...selectedTags, tag];
@@ -41,23 +60,34 @@ const DashboardFilters = ({
     }
   };
 
-  // Handle removing a tag from the filter
+  /**
+   * Remove a tag from active filters
+   * @param {string} tag - Tag to remove from filter
+   */
   const handleRemoveTag = (tag) => {
     const newSelectedTags = selectedTags.filter((t) => t !== tag);
     onFilterChange(searchQuery, newSelectedTags);
   };
 
-  // Handle search query changes
+  /**
+   * Update search query when input changes
+   * @param {Object} e - Change event
+   */
   const handleSearchChange = (e) => {
     onFilterChange(e.target.value, selectedTags);
   };
 
-  // Handle sort option changes
+  /**
+   * Change the sort option
+   * @param {string} option - New sort option
+   */
   const handleSortChange = (option) => {
     onSortChange(option);
   };
 
-  // Clear all filters
+  /**
+   * Clear all active filters and reset to default sort
+   */
   const handleClearFilters = () => {
     onFilterChange("", []);
     onSortChange("newest");
@@ -102,10 +132,10 @@ const DashboardFilters = ({
               {sortOption === "newest"
                 ? "Newest"
                 : sortOption === "oldest"
-                  ? "Oldest"
-                  : sortOption === "a-z"
-                    ? "A to Z"
-                    : "Z to A"}
+                ? "Oldest"
+                : sortOption === "a-z"
+                ? "A to Z"
+                : "Z to A"}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start">

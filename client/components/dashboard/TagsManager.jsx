@@ -9,6 +9,19 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
+/**
+ * Component for managing tags on a resource
+ * Provides UI for viewing, adding, and removing tags
+ *
+ * @param {Object} props - Component props
+ * @param {Object} props.resource - The resource to manage tags for
+ * @param {boolean} props.isEditing - Whether the resource is in edit mode
+ * @param {Array} props.allTags - All available tags in the system
+ * @param {Function} props.handleAddTag - Function to add a tag to the resource
+ * @param {Function} props.handleRemoveTag - Function to remove a tag from the resource
+ * @param {Function} props.onTagClick - Function to handle when a tag is clicked (for filtering)
+ * @returns {JSX.Element} The tags manager UI
+ */
 export default function TagsManager({
   resource,
   isEditing,
@@ -17,10 +30,15 @@ export default function TagsManager({
   handleRemoveTag,
   onTagClick,
 }) {
+  // State for the tag input in the popover
   const [tagInputValue, setTagInputValue] = useState("");
+  // State to control the popover visibility
   const [openTagPopover, setOpenTagPopover] = useState(false);
 
-  // Function to handle adding a tag with proper event handling
+  /**
+   * Adds a tag to the resource and closes the popover
+   * @param {string} tag - Tag to add to the resource
+   */
   const addTagAndClose = (tag) => {
     if (tag && tag.trim()) {
       handleAddTag(resource.id, tag.trim());
@@ -31,6 +49,7 @@ export default function TagsManager({
 
   return (
     <div className="mt-2 flex flex-wrap gap-2">
+      {/* Render existing tags */}
       {(resource.tags || []).map((tag, idx) => (
         <Badge
           key={`${resource.id}-tag-${idx}`}
@@ -54,6 +73,7 @@ export default function TagsManager({
           }
         >
           {tag}
+          {/* Show remove button only in edit mode */}
           {isEditing && (
             <button
               type="button"
@@ -69,7 +89,7 @@ export default function TagsManager({
         </Badge>
       ))}
 
-      {/* Add Tag Button - Only visible in edit mode */}
+      {/* Add Tag Button - Only visible in edit mode and when fewer than 3 tags exist */}
       {isEditing && (resource.tags || []).length < 3 && (
         <Popover
           open={openTagPopover}
@@ -105,12 +125,14 @@ export default function TagsManager({
             }}
           >
             <div className="p-2">
+              {/* Tag search/create input */}
               <div className="flex items-center border rounded px-2 py-1 mb-2">
                 <TagIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                 <input
                   className="w-full focus:outline-none bg-transparent"
                   placeholder="Search or create tag..."
                   value={tagInputValue}
+                  maxLength={10}
                   onChange={(e) => setTagInputValue(e.target.value)}
                   onClick={(e) => {
                     // Prevent clicking in input from closing popover
@@ -126,6 +148,7 @@ export default function TagsManager({
                 />
               </div>
 
+              {/* Create new tag option */}
               {tagInputValue.trim() &&
               !allTags.includes(tagInputValue.trim()) ? (
                 <div
@@ -141,6 +164,7 @@ export default function TagsManager({
                 </div>
               ) : null}
 
+              {/* Existing tags list */}
               <div className="mt-2">
                 <div className="text-xs font-medium text-muted-foreground mb-1">
                   Existing Tags
@@ -153,7 +177,7 @@ export default function TagsManager({
                   <div className="max-h-32 overflow-y-auto">
                     {allTags
                       .filter((tag) =>
-                        tag.toLowerCase().includes(tagInputValue.toLowerCase()),
+                        tag.toLowerCase().includes(tagInputValue.toLowerCase())
                       )
                       .map((tag) => (
                         <div
