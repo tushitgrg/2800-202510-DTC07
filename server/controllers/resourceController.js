@@ -315,6 +315,16 @@ const updateResourceInfo = async function (req, res) {
   }
 };
 
+/**
+ * Retrieves a paginated list of public resources with optional
+ * filters (course, school, text search) and sorting.
+ *
+ * @async
+ * @function getPublicResources
+ * @param {Object} req - Express request object (with query params)
+ * @param {Object} res - Express response object
+ * @returns {Promise<void>}
+ */
 const getPublicResources = async function (req, res) {
   try {
     let { course, school, q, sort, page } = req.query;
