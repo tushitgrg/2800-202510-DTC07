@@ -66,7 +66,7 @@ const CommunityFilters = ({
   };
 
   return (
-    <div className="w-full mb-6 space-y-4">
+    <div className="w-full my-6 space-y-4">
       {/* Search bar */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />

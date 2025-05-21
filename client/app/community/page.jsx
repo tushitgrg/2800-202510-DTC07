@@ -174,7 +174,7 @@ export default function CommunityPage() {
         variant="outline"
         size="md"
         className="my-3 px-6 py-3 rounded-full text-white font-semibold shadow-lg hover:shadow-xl 
-            transform hover:-translate-y-0.5 active:scale-95 transition-all duration-200 bg-gradient-to-r"
+            transform hover:-translate-y-0.5 active:scale-95 transition-all duration-200 bg-gradient-to-r cursor-pointer"
       >
         <ChevronsDown className="mr-2 h-4 w-4" />
         Load More

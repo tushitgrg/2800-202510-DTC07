@@ -13,7 +13,7 @@ const CommunityRecomm = ({ userSchool }) => {
         </h2>
         <button
           onClick={() => router.push("/profile")}
-          className="bg-gray-600 text-white px-4 py-2 rounded-full hover:bg-gray-700 transition"
+          className="bg-gray-600 text-white px-4 py-2 rounded-full hover:bg-gray-700 transition cursor-pointer"
         >
           Go to Profile to Set School
         </button>
