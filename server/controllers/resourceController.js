@@ -213,6 +213,15 @@ const addResource = async function (req, res) {
   }
 };
 
+/**
+ * Deletes a resource by ID if the user is authorized.
+ *
+ * @async
+ * @function deleteResource
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Promise<void>}
+ */
 const deleteResource = async function (req, res) {
   const resourceId = req.params.id;
   if (!resourceId) {
