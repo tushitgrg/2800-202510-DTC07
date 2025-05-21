@@ -16,7 +16,6 @@ const ProgressSchema = mongoose.Schema({
   quizScore: { type: Number, default: null },
   flashcardScore: { type: Number, default: null },
   summaryCompletion: { type: Boolean, default: false },
-});
-
-
+},
+  { _id: true, timestamps: true });
 module.exports = mongoose.model("progress", ProgressSchema);
