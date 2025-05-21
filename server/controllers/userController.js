@@ -1,6 +1,16 @@
 const { connectToDB } = require("../utils/mongodb");
 const userModel = require("../models/userModel");
 
+/**
+ * Updates user profile information. If user doesn't exist,
+ * creates a new record using upsert.
+ *
+ * @async
+ * @function updateUser
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Promise<void>}
+ */
 const updateUser = async (req, res) => {
   const { displayName, firstName, lastName, email, school } = req.body;
 
@@ -24,6 +34,15 @@ const updateUser = async (req, res) => {
   }
 };
 
+/**
+ * Retrieves a user by email.
+ *
+ * @async
+ * @function getUser
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Promise<void>}
+ */
 const getUser = async (req, res) => {
   try {
     await connectToDB();

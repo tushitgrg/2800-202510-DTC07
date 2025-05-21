@@ -70,7 +70,6 @@ app.get("/dashboard", (req, res) => {
 app.use("/resources", resourceRoutes);
 app.use("/api/user", userRoutes);
 app.use("/progress", progressRoutes);
-// app.use("/flashcard", flashcardRoutes);
 
 if (process.env.VERCEL !== "1") {
   app.listen(3001, () => {
