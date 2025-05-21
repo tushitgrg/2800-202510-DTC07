@@ -1,3 +1,22 @@
+/**
+ * Retrieves the user's current weather information by:
+ * 1. Obtaining the user's geolocation using the browser's Geolocation API.
+ * 2. Querying the OpenWeatherMap API with the latitude and longitude.
+ * 3. Returning a simplified weather object.
+ *
+ * @async
+ * @function fetchUserWeather
+ * @throws {Error} If geolocation is not supported or location retrieval fails.
+ * @throws {Error} If the weather API key is missing or the API request fails.
+ * @returns {Promise<{
+ *   weather: 'sunny' | 'rainy' | 'cloudy' | 'snowy',
+ *   temp: number,
+ *   humidity: number,
+ *   wind: number,
+ *   country: string,
+ *   city: string
+ * }>} Simplified user weather data
+ */
 export async function fetchUserWeather() {
   const position = await new Promise((resolve, reject) => {
     // Reject right away if the browser doesn’t implement the Geolocation API
@@ -9,10 +28,10 @@ export async function fetchUserWeather() {
     const gpsSetting = {
       enableHighAccuracy: true,
       timeout: 20000, // 20 seconds before giving up
-      maximumAge: 0, // Don’t use a cached position
+      maximumAge: 0,  // Don’t use a cached position
     };
 
-    // If successful, resolve returns the native Position object, else reject with Error
+    // If successful, resolve returns the Position object, else reject with Error
     navigator.geolocation.getCurrentPosition(
       resolve,
       () => reject(new Error("Unable to retrieve user location")),
@@ -41,6 +60,7 @@ export async function fetchUserWeather() {
   if (!res.ok) throw new Error(`Weather API error: ${res.statusText}`);
 
   const data = await res.json();
+
   // Generate object with relevant data
   const userWeather = {
     weather: getSimpleWeather(data.weather[0].main),
@@ -54,6 +74,13 @@ export async function fetchUserWeather() {
   return userWeather;
 }
 
+/**
+ * Simplifies an OpenWeatherMap condition string into a basic category.
+ *
+ * @function getSimpleWeather
+ * @param {string} condition - Main weather condition from API.
+ * @returns {'sunny' | 'rainy' | 'cloudy' | 'snowy'} Simplified weather category.
+ */
 function getSimpleWeather(condition) {
   const normalized = condition.toLowerCase();
 
