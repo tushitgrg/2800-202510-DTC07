@@ -1,8 +1,11 @@
-const { processFile } = require("../utils/fileHandler");
-const { getGeminiOutput } = require("../utils/geminiClient");
-const addQuizEntry = require("../utils/addQuizEntry");
-const addFlashcardEntry = require("../utils/addFlashcardEntry");
-const addSummaryEntry = require("../utils/addSummaryEntry");
+
+const {
+  processUploadedContent,
+  createResourceShell,
+  handleGeminiTasks,
+} = require("./resourceUtils");
+
+
 
 const User = require("../models/userModel");
 const Progress = require("../models/progressModel");
@@ -10,7 +13,6 @@ const Resource = require("../models/resourceModel");
 const Quiz = require("../models/quizModel");
 const Flashcard = require("../models/flashcardModel");
 const Summary = require("../models/summaryModel");
-const { getTranscriptAsFilePart } = require("../utils/GetYoutubeTranscript");
 const { isValidObjectId } = require("mongoose");
 
 /**
@@ -107,7 +109,16 @@ const getResources = async function (req, res) {
   }
 };
 
-//GET request handler by resource ID
+/**
+ * Handles GET request for a single resource by ID.
+ * Returns detailed content and progress metadata.
+ *
+ * @async
+ * @function getResourceById
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Promise<void>}
+ */
 const getResourceById = async function (req, res) {
   const resourceId = req.params.id;
 
@@ -148,99 +159,58 @@ const getResourceById = async function (req, res) {
       const summary = await Summary.findById(summaryID);
       response.summary = summary;
     }
-    res.status(200).json(response);
+    return res.status(200).json(response);
   } catch (error) {
     console.error("Internal server error: ", error);
-    res.status(500).json({ error: "Failed to retrieve resource" });
+    return res.status(500).json({ error: "Failed to retrieve resource" });
   }
 };
 
-//POST request handler for creating a resource
+/**
+ * Creates a new resource for the user and optionally generates quiz, flashcard, and summary content using AI.
+ * @async
+ * @function addResource
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Promise<void>}
+ */
 const addResource = async function (req, res) {
   const userId = req.user._id;
   const user = await User.findById(userId);
 
-  const { title, quizPrompt, flashcardPrompt, summaryPrompt, youtubeUrl } =
-    req.body;
-  if (!req.file) {
-    if (!youtubeUrl)
-      return res.status(500).json({ error: "No file or youtube URL uploaded" });
-    file = await getTranscriptAsFilePart(youtubeUrl);
-  } else {
-    file = processFile(req.file);
-  }
-
-  if (!file) {
-    return res.status(500).json({ error: "Failed to process file" });
-  }
-  const newResource = await Resource.create({
-    title: title || "Untitled Resource",
-    quizID: null,
-    flashcardID: null,
-    summaryID: null,
-    author: userId,
-    school: user.school || null,
-  });
-
   try {
-    const tasks = [];
+    const file = await processUploadedContent(req);
 
-    if (quizPrompt) {
-      const quizTask = (async () => {
-        const quiz = await getGeminiOutput(file, quizPrompt);
-        const quizId = await addQuizEntry(quiz);
-        await Resource.findByIdAndUpdate(newResource._id, { quizID: quizId });
-      })();
-      tasks.push(quizTask);
-    }
+    const newResource = await createResourceShell(
+      userId,
+      req.body.title,
+      user.school
+    );
 
-    if (flashcardPrompt) {
-      const flashcardTask = (async () => {
-        const flashcard = await getGeminiOutput(file, flashcardPrompt);
-        const flashcardId = await addFlashcardEntry(flashcard);
-        await Resource.findByIdAndUpdate(newResource._id, {
-          flashcardID: flashcardId,
-        });
-      })();
-      tasks.push(flashcardTask);
-    }
+    await handleGeminiTasks(file, req.body, newResource._id);
 
-    if (summaryPrompt) {
-      const summaryTask = (async () => {
-        const summary = await getGeminiOutput(file, summaryPrompt);
-        const summaryId = await addSummaryEntry(summary);
-        await Resource.findByIdAndUpdate(newResource._id, {
-          summaryID: summaryId,
-        });
-      })();
-      tasks.push(summaryTask);
-    }
+    user.resources.push(newResource._id);
+    await user.save();
 
-    await Promise.all(tasks);
+    await Progress.create({
+      userId,
+      resourceId: newResource._id,
+    });
+
+    return res.status(201).json({
+      msg: `Successfully created resource with id:${newResource._id}`,
+      resourceID: newResource._id,
+    });
   } catch (err) {
-    console.error("Failed to create resource data:", err);
-    if (newResource._id) {
-      await Resource.deleteOne({
-        _id: newResource._id,
-      });
+    console.error("Resource creation failed:", err);
+    if (newResource?._id) {
+      await Resource.deleteOne({ _id: newResource._id });
     }
 
-    return res
-      .status(500)
-      .json({ error: "Failed to create one or more parts of the resource." });
+    return res.status(500).json({
+      error: "Failed to create resource",
+    });
   }
-
-  user.resources.push(newResource._id);
-  await user.save();
-  await Progress.create({
-    userId: userId,
-    resourceId: newResource._id,
-  });
-
-  return res.status(201).json({
-    msg: `Successfully created resource with id:${newResource._id}`,
-    resourceID: newResource._id,
-  });
 };
 
 const deleteResource = async function (req, res) {
