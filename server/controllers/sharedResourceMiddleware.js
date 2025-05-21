@@ -2,6 +2,17 @@ const User = require("../models/userModel");
 
 const mongoose = require("mongoose");
 
+/**
+ * Middleware to check if the user owns or duplicated the resource.
+ * Sets `req.hasResource` to true if the user has access.
+ *
+ * @async
+ * @function hasResource
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ * @returns {Promise<void>}
+ */
 const hasResource = async function (req, res, next) {
   try {
     const targetId = new mongoose.Types.ObjectId(req.params.id);
