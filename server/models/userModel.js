@@ -1,6 +1,24 @@
 // import mongoose from 'mongoose';
 const mongoose = require("mongoose");
 
+/**
+ * Mongoose schema for a user profile.
+ * Stores identity, profile data, linked resources, and achievements.
+ *
+ * @typedef {Object} User
+ * @property {string} name - Full name of the user
+ * @property {string} email - Unique email address
+ * @property {string} avatar - URL to user's avatar image
+ * @property {string} [displayName] - Optional display name
+ * @property {string} [firstName] - Optional first name
+ * @property {string} [lastName] - Optional last name
+ * @property {string|null} [school] - Optional school name
+ * @property {Array<mongoose.Types.ObjectId>} resources - User's saved resources
+ * @property {Object} achievements - Stats for earned badges and progress
+ * @property {string|null} equippedAchievement - Selected badge type
+ * @property {Date} createdAt - Timestamp of account creation
+ * @property {Date} updatedAt - Timestamp of last update
+ */
 const userSchema = new mongoose.Schema(
   {
     name: {
@@ -50,5 +68,4 @@ const userSchema = new mongoose.Schema(
 );
 
 const userModel = mongoose.model("User", userSchema);
-// export default userModel
 module.exports = userModel;
