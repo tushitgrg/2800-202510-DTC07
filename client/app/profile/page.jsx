@@ -17,9 +17,11 @@ import { ServerUrl } from "@/lib/urls";
  */
 
 export default function profilePage() {
+  // Store the logged-in user's info
   const [googleUser, setGoogleUser] = useState(null);
 
   useEffect(() => {
+    // Fetch user info from backend
     fetch(ServerUrl, {
       credentials: "include",
     })
@@ -36,8 +38,10 @@ export default function profilePage() {
       });
   }, []);
 
+  // Show loading until user data is available
   if (!googleUser) return <Loading />;
 
+  // Render the profile UI with the fetched user info
   return (
     <div>
       <ProfileCard googleUser={googleUser} />
