@@ -3,8 +3,14 @@ const passport = require("passport"); // Import Passport.js for authentication.
 require("dotenv").config(); // Load environment variables from a .env file.
 const router = express.Router(); // Create a new Express router instance.
 
-// Route to initiate Google OAuth authentication.
-// Passport.js redirects to Google's consent screen.
+/**
+ * Route to initiate Google OAuth authentication.
+ * Redirects the user to Google's consent screen using Passport.js.
+ *
+ * @name GET /auth/google
+ * @function
+ * @memberof module:authRoutes
+ */
 router.get(
   "/auth/google",
   passport.authenticate("google", {
