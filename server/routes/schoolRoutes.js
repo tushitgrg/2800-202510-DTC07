@@ -1,8 +1,23 @@
+/**
+ * School search route for autocomplete functionality.
+ * Searches a local list of school names and returns up to 10 matches.
+ * Uses in-memory caching for performance.
+ *
+ * @module schoolRoutes
+ */
+
 const express = require("express");
 const router = express.Router();
 const schools = require("../data/lowercased-schools.json");
 const cache = new Map();
 
+
+/**
+ * @route GET /schools/search
+ * @queryParam {string} q - Query string for filtering school names
+ * @desc Returns up to 10 school name suggestions
+ * @access Public
+ */
 router.get("/search", (req, res) => {
   const q = (req.query.q || "").toLowerCase();
   if (cache.has(q)) return res.json(cache.get(q));
