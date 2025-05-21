@@ -82,8 +82,10 @@ export default function ShareDialog({
   const handleCopyLink = async () => {
     if (navigator.clipboard) {
       try {
+        const resourceId = resource.originalResourceId || resource.id 
+
         await navigator.clipboard.writeText(
-          `${ClientUrl}/resource/${resource.id}`
+          `${ClientUrl}/resource/${resourceId}`
         );
         toast.success("Copied!", {
           duration: 4000,
@@ -104,9 +106,12 @@ export default function ShareDialog({
   const handleSharePrivate = async () => {
     if (navigator.share) {
       try {
+        const resourceId = resource.originalResourceId || resource.id 
+        console.log("Emanuel in frontend",resource.originalResourceId)
+
         await navigator.share({
           title: resource.title,
-          url: `${ClientUrl}/resource/${resource.id}`,
+          url: `${ClientUrl}/resource/${resourceId}`,
         });
       } catch (e) {
         // Silently handle rejection (user canceled)
@@ -123,7 +128,9 @@ export default function ShareDialog({
    * Makes the resource public and adds metadata
    */
   const handleSharePublic = () => {
-    handleShare(resource.id, title, school || null, course || null, true);
+    const resourceId = resource.originalResourceId || resource.id 
+
+    handleShare(resourceId, title, school || null, course || null, true);
     onClose();
   };
 

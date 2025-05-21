@@ -44,6 +44,7 @@ const getResourceInfo = async function (req, res) {
         if (!resource) return null;
         const info = {};
         info.id = resourceID;
+        info.originalResourceId = resource.originalResourceId || null;
         info.title = resource.title;
         info.createdAt = resource.createdAt;
         info.tags = resource.tags || [];
