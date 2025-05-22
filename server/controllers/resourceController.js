@@ -249,6 +249,20 @@ const deleteResource = async function (req, res) {
   }
 };
 
+async function updateLikes(resourceId, userId, add) {
+  const action = add
+    ? { $addToSet: { likes: userId } }
+    : { $pull: { likes: userId } };
+
+  const updated = await Resource.findByIdAndUpdate(resourceId, action, {
+    new: true,
+  });
+
+  await Resource.findByIdAndUpdate(resourceId, {
+    $set: { likesCount: updated.likes.length },
+  });
+}
+
 /**
  * Updates a resource's metadata and like status.
  *
@@ -275,28 +289,18 @@ const updateResourceInfo = async function (req, res) {
     return res.status(400).json({ error: "Resource ID is required" });
   }
   try {
-    console.log(
-      "Hello this is emanuel: ",
-      isPublic,
-      updatedFields.isPublic,
-      true
-    );
-    if (isLiked === true) {
-      const currentResource = await Resource.findByIdAndUpdate(resourceId, {
-        $addToSet: { likes: req.user._id },
-      });
-      if (currentResource.originalResourceId)
-        await Resource.findByIdAndUpdate(currentResource.originalResourceId, {
-          $addToSet: { likes: req.user._id },
-        });
-    } else if (isLiked === false) {
-      const currentResource = await Resource.findByIdAndUpdate(resourceId, {
-        $pull: { likes: req.user._id },
-      });
-      if (currentResource.originalResourceId)
-        await Resource.findByIdAndUpdate(currentResource.originalResourceId, {
-          $pull: { likes: req.user._id },
-        });
+ 
+    if (isLiked === true || isLiked === false) {
+      const currentResource = await Resource.findById(resourceId);
+      await updateLikes(resourceId, req.user._id, isLiked === true);
+
+      if (currentResource.originalResourceId) {
+        await updateLikes(
+          currentResource.originalResourceId,
+          req.user._id,
+          isLiked === true
+        );
+      }
     }
     const updatedResource = await Resource.findByIdAndUpdate(
       resourceId,
@@ -354,6 +358,14 @@ const getPublicResources = async function (req, res) {
     if (sort) {
       const [field, order] = sort.split(":");
       sortOption[field] = order === "desc" ? -1 : 1;
+      const sortOrder = order === "desc" ? -1 : 1;
+
+      if (field === "likes") {
+        // Special handling to sort by number of likes (length of likes array)
+        sortOption = { likesCount: sortOrder };
+      } else {
+        sortOption[field] = sortOrder;
+      }
     }
 
     const totalCount = await Resource.countDocuments(filters);
@@ -372,7 +384,7 @@ const getPublicResources = async function (req, res) {
       course: resource.course,
       createdAt: resource.createdAt,
       shareCount: resource.shareCount || 0,
-      likes: resource.likes?.length || 0,
+      likes: resource.likesCount || 0,
     }));
 
     // Obtain all unique schools/courses from matching full set
