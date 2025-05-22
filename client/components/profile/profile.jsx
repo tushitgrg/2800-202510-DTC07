@@ -211,7 +211,13 @@ export default function ProfileCard({ googleUser = {} }) {
             value={displayName}
             disabled={!isEditing}
             className="rounded-full mt-1"
-            onChange={(e) => setDisplayName(e.target.value)}
+            onChange={(e) => {
+              const input = e.target.value;
+              if (input.length <= 20) {
+                setDisplayName(input);
+              }
+            }}
+            
           />
         </div>
 
