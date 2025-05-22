@@ -34,6 +34,7 @@ const resourceSchema = new mongoose.Schema(
       type: Array,
       default: [],
     },
+    likesCount: { type: Number, default: 0 },
     course: { type: String, default: null },
     school: { type: String, default: null },
 
@@ -45,6 +46,5 @@ const resourceSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
 
 module.exports = mongoose.model("Resource", resourceSchema);

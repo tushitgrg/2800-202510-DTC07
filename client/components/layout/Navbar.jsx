@@ -54,7 +54,7 @@ const Navbar = () => {
   }, [mobileMenuOpen]);
   return (
     <header
-      className={`sticky top-0 z-50 w-full flex flex-col items-center backdrop-blur-lg transition-all duration-300 ${
+      className={`sticky top-0 z-50 w-full  px-3 flex flex-col items-center backdrop-blur-lg transition-all duration-300 ${
         isScrolled ? "bg-background/80 shadow-sm" : "bg-transparent"
       }`}
     >
