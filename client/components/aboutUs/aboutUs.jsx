@@ -59,9 +59,9 @@ const AboutUs = () => {
     },
     {
       name: "Tracy Chung",
-      role: "Our Placeholder",
+      role: "Our Team Glue Engineer",
       icon: <Code2 className="size-6" />,
-      description: "The 5th Group mate, because every team needs five members.",
+      description: "Responsible for bringing every component (aka teammates) together to form scholiast/page.jsx. Busy planning meetings, organizing team bonding moments, and preventing teammates from abusing substances or fighting with each other.",
     },
   ];
 
