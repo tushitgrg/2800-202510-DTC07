@@ -67,6 +67,7 @@ router.post("/:id/add", hasResource, addResourceById);
 /**
  * @route DELETE /resources/:id
  * @
+ */
 router.delete("/:id", hasResource, deleteResource);
 
 // Resource updates
