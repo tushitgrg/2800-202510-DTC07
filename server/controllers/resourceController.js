@@ -249,6 +249,20 @@ const deleteResource = async function (req, res) {
   }
 };
 
+
+/**
+ * Updates the likes array and likesCount field of a resource document.
+ *
+ * Adds or removes a user ID from the resource's likes array using $addToSet or $pull,
+ * then updates the likesCount field to reflect the current number of likes.
+ *
+ * @async
+ * @function updateLikes
+ * @param {string} resourceId - The ID of the resource to update.
+ * @param {string} userId - The ID of the user liking or unliking the resource.
+ * @param {boolean} add - If true, adds the user to the likes array; if false, removes them.
+ * @returns {Promise<void>} Resolves when the update is complete.
+ */
 async function updateLikes(resourceId, userId, add) {
   const action = add
     ? { $addToSet: { likes: userId } }
