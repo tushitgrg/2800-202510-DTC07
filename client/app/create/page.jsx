@@ -255,10 +255,13 @@ export default function CreatePage() {
   const handleNext = async () => {
     if (currentStep === "upload") {
       if (!file && !isValidYouTubeUrl(youtubeUrl)) {
-        toast.error("Please upload a PDF file or provide a valid YouTube URL.", {
-          duration: 4000,
-          position: "bottom-right",
-        });
+        toast.error(
+          "Please upload a PDF file or provide a valid YouTube URL.",
+          {
+            duration: 4000,
+            position: "bottom-right",
+          },
+        );
         return;
       }
       setCurrentStep("select");
@@ -1129,7 +1132,10 @@ export default function CreatePage() {
               </motion.div>
 
               {/* Processing animation and progress bar */}
-              <motion.div variants={itemVariants} className="flex flex-col items-center gap-6">
+              <motion.div
+                variants={itemVariants}
+                className="flex flex-col items-center gap-6"
+              >
                 <div className="relative size-24">
                   <motion.div
                     className="absolute inset-0 rounded-full bg-primary/10 flex items-center justify-center"

@@ -43,5 +43,4 @@ const quizCollectionModel = mongoose.model(
   quizCollectionSchema,
 );
 
-
 module.exports = quizCollectionModel;

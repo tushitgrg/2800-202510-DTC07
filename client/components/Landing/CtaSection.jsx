@@ -9,7 +9,7 @@ import Link from "next/link";
  * CtaSection component renders a call-to-action section
  * with animated heading, description, and action buttons.
  * It encourages users to start using the platform or see a demo.
- * 
+ *
  * @component
  * @returns {JSX.Element} The CTA section JSX element
  */

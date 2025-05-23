@@ -19,6 +19,5 @@ const summarySchema = new mongoose.Schema(
   { _id: true, timestamps: true },
 );
 
-
 const summaryModel = mongoose.model("summary", summarySchema);
 module.exports = summaryModel;

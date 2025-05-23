@@ -61,7 +61,8 @@ const AboutUs = () => {
       name: "Tracy Chung",
       role: "Our Team Glue Engineer",
       icon: <Code2 className="size-6" />,
-      description: "Responsible for bringing every component (aka teammates) together to form scholiast/page.jsx. Busy planning meetings, organizing team bonding moments, and preventing teammates from abusing substances or fighting with each other.",
+      description:
+        "Responsible for bringing every component (aka teammates) together to form scholiast/page.jsx. Busy planning meetings, organizing team bonding moments, and preventing teammates from abusing substances or fighting with each other.",
     },
   ];
 

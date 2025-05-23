@@ -36,11 +36,12 @@ const calculateExperience = async (req, res, next) => {
     streakXP * user.achievements.streak +
     progressXP;
   req.experience = totalXP;
-  req.user.achievements.streak = getLongestStreak(allProgress.map((prog)=>prog.updatedAt))
+  req.user.achievements.streak = getLongestStreak(
+    allProgress.map((prog) => prog.updatedAt),
+  );
   req.user = { ...req.user.toObject(), experience: totalXP };
   return next();
 };
-
 
 function getLongestStreak(dates) {
   let longest = 0;
@@ -49,9 +50,9 @@ function getLongestStreak(dates) {
   for (let i = 1; i < dates.length; i++) {
     const prev = new Date(dates[i - 1]);
     const curr = new Date(dates[i]);
-    
+
     const diffInDays = (curr - prev) / (1000 * 60 * 60 * 24);
-    
+
     if (diffInDays === 1) {
       current++;
     } else {

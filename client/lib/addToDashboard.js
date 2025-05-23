@@ -12,13 +12,10 @@ import { ServerUrl } from "./urls";
 export const addToDashboard = async (resourceId) => {
   try {
     // Construct the POST endpoint URL and include cookies for authentication
-    const response = await fetch(
-      `${ServerUrl}/resources/${resourceId}/add`,
-      {
-        method: "POST",
-        credentials: "include", // send browser cookies for session auth
-      }
-    );
+    const response = await fetch(`${ServerUrl}/resources/${resourceId}/add`, {
+      method: "POST",
+      credentials: "include", // send browser cookies for session auth
+    });
 
     if (!response.ok) {
       throw new Error("Failed to add resource");

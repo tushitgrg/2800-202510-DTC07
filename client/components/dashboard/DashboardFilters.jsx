@@ -132,10 +132,10 @@ const DashboardFilters = ({
               {sortOption === "newest"
                 ? "Newest"
                 : sortOption === "oldest"
-                ? "Oldest"
-                : sortOption === "a-z"
-                ? "A to Z"
-                : "Z to A"}
+                  ? "Oldest"
+                  : sortOption === "a-z"
+                    ? "A to Z"
+                    : "Z to A"}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start">

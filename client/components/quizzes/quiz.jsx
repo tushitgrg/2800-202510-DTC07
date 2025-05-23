@@ -80,7 +80,7 @@ export default function Quiz({ questions, onComplete, progress }) {
         question.options.length === 2 &&
         question.options.every(
           (option) =>
-            option.toLowerCase() === "true" || option.toLowerCase() === "false"
+            option.toLowerCase() === "true" || option.toLowerCase() === "false",
         );
 
       // Shuffle options for non-true/false questions
@@ -183,7 +183,7 @@ export default function Quiz({ questions, onComplete, progress }) {
       if (answer === null) {
         const correctAnswer = questionsToUse[index].answer;
         const incorrectChoice = questionsToUse[index].options.find(
-          (choice) => choice !== correctAnswer
+          (choice) => choice !== correctAnswer,
         );
         return incorrectChoice || questionsToUse[index].options[0];
       }
@@ -205,7 +205,7 @@ export default function Quiz({ questions, onComplete, progress }) {
       {
         quizScore: scorePercentage,
       },
-      progress
+      progress,
     );
   };
 

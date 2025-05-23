@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 
 /**
  * LogoSection component
- * 
+ *
  * Displays a section with a message and logos of institutions/brands.
  * Animates logos into view using Framer Motion when they appear in the viewport.
  *

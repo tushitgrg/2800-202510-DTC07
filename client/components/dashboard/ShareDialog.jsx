@@ -60,7 +60,7 @@ export default function ShareDialog({
     }
     const res = await fetch(
       `${ServerUrl}/school/search?q=${encodeURIComponent(q)}`,
-      { credentials: "include" }
+      { credentials: "include" },
     );
     const data = await res.json();
     setSchoolList(data);
@@ -82,10 +82,10 @@ export default function ShareDialog({
   const handleCopyLink = async () => {
     if (navigator.clipboard) {
       try {
-        const resourceId = resource.originalResourceId || resource.id 
+        const resourceId = resource.originalResourceId || resource.id;
 
         await navigator.clipboard.writeText(
-          `${ClientUrl}/resource/${resourceId}`
+          `${ClientUrl}/resource/${resourceId}`,
         );
         toast.success("Copied!", {
           duration: 4000,
@@ -106,8 +106,8 @@ export default function ShareDialog({
   const handleSharePrivate = async () => {
     if (navigator.share) {
       try {
-        const resourceId = resource.originalResourceId || resource.id 
-        console.log("Emanuel in frontend",resource.originalResourceId)
+        const resourceId = resource.originalResourceId || resource.id;
+        console.log("Emanuel in frontend", resource.originalResourceId);
 
         await navigator.share({
           title: resource.title,
@@ -128,7 +128,7 @@ export default function ShareDialog({
    * Makes the resource public and adds metadata
    */
   const handleSharePublic = () => {
-    const resourceId = resource.originalResourceId || resource.id 
+    const resourceId = resource.originalResourceId || resource.id;
 
     handleShare(resourceId, title, school || null, course || null, true);
     onClose();

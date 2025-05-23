@@ -20,36 +20,27 @@ import { ServerUrl } from "@/lib/urls";
  */
 const updateResource = async (resource) => {
   // Construct the PUT endpoint URL with the resource ID
-  const response = await fetch(
-    `${ServerUrl}/resources/${resource.editingId}`,
-    {
-      method: "PUT",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        // Determine the new title: use editValue if present, else newTitle or null
-        newTitle: resource.editValue
-          ? resource.editValue
-          : resource.newTitle || null,
-        // Use updated tags if available, otherwise default to empty array
-        newTags: resource.updatedResource
-          ? resource.updatedResource.tags
-          : [],
-        newSchool: resource.newSchool ?? null, // Nullable new school
-        newCourse: resource.newCourse ?? null, // Nullable new course
-        // Only include isPublic if defined
-        isPublic: resource.isPublic !== undefined
-          ? resource.isPublic
-          : undefined,
-        // Only include isLiked if defined, null otherwise
-        isLiked: resource.isLiked !== undefined
-          ? resource.isLiked
-          : null,
-      }),
-    }
-  );
+  const response = await fetch(`${ServerUrl}/resources/${resource.editingId}`, {
+    method: "PUT",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      // Determine the new title: use editValue if present, else newTitle or null
+      newTitle: resource.editValue
+        ? resource.editValue
+        : resource.newTitle || null,
+      // Use updated tags if available, otherwise default to empty array
+      newTags: resource.updatedResource ? resource.updatedResource.tags : [],
+      newSchool: resource.newSchool ?? null, // Nullable new school
+      newCourse: resource.newCourse ?? null, // Nullable new course
+      // Only include isPublic if defined
+      isPublic: resource.isPublic !== undefined ? resource.isPublic : undefined,
+      // Only include isLiked if defined, null otherwise
+      isLiked: resource.isLiked !== undefined ? resource.isLiked : null,
+    }),
+  });
 
   // Throw if the update failed
   if (!response.ok) {

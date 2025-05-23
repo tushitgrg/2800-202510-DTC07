@@ -14,7 +14,7 @@ import {
 /**
  * FeaturesSection component renders a section showcasing AI-powered study tools.
  * It uses framer-motion for animation and displays feature cards with icons, titles, and descriptions.
- * 
+ *
  * @component
  * @returns {JSX.Element} The FeaturesSection React component.
  */

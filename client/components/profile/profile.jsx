@@ -217,7 +217,6 @@ export default function ProfileCard({ googleUser = {} }) {
                 setDisplayName(input);
               }
             }}
-            
           />
         </div>
 
@@ -312,7 +311,11 @@ export default function ProfileCard({ googleUser = {} }) {
       <CardFooter className="justify-end space-x-2">
         {isEditing ? (
           <>
-            <Button variant="outline" onClick={handleCancel} className="cursor-pointer">
+            <Button
+              variant="outline"
+              onClick={handleCancel}
+              className="cursor-pointer"
+            >
               Cancel
             </Button>
             <Button onClick={handleSave} className="cursor-pointer">

@@ -76,7 +76,7 @@ export default function Flashcards({ cards, progress }) {
           {
             flashcardScore: scorePercentage,
           },
-          progress
+          progress,
         );
       }
     }
@@ -121,7 +121,7 @@ export default function Flashcards({ cards, progress }) {
   if (showResults) {
     const correctCount = correctAnswers.filter(Boolean).length;
     const scorePercentage = Math.round(
-      (correctCount / cardsToUse.length) * 100
+      (correctCount / cardsToUse.length) * 100,
     );
 
     return (

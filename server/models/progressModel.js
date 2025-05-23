@@ -10,12 +10,14 @@ const mongoose = require("mongoose");
  * @property {number|null} flashcardScore - User's flashcard score (0–100)
  * @property {boolean} summaryCompletion - Whether the summary task was completed
  */
-const ProgressSchema = mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
-  resourceId: { type: mongoose.Schema.Types.ObjectId, ref: "resource" },
-  quizScore: { type: Number, default: null },
-  flashcardScore: { type: Number, default: null },
-  summaryCompletion: { type: Boolean, default: false },
-},
-  { _id: true, timestamps: true });
+const ProgressSchema = mongoose.Schema(
+  {
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
+    resourceId: { type: mongoose.Schema.Types.ObjectId, ref: "resource" },
+    quizScore: { type: Number, default: null },
+    flashcardScore: { type: Number, default: null },
+    summaryCompletion: { type: Boolean, default: false },
+  },
+  { _id: true, timestamps: true },
+);
 module.exports = mongoose.model("progress", ProgressSchema);

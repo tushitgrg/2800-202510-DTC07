@@ -5,7 +5,6 @@ import { Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 
-
 /**
  * Renders the testimonial section of the landing page.
  * Displays animated testimonials with quotes, author info, and ratings.

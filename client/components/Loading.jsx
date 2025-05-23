@@ -22,7 +22,7 @@ const Loading = () => {
           className="absolute inset-0 rounded-full border-4 border-primary/30"
           animate={{ rotate: 360 }}
           transition={{
-            duration: 8,                   
+            duration: 8,
             repeat: Number.POSITIVE_INFINITY,
             ease: "linear",
           }}
@@ -32,7 +32,7 @@ const Loading = () => {
           className="absolute inset-4 rounded-full border-4 border-t-primary border-r-transparent border-b-transparent border-l-transparent"
           animate={{ rotate: -360 }}
           transition={{
-            duration: 4,                   
+            duration: 4,
             repeat: Number.POSITIVE_INFINITY,
             ease: "linear",
           }}
@@ -42,7 +42,7 @@ const Loading = () => {
           className="absolute inset-8 rounded-full border-4 border-t-transparent border-r-primary border-b-transparent border-l-transparent"
           animate={{ rotate: 360 }}
           transition={{
-            duration: 3,                   
+            duration: 3,
             repeat: Number.POSITIVE_INFINITY,
             ease: "linear",
           }}

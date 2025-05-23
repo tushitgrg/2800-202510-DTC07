@@ -11,7 +11,6 @@ const router = express.Router();
 const schools = require("../data/lowercased-schools.json");
 const cache = new Map();
 
-
 /**
  * @route GET /schools/search
  * @queryParam {string} q - Query string for filtering school names

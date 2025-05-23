@@ -72,7 +72,7 @@ const getResourceInfo = async function (req, res) {
         info.school = author.school;
 
         return info;
-      })
+      }),
     );
     return res.status(200).json({ resources: result });
   } catch (err) {
@@ -97,7 +97,7 @@ const getResources = async function (req, res) {
     const user = await User.findById(userId);
     const userResources = user.resources;
     const result = await Promise.all(
-      userResources.map((resourceID) => fetchResource(resourceID))
+      userResources.map((resourceID) => fetchResource(resourceID)),
     );
     return res.status(200).json(result);
   } catch (err) {
@@ -126,13 +126,13 @@ const getResourceById = async function (req, res) {
       return res.status(404).json({ error: "Resource not found" });
     }
     const originalResource = await Resource.findById(
-      resource.originalResourceId
+      resource.originalResourceId,
     );
     console.log("aaaaa", originalResource);
     const { quizID, flashcardID, summaryID, title, createdAt, author } =
       resource;
     const progress = await Progress.findOne({ resourceId: resourceId }).select(
-      "-_id -userId -resourceId"
+      "-_id -userId -resourceId",
     );
     response.id = resourceId;
     response.title = title;
@@ -181,7 +181,7 @@ const addResource = async function (req, res) {
     const newResource = await createResourceShell(
       userId,
       req.body.title,
-      user.school
+      user.school,
     );
 
     await handleGeminiTasks(file, req.body, newResource._id);
@@ -249,7 +249,6 @@ const deleteResource = async function (req, res) {
   }
 };
 
-
 /**
  * Updates the likes array and likesCount field of a resource document.
  *
@@ -303,7 +302,6 @@ const updateResourceInfo = async function (req, res) {
     return res.status(400).json({ error: "Resource ID is required" });
   }
   try {
- 
     if (isLiked === true || isLiked === false) {
       const currentResource = await Resource.findById(resourceId);
       await updateLikes(resourceId, req.user._id, isLiked === true);
@@ -312,14 +310,14 @@ const updateResourceInfo = async function (req, res) {
         await updateLikes(
           currentResource.originalResourceId,
           req.user._id,
-          isLiked === true
+          isLiked === true,
         );
       }
     }
     const updatedResource = await Resource.findByIdAndUpdate(
       resourceId,
       updatedFields,
-      { new: true }
+      { new: true },
     );
     if (!updatedResource) {
       return res.status(404).json({ error: "Resource not found" });
@@ -402,14 +400,13 @@ const getPublicResources = async function (req, res) {
     }));
 
     // Obtain all unique schools/courses from matching full set
-    const allMatchingResources = await Resource.find(filters).select(
-      "school course"
-    );
+    const allMatchingResources =
+      await Resource.find(filters).select("school course");
     const allSchools = Array.from(
-      new Set(allMatchingResources.map((r) => r.school).filter(Boolean))
+      new Set(allMatchingResources.map((r) => r.school).filter(Boolean)),
     );
     const allCourses = Array.from(
-      new Set(allMatchingResources.map((r) => r.course).filter(Boolean))
+      new Set(allMatchingResources.map((r) => r.course).filter(Boolean)),
     );
 
     res.status(200).json({

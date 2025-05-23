@@ -46,9 +46,9 @@ const CommunityFilters = ({
   /** Memoized list of schools matching the schoolSearch input */
   const filteredSchools = useMemo(() => {
     const base = schoolSearch.trim()
-      ? allSchools.filter(s =>
-        s.toLowerCase().includes(schoolSearch.toLowerCase())
-      )
+      ? allSchools.filter((s) =>
+          s.toLowerCase().includes(schoolSearch.toLowerCase()),
+        )
       : allSchools;
     return [...base].sort((a, b) => a.localeCompare(b));
   }, [schoolSearch, allSchools]);
@@ -56,9 +56,9 @@ const CommunityFilters = ({
   /** Memoized list of courses matching the courseSearch input */
   const filteredCourses = useMemo(() => {
     const base = courseSearch.trim()
-      ? allCourses.filter(c =>
-        c.toLowerCase().includes(courseSearch.toLowerCase())
-      )
+      ? allCourses.filter((c) =>
+          c.toLowerCase().includes(courseSearch.toLowerCase()),
+        )
       : allCourses;
     return [...base].sort((a, b) => a.localeCompare(b));
   }, [courseSearch, allCourses]);
@@ -138,10 +138,18 @@ const CommunityFilters = ({
           <DropdownMenuContent align="start">
             <DropdownMenuLabel>Sort by</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => onSortChange("createdAt:desc")}>Newest</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onSortChange("createdAt:asc")}>Oldest</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onSortChange("likes:desc")}>Likes</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onSortChange("shareCount:desc")}>Share Count</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onSortChange("createdAt:desc")}>
+              Newest
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onSortChange("createdAt:asc")}>
+              Oldest
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onSortChange("likes:desc")}>
+              Likes
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onSortChange("shareCount:desc")}>
+              Share Count
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
@@ -169,7 +177,10 @@ const CommunityFilters = ({
               filteredSchools.map((school) => (
                 <DropdownMenuItem
                   key={school}
-                  onClick={() => { handleSchoolSelect(school); setSchoolSearch(""); }}
+                  onClick={() => {
+                    handleSchoolSelect(school);
+                    setSchoolSearch("");
+                  }}
                   disabled={selectedSchool === school}
                   className="cursor-pointer hover:bg-zinc-700"
                 >
@@ -183,7 +194,10 @@ const CommunityFilters = ({
             )}
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onClick={() => { handleSchoolSelect(""); setSchoolSearch(""); }}
+              onClick={() => {
+                handleSchoolSelect("");
+                setSchoolSearch("");
+              }}
               disabled={!selectedSchool}
               className="cursor-pointer"
             >
@@ -216,7 +230,10 @@ const CommunityFilters = ({
               filteredCourses.map((course) => (
                 <DropdownMenuItem
                   key={course}
-                  onClick={() => { handleCourseSelect(course); setCourseSearch(""); }}
+                  onClick={() => {
+                    handleCourseSelect(course);
+                    setCourseSearch("");
+                  }}
                   disabled={selectedCourse === course}
                   className="cursor-pointer hover:bg-zinc-700"
                 >
@@ -230,7 +247,10 @@ const CommunityFilters = ({
             )}
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onClick={() => { handleCourseSelect(""); setCourseSearch(""); }}
+              onClick={() => {
+                handleCourseSelect("");
+                setCourseSearch("");
+              }}
               disabled={!selectedCourse}
               className="cursor-pointer"
             >

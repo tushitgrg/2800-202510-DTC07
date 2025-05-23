@@ -47,10 +47,10 @@ export default function Summary({ content, progress }) {
       {
         summaryCompletion: isChecked,
       },
-      progress
+      progress,
     );
   };
-    const processedContent = content
+  const processedContent = content
     // Replace escaped newlines with actual newlines
     .replace(/\\n/g, "\n")
     // Fix any heading issues (ensure space after #)
@@ -61,33 +61,31 @@ export default function Summary({ content, progress }) {
   return (
     <div className="bg-slate-800 rounded-lg p-6 shadow-md w-full">
       {/* Render markdown content */}
-             <Markdown
-          remarkPlugins={[remarkGfm]}
-          rehypePlugins={[rehypeRaw]}
-          components={{
-            // Properly style unordered lists and list items
-            ul: ({ node, ...props }) => (
-              <ul className="list-disc pl-6 space-y-1 my-3" {...props} />
-            ),
-            li: ({ node, children, ...props }) => (
-              <li className="my-1" {...props}>
-                {children}
-              </li>
-            ),
-            // Custom component for headings
-            h1: ({ node, ...props }) => (
-              <h1 className="text-2xl font-bold mb-4 mt-6" {...props} />
-            ),
-            h2: ({ node, ...props }) => (
-              <h2 className="text-xl font-bold mb-3 mt-5" {...props} />
-            ),
-            p: ({ node, ...props }) => (
-              <p className="my-2" {...props} />
-            ),
-          }}
-        >
-          {processedContent}
-        </Markdown>
+      <Markdown
+        remarkPlugins={[remarkGfm]}
+        rehypePlugins={[rehypeRaw]}
+        components={{
+          // Properly style unordered lists and list items
+          ul: ({ node, ...props }) => (
+            <ul className="list-disc pl-6 space-y-1 my-3" {...props} />
+          ),
+          li: ({ node, children, ...props }) => (
+            <li className="my-1" {...props}>
+              {children}
+            </li>
+          ),
+          // Custom component for headings
+          h1: ({ node, ...props }) => (
+            <h1 className="text-2xl font-bold mb-4 mt-6" {...props} />
+          ),
+          h2: ({ node, ...props }) => (
+            <h2 className="text-xl font-bold mb-3 mt-5" {...props} />
+          ),
+          p: ({ node, ...props }) => <p className="my-2" {...props} />,
+        }}
+      >
+        {processedContent}
+      </Markdown>
 
       {/* Completion checkbox */}
       <div className="flex items-center space-x-2 mt-6 justify-end">

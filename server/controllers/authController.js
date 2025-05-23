@@ -15,7 +15,7 @@ router.get(
   "/auth/google",
   passport.authenticate("google", {
     scope: ["profile", "email"], // Request access to the user's profile and email.
-  })
+  }),
 );
 
 /**
@@ -35,7 +35,7 @@ router.get(
   (req, res) => {
     // On successful authentication, redirect the user to the client-side dashboard.
     res.redirect(`${process.env.CLIENT_URL}/dashboard`);
-  }
+  },
 );
 
 /**

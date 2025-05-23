@@ -7,7 +7,7 @@ import { ServerUrl } from "@/lib/urls";
 
 /**
  * Renders the user's profile page.
- * 
+ *
  * This component fetches the authenticated user's data using the Google OAuth cookie,
  * then displays a profile card using the <ProfileCard /> component.
  * If the user is not authenticated, it redirects to the Google login page.

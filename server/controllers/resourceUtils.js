@@ -70,7 +70,7 @@ const handleGeminiTasks = async (file, prompts, resourceId) => {
         const quiz = await getGeminiOutput(file, prompts.quizPrompt);
         const quizId = await addQuizEntry(quiz);
         await Resource.findByIdAndUpdate(resourceId, { quizID: quizId });
-      })()
+      })(),
     );
   }
 
@@ -82,7 +82,7 @@ const handleGeminiTasks = async (file, prompts, resourceId) => {
         await Resource.findByIdAndUpdate(resourceId, {
           flashcardID: flashcardId,
         });
-      })()
+      })(),
     );
   }
 
@@ -94,7 +94,7 @@ const handleGeminiTasks = async (file, prompts, resourceId) => {
         await Resource.findByIdAndUpdate(resourceId, {
           summaryID: summaryId,
         });
-      })()
+      })(),
     );
   }
 

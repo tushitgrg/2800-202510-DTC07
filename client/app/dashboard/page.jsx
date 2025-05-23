@@ -55,8 +55,8 @@ export default function DashboardPage() {
           new Set(
             data.resources
               .flatMap((resource) => resource.tags || [])
-              .filter((tag) => tag)
-          )
+              .filter((tag) => tag),
+          ),
         );
         setAllTags(uniqueTags);
       } catch (error) {
@@ -150,8 +150,8 @@ export default function DashboardPage() {
         resources.map((resource) =>
           resource.id === editingId
             ? { ...resource, title: editValue }
-            : resource
-        )
+            : resource,
+        ),
       );
       setEditingId(null);
     } catch (error) {
@@ -161,8 +161,8 @@ export default function DashboardPage() {
         resources.map((resource) =>
           resource.id === editingId
             ? { ...resource, title: editValue }
-            : resource
-        )
+            : resource,
+        ),
       );
       setEditingId(null);
     }
@@ -218,7 +218,7 @@ export default function DashboardPage() {
     newTitle,
     schoolData,
     courseData,
-    isPublicData
+    isPublicData,
   ) => {
     try {
       // Update the resource in the database
@@ -242,8 +242,8 @@ export default function DashboardPage() {
                 course: courseData,
                 isPublic: isPublicData,
               }
-            : resource
-        )
+            : resource,
+        ),
       );
       toast.success("Your resource is now public!", {
         duration: 4000,
@@ -338,8 +338,8 @@ export default function DashboardPage() {
       new Set(
         currentResources
           .flatMap((resource) => resource.tags || [])
-          .filter((tag) => tag)
-      )
+          .filter((tag) => tag),
+      ),
     );
     setAllTags(uniqueTags);
   };

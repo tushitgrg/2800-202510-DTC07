@@ -56,13 +56,16 @@ const Navbar = () => {
   // Effect to lock body scroll when mobile menu is open
   useEffect(() => {
     document.body.style.overflow = mobileMenuOpen ? "hidden" : "auto";
-    return () => { document.body.style.overflow = "auto"; };
+    return () => {
+      document.body.style.overflow = "auto";
+    };
   }, [mobileMenuOpen]);
 
   return (
     <header
-      className={`sticky top-0 z-50 w-full px-3 flex flex-col items-center backdrop-blur-lg transition-all duration-300 ${isScrolled ? "bg-background/80 shadow-sm" : "bg-transparent"
-        }`}
+      className={`sticky top-0 z-50 w-full px-3 flex flex-col items-center backdrop-blur-lg transition-all duration-300 ${
+        isScrolled ? "bg-background/80 shadow-sm" : "bg-transparent"
+      }`}
     >
       <div className="container flex h-16 items-center justify-between">
         {/* Logo linking to home */}
@@ -96,7 +99,11 @@ const Navbar = () => {
             size="icon"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            {mobileMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
+            {mobileMenuOpen ? (
+              <X className="size-5" />
+            ) : (
+              <Menu className="size-5" />
+            )}
             <span className="sr-only">Toggle menu</span>
           </Button>
         </div>
@@ -113,10 +120,18 @@ const Navbar = () => {
             transition={{ duration: 0.2 }}
           >
             {/* Backdrop and animated overlays */}
-            <motion.div className="absolute inset-0 bg-black/95 backdrop-blur-md"
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} />
-            <motion.div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-black/50 to-purple-900/20"
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} />
+            <motion.div
+              className="absolute inset-0 bg-black/95 backdrop-blur-md"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            />
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-br from-primary/20 via-black/50 to-purple-900/20"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            />
             <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff10_1px,transparent_1px),linear-gradient(to_bottom,#ffffff10_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
 
             {/* Animated decorative circles */}
@@ -128,7 +143,12 @@ const Navbar = () => {
             <motion.div
               className="absolute bottom-1/4 right-1/4 w-40 h-40 rounded-full bg-purple-500/10 blur-3xl"
               animate={{ scale: [1, 1.3, 1], opacity: [0.2, 0.4, 0.2] }}
-              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+              transition={{
+                duration: 5,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: 1,
+              }}
             />
 
             {/* Close button */}
@@ -154,7 +174,10 @@ const Navbar = () => {
               >
                 {/* Logo at top of menu */}
                 <Link href="/">
-                  <motion.div variants={item} className="flex items-center gap-2 font-bold text-2xl">
+                  <motion.div
+                    variants={item}
+                    className="flex items-center gap-2 font-bold text-2xl"
+                  >
                     <img src="/header-icon.svg" className="w-10 h-10" />
                     <span>Scholiast</span>
                   </motion.div>

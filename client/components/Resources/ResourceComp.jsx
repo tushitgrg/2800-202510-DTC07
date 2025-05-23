@@ -119,7 +119,11 @@ const ResourceComp = ({ resourceData, userData, goToDashboard }) => {
 
         {/* 'Add to Dashboard' button for non-owners if not already added */}
         {!isOwner && !hasResource && (
-          <Button variant="outline" className="w-fit" onClick={handleAddToDashboard}>
+          <Button
+            variant="outline"
+            className="w-fit"
+            onClick={handleAddToDashboard}
+          >
             <Plus className="mr-1 h-3 w-3" />
             Add to my Dashboard
           </Button>

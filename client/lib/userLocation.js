@@ -28,7 +28,7 @@ export async function fetchUserWeather() {
     const gpsSetting = {
       enableHighAccuracy: true,
       timeout: 20000, // 20 seconds before giving up
-      maximumAge: 0,  // Don’t use a cached position
+      maximumAge: 0, // Don’t use a cached position
     };
 
     // If successful, resolve returns the Position object, else reject with Error

@@ -40,4 +40,3 @@ const CommunityRecomm = ({ userSchool }) => {
 };
 
 export default CommunityRecomm;
-
