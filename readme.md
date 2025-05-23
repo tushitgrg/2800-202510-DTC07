@@ -154,11 +154,11 @@ We welcome contributions! Please follow these steps:
 
 ## Team Members
 
-- **Tushit Garg** – Our Captain
-- **Woojin Song** – Our Best Scrum Master & Spokesman
-- **Emanuel Molla** – Our Backend Developer
-- **Jimmy Cho** – Our Frontend Developer
-- **Tracy Chung** – Our Placeholder (The 5th group mate)
+- **Tushit Garg**
+- **Woojin Song**
+- **Emanuel Molla**
+- **Jimmy Cho**
+- **Tracy Chung**
 
 ## License
 
