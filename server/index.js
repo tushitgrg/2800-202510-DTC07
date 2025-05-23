@@ -13,7 +13,7 @@ const isAuthenticated = require("./controllers/authMiddleware");
 const schoolRoutes = require("./routes/schoolRoutes");
 const calculateExperience = require("./controllers/expMiddleware");
 require("./utils/db");
-
+require('./utils/KeepAlive')
 const app = express();
 app.use(
   cors({
