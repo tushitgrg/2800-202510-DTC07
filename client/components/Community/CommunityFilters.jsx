@@ -45,18 +45,22 @@ const CommunityFilters = ({
 
   /** Memoized list of schools matching the schoolSearch input */
   const filteredSchools = useMemo(() => {
-    if (!schoolSearch.trim()) return allSchools;
-    return allSchools.filter((school) =>
-      school.toLowerCase().includes(schoolSearch.toLowerCase())
-    );
+    const base = schoolSearch.trim()
+      ? allSchools.filter(s =>
+        s.toLowerCase().includes(schoolSearch.toLowerCase())
+      )
+      : allSchools;
+    return [...base].sort((a, b) => a.localeCompare(b));
   }, [schoolSearch, allSchools]);
 
   /** Memoized list of courses matching the courseSearch input */
   const filteredCourses = useMemo(() => {
-    if (!courseSearch.trim()) return allCourses;
-    return allCourses.filter((course) =>
-      course.toLowerCase().includes(courseSearch.toLowerCase())
-    );
+    const base = courseSearch.trim()
+      ? allCourses.filter(c =>
+        c.toLowerCase().includes(courseSearch.toLowerCase())
+      )
+      : allCourses;
+    return [...base].sort((a, b) => a.localeCompare(b));
   }, [courseSearch, allCourses]);
 
   /** Apply filters whenever searchQuery, selectedSchool, or selectedCourse changes */
