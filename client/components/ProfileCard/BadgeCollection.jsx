@@ -1,5 +1,6 @@
 "use client";
 
+// CODE NOT USED FOR THIS TERM. For future use.
 import { useState } from "react";
 
 export default function BadgeCollection() {
