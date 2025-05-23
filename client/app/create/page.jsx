@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
@@ -32,7 +31,7 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { ServerUrl } from "@/lib/urls";
 import toast from "react-hot-toast";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/useAuth";
 
 /**
  * @typedef {Object} QuizSettings
