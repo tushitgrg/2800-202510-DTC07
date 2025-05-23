@@ -61,9 +61,11 @@ Return a JSON object matching this schema
 The input may resemble a transcript. Please ignore speaker labels or timestamps and extract meaningful content
 DO NOT SAY YOU CANNOT DO IT. It does not have to be strictly based on the transcript, but should be **clearly related** to its themes or topics. Use inferred context when needed.
 Instructions:
-1. Write a **${s.length}‑length** summary (short / medium / long).
-2. Use concise, academic language; bullet points are welcome.
+1. Write a **${s.length}‑length** summary (short / medium / long) in bullet points
+2. Use concise, academic language; bullet points are a must.
 3. Place the entire summary in the "content" field.
 4. Respond with **only** the JSON object—no markdown fences, no extra keys.
 5. You must use markdown for the content string to style the text.
+6. You must use markdown for styling different headings.
+7. I am going to be using a mardown rendered, the SUMMARY MUST LOOK MORE READABLE AND HAVE CLEAR DEFINED HEADINGS AND BULLET POINTS
 `.trim();

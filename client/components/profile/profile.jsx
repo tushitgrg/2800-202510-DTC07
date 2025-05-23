@@ -15,7 +15,12 @@ import { Button } from "@/components/ui/button";
 import { ServerUrl } from "@/lib/urls";
 import toast from "react-hot-toast";
 
-//add debounce function to let user finish entering first
+/**
+ * Debounce utility: delays function execution until user stops typing
+ * @param {Function} cb - Callback to execute
+ * @param {number} delay - Milliseconds to wait before execution
+ * @returns {Function}
+ */
 function debounce(cb, delay) {
   let timeoutId;
   return function (...args) {
@@ -27,6 +32,27 @@ function debounce(cb, delay) {
     }, delay);
   };
 }
+
+/**
+ * ProfileCard Component
+ *
+ * Renders a user profile card that allows users to view and update their personal details,
+ * including display name, first name, last name, and school. The email is shown but not editable.
+ *
+ * Features:
+ * - Edit mode toggle with cancel and save options
+ * - Debounced school name search with live suggestions
+ * - Google-authenticated user info loading on mount
+ * - Avatar display fallback
+ *
+ * @component
+ * @param {Object} props - The props object
+ * @param {Object} props.googleUser - The user object passed from Google OAuth
+ * @param {string} [props.googleUser.name] - The default name
+ * @param {string} [props.googleUser.email] - The user's email
+ * @param {string} [props.googleUser.avatar] - The user's avatar URL
+ * @returns {JSX.Element} A profile UI component with form inputs and save/edit logic.
+ */
 
 export default function ProfileCard({ googleUser = {} }) {
   // Initialize state variables with default values
@@ -55,6 +81,7 @@ export default function ProfileCard({ googleUser = {} }) {
     email: "",
     school: "",
   });
+
   // The logic of searching school
   const fetchSchools = async (query) => {
     console.log("keyword:", query);
@@ -69,6 +96,7 @@ export default function ProfileCard({ googleUser = {} }) {
 
   const debouncedFetch = useMemo(() => debounce(fetchSchools, 500), []);
 
+  // Load user data from backend using email
   useEffect(() => {
     const fetchUser = async () => {
       if (!email) return;
@@ -98,6 +126,7 @@ export default function ProfileCard({ googleUser = {} }) {
     fetchUser();
   }, [email]);
 
+  // Enable editing mode and save backup state
   const handleEdit = () => {
     setBackup({ displayName, firstName, lastName, email, school }); // Save previous values in backup object
     setIsEditing(true); // Editing mode "On"
@@ -174,6 +203,7 @@ export default function ProfileCard({ googleUser = {} }) {
         <CardTitle>User Profile</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+        {/* Display Name */}
         <div>
           <Label htmlFor="displayName">Display Name</Label>
           <Input
@@ -181,10 +211,16 @@ export default function ProfileCard({ googleUser = {} }) {
             value={displayName}
             disabled={!isEditing}
             className="rounded-full mt-1"
-            onChange={(e) => setDisplayName(e.target.value)}
+            onChange={(e) => {
+              const input = e.target.value;
+              if (input.length <= 20) {
+                setDisplayName(input);
+              }
+            }}
           />
         </div>
 
+        {/* First/Last Name */}
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label htmlFor="firstName">First Name</Label>
@@ -208,6 +244,7 @@ export default function ProfileCard({ googleUser = {} }) {
           </div>
         </div>
 
+        {/* Email (readonly) */}
         <div>
           <Label htmlFor="email">Email</Label>
           <Input
@@ -220,6 +257,7 @@ export default function ProfileCard({ googleUser = {} }) {
           />
         </div>
 
+        {/* School - with dropdown search if editing */}
         <div>
           <Label htmlFor="school">School</Label>
           {isEditing ? (
@@ -268,16 +306,24 @@ export default function ProfileCard({ googleUser = {} }) {
           )}
         </div>
       </CardContent>
+
+      {/* Footer Buttons */}
       <CardFooter className="justify-end space-x-2">
         {isEditing ? (
           <>
-            <Button variant="outline" onClick={handleCancel}>
+            <Button
+              variant="outline"
+              onClick={handleCancel}
+              className="cursor-pointer"
+            >
               Cancel
             </Button>
-            <Button onClick={handleSave}>Save</Button>
+            <Button onClick={handleSave} className="cursor-pointer">
+              Save
+            </Button>
           </>
         ) : (
-          <Button onClick={handleEdit} className="rounded-full">
+          <Button onClick={handleEdit} className="rounded-full cursor-pointer">
             Edit
           </Button>
         )}

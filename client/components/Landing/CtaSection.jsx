@@ -5,6 +5,14 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
+/**
+ * CtaSection component renders a call-to-action section
+ * with animated heading, description, and action buttons.
+ * It encourages users to start using the platform or see a demo.
+ *
+ * @component
+ * @returns {JSX.Element} The CTA section JSX element
+ */
 const CtaSection = () => {
   return (
     <section className="w-full py-20 md:py-32 bg-gradient-to-br from-primary to-purple-600 text-primary-foreground relative overflow-hidden">

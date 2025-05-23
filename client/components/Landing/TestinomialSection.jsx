@@ -5,6 +5,13 @@ import { Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 
+/**
+ * Renders the testimonial section of the landing page.
+ * Displays animated testimonials with quotes, author info, and ratings.
+ *
+ * @component
+ * @returns {JSX.Element} A section containing student testimonials with animation and styling.
+ */
 const TestinomialSection = () => {
   return (
     <section id="testimonials" className="w-full py-20 md:py-32">

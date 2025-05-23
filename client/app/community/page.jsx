@@ -1,16 +1,24 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import CommunityFilters from "@/components/Community/CommunityFilters";
 import CommunityCard from "@/components/Community/CommunityCard";
-import CommunityRec from "@/components/Community/community-rec";
+import CommunityRec from "@/components/Community/CommunityRec";
 import Loading from "@/components/Loading";
 import { ServerUrl } from "@/lib/urls";
-import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronsDown } from "lucide-react";
 
+/**
+ * CommunityPage component
+ * Fetches public resources and user profile data on mount,
+ * manages search, filter, sort, and pagination state,
+ * and renders CommunityRec, CommunityFilters, and a grid of CommunityCard components.
+ *
+ * @component
+ * @returns {JSX.Element} Community resources page
+ */
 export default function CommunityPage() {
   const [resources, setResources] = useState(null);
   const [searchQuery, setSearchQuery] = useState(""); // Text for the title search input
@@ -26,25 +34,24 @@ export default function CommunityPage() {
 
   const router = useRouter();
 
-  // Obtain the dropdown options from filteredResources
+  // Compute unique dropdown options
   const availableCourses = useMemo(
     () => Array.from(new Set(allCourses.filter(Boolean))),
     [allCourses],
   );
-
   const availableSchools = useMemo(
     () => Array.from(new Set(allSchools.filter(Boolean))),
     [allSchools],
   );
 
-  // Load more button handle
+  // Load more button handler
   const handleLoadMore = () => {
     const nextPage = page + 1;
     fetchFilteredResources(nextPage, true);
     setPage(nextPage);
   };
 
-  // Fetch backend data on mount
+  // Fetch public resources on mount
   useEffect(() => {
     const fetchResources = async () => {
       try {
@@ -64,7 +71,7 @@ export default function CommunityPage() {
     fetchResources();
   }, [router]); // Only re-run if router changes
 
-  // Fetch user data
+  // Fetch user data on mount
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -81,7 +88,11 @@ export default function CommunityPage() {
     fetchUser();
   }, []);
 
-  // Send filter/sort/search query to backend and receive filtered resources
+  /**
+   * Send filter/sort/search query to backend and receive filtered resources
+   * @param {number} [pageToFetch=1] - Page number to fetch
+   * @param {boolean} [append=false] - Whether to append results or replace
+   */
   const fetchFilteredResources = async (pageToFetch = 1, append = false) => {
     const filters = {
       course: selectedCourse,
@@ -120,19 +131,23 @@ export default function CommunityPage() {
     }
   };
 
+  // Refetch resources when filters change
   useEffect(() => {
     setPage(1); // Reset to page 1
     setHasMore(true); // Reset load more button
     fetchFilteredResources(1, false); // Replace data
   }, [searchQuery, selectedSchool, selectedCourse, sortOption]);
 
+  // Render loading state or content
   return resources ? (
     <div className="flex flex-col w-full justify-center items-center p-6">
       <div className="container">
         <div className="flex justify-between w-full items-center mb-6">
           <h1 className="text-2xl font-bold">Community Resources</h1>
         </div>
+
         <CommunityRec userSchool={user?.school} />
+
         <CommunityFilters
           allSchools={availableSchools}
           allCourses={availableCourses}
@@ -147,6 +162,7 @@ export default function CommunityPage() {
           }}
           onSortChange={setSortOption}
         />
+
         {filteredResources.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">
             No resources found matching your filters.
@@ -169,16 +185,18 @@ export default function CommunityPage() {
           </div>
         )}
       </div>
-      <Button
-        onClick={handleLoadMore}
-        variant="outline"
-        size="md"
-        className="my-3 px-6 py-3 rounded-full text-white font-semibold shadow-lg hover:shadow-xl 
-            transform hover:-translate-y-0.5 active:scale-95 transition-all duration-200 bg-gradient-to-r"
-      >
-        <ChevronsDown className="mr-2 h-4 w-4" />
-        Load More
-      </Button>
+
+      {hasMore && (
+        <Button
+          onClick={handleLoadMore}
+          variant="outline"
+          size="md"
+          className="my-3 px-6 py-3 rounded-full text-white font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:scale-95 transition-all duration-200 bg-gradient-to-r cursor-pointer"
+        >
+          <ChevronsDown className="mr-2 h-4 w-4" />
+          Load More
+        </Button>
+      )}
     </div>
   ) : (
     <Loading />

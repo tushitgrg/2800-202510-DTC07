@@ -8,6 +8,13 @@ import {
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 
+/**
+ * Renders the FAQ section with animated appearance and an accordion
+ * containing frequently asked questions and their answers.
+ *
+ * @component
+ * @returns {JSX.Element} The FAQ section component
+ */
 const FaqSection = () => {
   return (
     <section id="faq" className="w-full py-20 md:py-32">

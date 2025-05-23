@@ -10,7 +10,24 @@ import {
 } from "@/components/ui/carousel";
 import { Users, Target, UserCircle2, Code2, Lightbulb } from "lucide-react";
 
+/**
+ * AboutUs Component
+ *
+ * This page component introduces the Scholiast project and showcases the development team.
+ * It includes a section describing the motivation behind building the app,
+ * followed by a carousel displaying fun profiles for each team member.
+ *
+ * Built using:
+ * - TailwindCSS for layout and styling
+ * - Framer Motion for entrance animations
+ * - Custom UI components (Badge, Carousel, etc.)
+ *
+ * @component
+ * @returns {JSX.Element} A styled "About Us" section with team details and project background.
+ */
+
 const AboutUs = () => {
+  // Team member card content (for carousel)
   const teamCards = [
     {
       name: "Tushit Garg",
@@ -42,12 +59,14 @@ const AboutUs = () => {
     },
     {
       name: "Tracy Chung",
-      role: "Our Placeholder",
+      role: "Our Team Glue Engineer",
       icon: <Code2 className="size-6" />,
-      description: "The 5th Group mate, because every team needs five members.",
+      description:
+        "Responsible for bringing every component (aka teammates) together to form scholiast/page.jsx. Busy planning meetings, organizing team bonding moments, and preventing teammates from abusing substances or fighting with each other.",
     },
   ];
 
+  // Header section with animation and badge
   const SectionHeader = ({ badge, title, text }) => (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -74,12 +93,14 @@ const AboutUs = () => {
   return (
     <section id="about" className="w-full py-5 md:py-32 ">
       <div className="container px-8 md:px-8 space-y-10">
+        {/* Introduction section */}
         <SectionHeader
           badge="About Us"
           title="Why We Built Scholiast"
           text="Studying should not feel like a constant uphill battle. As students ourselves, we have experienced the frustration of messy notes, overwhelming PDFs, and the uncertainty of what or how to review. Scholiast was created out of that challenge. It is an AI-powered study companion that turns your own materials into interactive flashcards, quizzes, and summaries. The goal is to help you study faster, stay focused, and truly retain what you learn. Scholiast is built with empathy and designed to be the learning tool we always wished existed. Now, we are sharing it with others who need it too."
         />
 
+        {/* Team carousel section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -102,6 +123,7 @@ const AboutUs = () => {
                     key={index}
                     className="basis-full flex justify-center"
                   >
+                    {/* Individual team card */}
                     <div className="w-full max-w-sm rounded-xl border border-border/40 bg-muted/10 p-3 backdrop-blur shadow-md hover:-translate-y-1 transition-transform duration-300 text-center">
                       <div className="flex flex-col items-center space-y-2 mb-4">
                         <div className="p-2 bg-primary/10 text-primary rounded-full">
@@ -121,6 +143,7 @@ const AboutUs = () => {
                   </CarouselItem>
                 ))}
               </CarouselContent>
+              {/* Carousel navigation */}
               <CarouselPrevious className="ml-10" />
               <CarouselNext className="mr-10" />
             </Carousel>

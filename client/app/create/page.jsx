@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
@@ -32,34 +31,85 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { ServerUrl } from "@/lib/urls";
 import toast from "react-hot-toast";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/useAuth";
 
+/**
+ * @typedef {Object} QuizSettings
+ * @property {number} questionCount - The number of questions for the quiz.
+ * @property {string} difficulty - The difficulty level of the quiz (e.g., "easy", "medium", "hard").
+ * @property {string[]} questionTypes - An array of question types to include (e.g., "multiple-choice", "true-false").
+ */
+
+/**
+ * @typedef {Object} FlashcardSettings
+ * @property {number} cardCount - The number of flashcards to generate.
+ * @property {string} complexity - The complexity level of the flashcards (e.g., "easy", "medium", "hard").
+ * @property {string} style - The style of the flashcards (e.g., "standard").
+ */
+
+/**
+ * @typedef {Object} SummarySettings
+ * @property {string} length - The desired length of the summary (e.g., "short", "medium", "long").
+ * @property {string[]} focusAreas - An array of focus areas for the summary (e.g., "key-concepts", "definitions").
+ */
+
+/**
+ * Renders the Create Page component, allowing users to upload study material and generate
+ * various content types like quizzes, flashcards, and summaries.
+ * @returns {JSX.Element} The CreatePage component.
+ */
 export default function CreatePage() {
-  useAuth();
-  const router = useRouter();
-  const [currentStep, setCurrentStep] = useState("upload");
-  // Update the useState for contentType to be an array
-  const [selectedContentTypes, setSelectedContentTypes] = useState([]);
-  const [youtubeUrl, setyoutubeUrl] = useState("");
-  // Update the file state to handle a single file instead of an array
-  const [file, setFile] = useState(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
+  useAuth(); // Custom hook for authentication
+  const router = useRouter(); // Next.js router for navigation
 
-  const fileInputRef = useRef(null);
-  const [titleText, settitleText] = useState("");
-  const [progressV, setprogressV] = useState(0);
-  // Quiz settings
+  // State variables for managing the component's UI and data
+  const [currentStep, setCurrentStep] = useState("upload"); // Current step in the content creation process
+  const [selectedContentTypes, setSelectedContentTypes] = useState([]); // Array to store selected content types (quiz, flashcards, summary)
+  const [youtubeUrl, setyoutubeUrl] = useState(""); // YouTube URL input
+  const [file, setFile] = useState(null); // Currently selected file (PDF only)
+  const [isDragging, setIsDragging] = useState(false); // Flag for drag-and-drop file upload
+  const [uploadProgress, setUploadProgress] = useState(0); // Progress of file upload
+
+  const fileInputRef = useRef(null); // Reference to the hidden file input element
+  const [titleText, settitleText] = useState(""); // Title for the generated content (optional)
+  const [progressV, setprogressV] = useState(0); // Progress value for the processing step
+
+  /** @type {[QuizSettings, Function]} */
   const [quizSettings, setQuizSettings] = useState({
     questionCount: 10,
     difficulty: "medium",
     questionTypes: ["multiple-choice", "true-false"],
   });
+
+  /** @type {[FlashcardSettings, Function]} */
+  const [flashcardSettings, setFlashcardSettings] = useState({
+    cardCount: 20,
+    complexity: "medium",
+    style: "standard",
+  });
+
+  /** @type {[SummarySettings, Function]} */
+  const [summarySettings, setSummarySettings] = useState({
+    length: "medium",
+    focusAreas: ["key-concepts", "definitions"],
+  });
+
+  const sizeLimit = 50 * 1024 * 1024; // 50 MB file size limit
+
+  /**
+   * Validates if a given URL is a valid YouTube URL.
+   * @param {string} url - The URL to validate.
+   * @returns {boolean} True if the URL is a valid YouTube URL, false otherwise.
+   */
   function isValidYouTubeUrl(url) {
     const youtubeRegex =
       /^https:\/\/(www\.youtube\.com\/watch\?v=|youtu\.be\/)[\w-]{11}([&?]\S*)?$/;
     return youtubeRegex.test(url);
   }
+
+  /**
+   * Resets all form states to their initial values.
+   */
   const resetForm = () => {
     setCurrentStep("upload");
     setSelectedContentTypes([]);
@@ -84,24 +134,14 @@ export default function CreatePage() {
       focusAreas: ["key-concepts", "definitions"],
     });
   };
-  // Flashcard settings
-  const [flashcardSettings, setFlashcardSettings] = useState({
-    cardCount: 20,
-    complexity: "medium",
-    style: "standard",
-  });
 
-  // Summary settings
-  const [summarySettings, setSummarySettings] = useState({
-    length: "medium",
-    focusAreas: ["key-concepts", "definitions"],
-  });
-  const sizeLimit = 50 * 1024 * 1024;
-
-  // Handle file selection
-  // Update the handleFileSelect function to only accept one PDF file
+  /**
+   * Handles file selection from the input field.
+   * Accepts only one PDF file and checks its size against the limit.
+   * @param {Event} e - The change event from the file input.
+   */
   const handleFileSelect = (e) => {
-    setyoutubeUrl("");
+    setyoutubeUrl(""); // Clear YouTube URL if a file is selected
     if (e.target.files && e.target.files.length > 0) {
       const selectedFile = e.target.files[0];
       if (selectedFile.type === "application/pdf") {
@@ -113,27 +153,49 @@ export default function CreatePage() {
             position: "bottom-right",
           });
         }
+      } else {
+        toast.error("Only PDF files are supported.", {
+          duration: 4000,
+          position: "bottom-right",
+        });
       }
     }
   };
 
+  /**
+   * Handles the drag enter event for the file drop zone.
+   * @param {Event} e - The drag event.
+   */
   const handleDragEnter = (e) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(true);
   };
 
+  /**
+   * Handles the drag leave event for the file drop zone.
+   * @param {Event} e - The drag event.
+   */
   const handleDragLeave = (e) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
   };
 
+  /**
+   * Handles the drag over event for the file drop zone.
+   * @param {Event} e - The drag event.
+   */
   const handleDragOver = (e) => {
     e.preventDefault();
     e.stopPropagation();
   };
 
+  /**
+   * Handles the drop event for the file drop zone.
+   * Accepts only one file and checks its size.
+   * @param {Event} e - The drop event.
+   */
   const handleDrop = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -141,16 +203,28 @@ export default function CreatePage() {
 
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const droppedFile = e.dataTransfer.files[0];
-      if (droppedFile.size < sizeLimit) {
-        setFile(droppedFile);
+      if (droppedFile.type === "application/pdf") {
+        if (droppedFile.size < sizeLimit) {
+          setFile(droppedFile);
+        } else {
+          toast.error("File too large!", {
+            duration: 4000,
+            position: "bottom-right",
+          });
+        }
       } else {
-        toast.error("File too large!", {
+        toast.error("Only PDF files are supported.", {
           duration: 4000,
           position: "bottom-right",
         });
       }
     }
   };
+
+  /**
+   * Effect hook to simulate progress during the "processing" step.
+   * Increments progressV until 95% is reached.
+   */
   useEffect(() => {
     if (currentStep === "processing") {
       const interval = setInterval(() => {
@@ -167,23 +241,49 @@ export default function CreatePage() {
     }
   }, [currentStep]);
 
+  /**
+   * Removes the currently selected file.
+   */
   const removeFile = () => {
     setFile(null);
   };
 
+  /**
+   * Handles moving to the next step in the content creation process.
+   * Performs validation and API calls based on the current step.
+   */
   const handleNext = async () => {
     if (currentStep === "upload") {
-      if (!file && !isValidYouTubeUrl(youtubeUrl)) return;
+      if (!file && !isValidYouTubeUrl(youtubeUrl)) {
+        toast.error(
+          "Please upload a PDF file or provide a valid YouTube URL.",
+          {
+            duration: 4000,
+            position: "bottom-right",
+          },
+        );
+        return;
+      }
       setCurrentStep("select");
     } else if (currentStep === "select") {
-      if (selectedContentTypes.length === 0) return;
+      if (selectedContentTypes.length === 0) {
+        toast.error("Please select at least one content type.", {
+          duration: 4000,
+          position: "bottom-right",
+        });
+        return;
+      }
       setCurrentStep("settings");
     } else if (currentStep === "settings") {
       setCurrentStep("processing");
       let apiBody = new FormData();
-      apiBody.append("pdf", file);
+      if (file) {
+        apiBody.append("pdf", file);
+      }
       apiBody.append("title", titleText);
       apiBody.append("youtubeUrl", youtubeUrl);
+
+      // Append prompt data based on selected content types
       if (selectedContentTypes.includes("quiz")) {
         apiBody.append("quizPrompt", generateQuizPrompt(quizSettings));
       }
@@ -196,6 +296,7 @@ export default function CreatePage() {
       if (selectedContentTypes.includes("summary")) {
         apiBody.append("summaryPrompt", generateSummaryPrompt(summarySettings));
       }
+
       try {
         const resp = await fetch(`${ServerUrl}/resources`, {
           method: "POST",
@@ -203,7 +304,7 @@ export default function CreatePage() {
           credentials: "include",
         });
         const data = await resp.json();
-        if (resp.status == 500) {
+        if (resp.status === 500) {
           toast.error(data.error, {
             duration: 4000,
             position: "bottom-right",
@@ -213,18 +314,19 @@ export default function CreatePage() {
         }
         router.push(`/resource/${data.resourceID}`);
       } catch (e) {
-        console.log(e);
-
+        console.error("Error during resource creation:", e);
         toast.error("Error connecting to the backend!", {
           duration: 4000,
           position: "bottom-right",
-        }); //change this to a toast
+        });
         resetForm();
       }
     }
   };
 
-  // Handle back step
+  /**
+   * Handles moving back to the previous step in the content creation process.
+   */
   const handleBack = () => {
     if (currentStep === "select") {
       setCurrentStep("upload");
@@ -233,7 +335,11 @@ export default function CreatePage() {
     }
   };
 
-  // Format file size
+  /**
+   * Formats a file size in bytes to a human-readable string (e.g., "1.23 MB").
+   * @param {number} bytes - The file size in bytes.
+   * @returns {string} The formatted file size string.
+   */
   const formatFileSize = (bytes) => {
     if (bytes === 0) return "0 Bytes";
     const k = 1024;
@@ -244,7 +350,7 @@ export default function CreatePage() {
     );
   };
 
-  // Animation variants
+  // Animation variants for Framer Motion
   const containerVariants = {
     hidden: { opacity: 0 },
     show: {
@@ -264,7 +370,7 @@ export default function CreatePage() {
 
   return (
     <main className="container py-12 md:py-16 relative px-10 md:px-0">
-      {/* Background elements */}
+      {/* Background elements for visual appeal */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
 
@@ -297,7 +403,7 @@ export default function CreatePage() {
         />
       </div>
 
-      {/* Progress steps */}
+      {/* Progress steps indicator */}
       <div className="mb-12">
         <div className="flex justify-between max-w-3xl mx-auto mb-8">
           {["Upload", "Select", "Settings", "Processing"].map((step, index) => {
@@ -337,6 +443,7 @@ export default function CreatePage() {
           })}
         </div>
         <div className="relative h-1 bg-muted rounded-full max-w-3xl mx-auto">
+          {/* Animated progress bar */}
           <motion.div
             className="absolute h-full bg-primary rounded-full"
             initial={{ width: "0%" }}
@@ -355,7 +462,7 @@ export default function CreatePage() {
         </div>
       </div>
 
-      {/* Form content */}
+      {/* Form content based on current step */}
       <div className="max-w-4xl mx-auto">
         <AnimatePresence mode="wait">
           {/* Step 1: Upload */}
@@ -380,10 +487,11 @@ export default function CreatePage() {
                 </h1>
                 <p className="text-muted-foreground max-w-2xl mx-auto">
                   Upload your notes, textbooks, or any study material you want
-                  to learn from. We support PDF, DOCX, TXT, and image files.
+                  to learn from. We support PDF files.
                 </p>
               </motion.div>
 
+              {/* File upload drag and drop area */}
               <motion.div
                 variants={itemVariants}
                 className={`border-2 border-dashed rounded-xl p-12 text-center transition-colors ${
@@ -394,13 +502,12 @@ export default function CreatePage() {
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
               >
-                {/* Update the file input to only accept PDF files */}
                 <input
                   type="file"
                   ref={fileInputRef}
                   onChange={handleFileSelect}
                   className="hidden"
-                  accept=".pdf"
+                  accept=".pdf" // Accept only PDF files
                 />
 
                 <div className="flex flex-col items-center justify-center gap-4">
@@ -408,12 +515,11 @@ export default function CreatePage() {
                     <Upload className="size-8" />
                   </div>
                   <div>
-                    {/* Update the drag and drop text */}
                     <h3 className="text-xl font-medium mb-2">
                       Drag and drop your PDF file here
                     </h3>
                     <p className="text-muted-foreground mb-4">
-                      or click to browse your files
+                      or click to browse your files (Max 50MB)
                     </p>
                     <Button
                       onClick={() => fileInputRef.current?.click()}
@@ -425,19 +531,20 @@ export default function CreatePage() {
                 </div>
               </motion.div>
 
+              {/* OR divider and YouTube URL input */}
               <motion.div variants={itemVariants}>
                 <p className="text-center p-2 text-2xl">OR</p>
                 <Input
                   type="url"
                   className={`${isValidYouTubeUrl(youtubeUrl) ? "input-valid" : "input-invalid"}`}
-                  placeholder="Youtube Url"
+                  placeholder="YouTube URL"
                   value={youtubeUrl}
                   onChange={(e) => setyoutubeUrl(e.currentTarget.value)}
-                  disabled={!!file}
+                  disabled={!!file} // Disable if a file is selected
                 />
               </motion.div>
 
-              {/* Replace the files.length check with file check */}
+              {/* Display selected file details */}
               {file && (
                 <motion.div variants={itemVariants} className="space-y-4">
                   <h3 className="text-lg font-medium">Selected File</h3>
@@ -470,8 +577,8 @@ export default function CreatePage() {
                 </motion.div>
               )}
 
+              {/* Navigation button for upload step */}
               <motion.div variants={itemVariants} className="flex justify-end">
-                {/* Update the continue button to check for a single file */}
                 <Button
                   onClick={handleNext}
                   className="rounded-full"
@@ -510,8 +617,7 @@ export default function CreatePage() {
                 </p>
               </motion.div>
 
-              {/* Modify the content type selection section in Step 2 */}
-              {/* Replace the existing content type selection code with this */}
+              {/* Content type selection cards */}
               <motion.div
                 variants={itemVariants}
                 className="grid md:grid-cols-3 gap-6"
@@ -604,6 +710,7 @@ export default function CreatePage() {
                 ))}
               </motion.div>
 
+              {/* Navigation buttons for select step */}
               <motion.div
                 variants={itemVariants}
                 className="flex justify-between"
@@ -616,7 +723,6 @@ export default function CreatePage() {
                   <ArrowLeft className="mr-2 size-4" />
                   Back
                 </Button>
-                {/* Update the next button in step 2 */}
                 <Button
                   onClick={handleNext}
                   className="rounded-full"
@@ -630,8 +736,6 @@ export default function CreatePage() {
           )}
 
           {/* Step 3: Settings */}
-          {/* Update the settings step to show settings for all selected content types */}
-          {/* Replace the existing settings step content with this */}
           {currentStep === "settings" && (
             <motion.div
               key="settings"
@@ -652,7 +756,7 @@ export default function CreatePage() {
                   Customize Your Content
                 </h1>
                 <p className="text-muted-foreground max-w-2xl mx-auto">
-                  Configure the settings for each type of content you've
+                  Configure the settings for each type of content you&apos;ve
                   selected.
                 </p>
               </motion.div>
@@ -660,12 +764,14 @@ export default function CreatePage() {
               <motion.div variants={itemVariants}>
                 <Card className="border-border/40">
                   <CardContent className="p-6 pt-6 space-y-8">
+                    {/* Optional title input */}
                     <Input
                       type={"text"}
                       placeholder={"Add a title (optional)"}
                       value={titleText}
                       onChange={(e) => settitleText(e.currentTarget.value)}
                     />
+                    {/* Render settings for each selected content type */}
                     {selectedContentTypes.map((type, index) => (
                       <div key={type}>
                         {index > 0 && (
@@ -674,7 +780,7 @@ export default function CreatePage() {
 
                         <h3 className="text-xl font-bold mb-6 flex items-center">
                           <div
-                            className={`size-8 rounded-full flex items-center justify-center mr-3 text-white 
+                            className={`size-8 rounded-full flex items-center justify-center mr-3 text-white
                               ${type === "quiz" ? "bg-blue-600" : type === "flashcards" ? "bg-purple-600" : "bg-pink-600"}`}
                           >
                             {type === "quiz" ? (
@@ -753,16 +859,16 @@ export default function CreatePage() {
                                     label: "Multiple Choice",
                                   },
                                   { id: "true-false", label: "True/False" },
-                                ].map((type) => (
+                                ].map((qType) => (
                                   <div
-                                    key={type.id}
+                                    key={qType.id}
                                     className="flex items-center space-x-2"
                                   >
                                     <input
                                       type="checkbox"
-                                      id={type.id}
+                                      id={qType.id}
                                       checked={quizSettings.questionTypes.includes(
-                                        type.id,
+                                        qType.id,
                                       )}
                                       onChange={(e) => {
                                         if (e.target.checked) {
@@ -770,7 +876,7 @@ export default function CreatePage() {
                                             ...quizSettings,
                                             questionTypes: [
                                               ...quizSettings.questionTypes,
-                                              type.id,
+                                              qType.id,
                                             ],
                                           });
                                         } else {
@@ -778,7 +884,7 @@ export default function CreatePage() {
                                             ...quizSettings,
                                             questionTypes:
                                               quizSettings.questionTypes.filter(
-                                                (t) => t !== type.id,
+                                                (t) => t !== qType.id,
                                               ),
                                           });
                                         }
@@ -786,10 +892,10 @@ export default function CreatePage() {
                                       className="rounded border-border text-primary focus:ring-primary"
                                     />
                                     <Label
-                                      htmlFor={type.id}
+                                      htmlFor={qType.id}
                                       className="cursor-pointer"
                                     >
-                                      {type.label}
+                                      {qType.label}
                                     </Label>
                                   </div>
                                 ))}
@@ -830,33 +936,31 @@ export default function CreatePage() {
                             <div className="space-y-4">
                               <Label>Complexity Level</Label>
                               <div className="grid grid-cols-3 gap-4">
-                                {["basic", "medium", "advanced"].map(
-                                  (level) => (
-                                    <Button
-                                      key={level}
-                                      type="button"
-                                      variant={
-                                        flashcardSettings.complexity === level
-                                          ? "default"
-                                          : "outline"
-                                      }
-                                      className="rounded-lg capitalize"
-                                      onClick={() =>
-                                        setFlashcardSettings({
-                                          ...flashcardSettings,
-                                          complexity: level,
-                                        })
-                                      }
-                                    >
-                                      {level}
-                                    </Button>
-                                  ),
-                                )}
+                                {["easy", "medium", "hard"].map((level) => (
+                                  <Button
+                                    key={level}
+                                    type="button"
+                                    variant={
+                                      flashcardSettings.complexity === level
+                                        ? "default"
+                                        : "outline"
+                                    }
+                                    className="rounded-lg capitalize"
+                                    onClick={() =>
+                                      setFlashcardSettings({
+                                        ...flashcardSettings,
+                                        complexity: level,
+                                      })
+                                    }
+                                  >
+                                    {level}
+                                  </Button>
+                                ))}
                               </div>
                             </div>
 
                             <div className="space-y-4">
-                              <Label>Card Style</Label>
+                              <Label>Flashcard Style</Label>
                               <RadioGroup
                                 value={flashcardSettings.style}
                                 onValueChange={(value) =>
@@ -865,36 +969,26 @@ export default function CreatePage() {
                                     style: value,
                                   })
                                 }
-                                className="grid grid-cols-1 md:grid-cols-2 gap-4"
+                                className="flex flex-col md:flex-row gap-4"
                               >
-                                {[
-                                  {
-                                    value: "standard",
-                                    label: "Standard (Term → Definition)",
-                                  },
-                                  {
-                                    value: "reversed",
-                                    label: "Reversed (Definition → Term)",
-                                  },
-                                  {
-                                    value: "question",
-                                    label: "Question & Answer",
-                                  },
-                                  { value: "cloze", label: "Cloze Deletion" },
-                                ].map((style) => (
-                                  <div
-                                    key={style.value}
-                                    className="flex items-center space-x-2"
-                                  >
-                                    <RadioGroupItem
-                                      value={style.value}
-                                      id={`${style.value}-flashcard`}
-                                    />
-                                    <Label htmlFor={`${style.value}-flashcard`}>
-                                      {style.label}
-                                    </Label>
-                                  </div>
-                                ))}
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem
+                                    value="standard"
+                                    id="style-standard"
+                                  />
+                                  <Label htmlFor="style-standard">
+                                    Standard (Term/Definition)
+                                  </Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem
+                                    value="question-answer"
+                                    id="style-question-answer"
+                                  />
+                                  <Label htmlFor="style-question-answer">
+                                    Question/Answer
+                                  </Label>
+                                </div>
                               </RadioGroup>
                             </div>
                           </div>
@@ -906,28 +1000,26 @@ export default function CreatePage() {
                             <div className="space-y-4">
                               <Label>Summary Length</Label>
                               <div className="grid grid-cols-3 gap-4">
-                                {["short", "medium", "comprehensive"].map(
-                                  (length) => (
-                                    <Button
-                                      key={length}
-                                      type="button"
-                                      variant={
-                                        summarySettings.length === length
-                                          ? "default"
-                                          : "outline"
-                                      }
-                                      className="rounded-lg capitalize"
-                                      onClick={() =>
-                                        setSummarySettings({
-                                          ...summarySettings,
-                                          length: length,
-                                        })
-                                      }
-                                    >
-                                      {length}
-                                    </Button>
-                                  ),
-                                )}
+                                {["short", "medium", "long"].map((len) => (
+                                  <Button
+                                    key={len}
+                                    type="button"
+                                    variant={
+                                      summarySettings.length === len
+                                        ? "default"
+                                        : "outline"
+                                    }
+                                    className="rounded-lg capitalize"
+                                    onClick={() =>
+                                      setSummarySettings({
+                                        ...summarySettings,
+                                        length: len,
+                                      })
+                                    }
+                                  >
+                                    {len}
+                                  </Button>
+                                ))}
                               </div>
                             </div>
 
@@ -938,16 +1030,20 @@ export default function CreatePage() {
                                   { id: "key-concepts", label: "Key Concepts" },
                                   { id: "definitions", label: "Definitions" },
                                   { id: "examples", label: "Examples" },
-                                ].map((area) => (
+                                  {
+                                    id: "applications",
+                                    label: "Applications",
+                                  },
+                                ].map((focus) => (
                                   <div
-                                    key={area.id}
+                                    key={focus.id}
                                     className="flex items-center space-x-2"
                                   >
                                     <input
                                       type="checkbox"
-                                      id={area.id}
+                                      id={focus.id}
                                       checked={summarySettings.focusAreas.includes(
-                                        area.id,
+                                        focus.id,
                                       )}
                                       onChange={(e) => {
                                         if (e.target.checked) {
@@ -955,7 +1051,7 @@ export default function CreatePage() {
                                             ...summarySettings,
                                             focusAreas: [
                                               ...summarySettings.focusAreas,
-                                              area.id,
+                                              focus.id,
                                             ],
                                           });
                                         } else {
@@ -963,7 +1059,7 @@ export default function CreatePage() {
                                             ...summarySettings,
                                             focusAreas:
                                               summarySettings.focusAreas.filter(
-                                                (a) => a !== area.id,
+                                                (f) => f !== focus.id,
                                               ),
                                           });
                                         }
@@ -971,10 +1067,10 @@ export default function CreatePage() {
                                       className="rounded border-border text-primary focus:ring-primary"
                                     />
                                     <Label
-                                      htmlFor={area.id}
+                                      htmlFor={focus.id}
                                       className="cursor-pointer"
                                     >
-                                      {area.label}
+                                      {focus.label}
                                     </Label>
                                   </div>
                                 ))}
@@ -988,6 +1084,7 @@ export default function CreatePage() {
                 </Card>
               </motion.div>
 
+              {/* Navigation buttons for settings step */}
               <motion.div
                 variants={itemVariants}
                 className="flex justify-between"
@@ -1001,7 +1098,7 @@ export default function CreatePage() {
                   Back
                 </Button>
                 <Button onClick={handleNext} className="rounded-full">
-                  Generate Content
+                  Create Content
                   <Sparkles className="ml-2 size-4" />
                 </Button>
               </motion.div>
@@ -1009,8 +1106,6 @@ export default function CreatePage() {
           )}
 
           {/* Step 4: Processing */}
-          {/* Update the processing step to show all selected content types */}
-          {/* Replace the existing processing step content with this */}
           {currentStep === "processing" && (
             <motion.div
               key="processing"
@@ -1018,126 +1113,50 @@ export default function CreatePage() {
               initial="hidden"
               animate="show"
               exit="exit"
-              className="space-y-8"
+              className="space-y-8 text-center"
             >
-              <motion.div variants={itemVariants} className="text-center">
+              <motion.div variants={itemVariants}>
+                <Badge
+                  className="mb-4 rounded-full px-4 py-1.5 text-sm font-medium"
+                  variant="secondary"
+                >
+                  Step 4
+                </Badge>
                 <h1 className="text-3xl md:text-4xl font-bold mb-4">
-                  Creating Your{" "}
-                  {selectedContentTypes.length > 1
-                    ? "Content"
-                    : selectedContentTypes[0]}
+                  Generating Your Content...
                 </h1>
-                <p className="text-muted-foreground max-w-2xl mx-auto">
-                  Our AI is analyzing your material and generating{" "}
-                  {selectedContentTypes.length > 1
-                    ? selectedContentTypes
-                        .map((type, i, arr) =>
-                          i === arr.length - 1 ? `and ${type}` : `${type}, `,
-                        )
-                        .join("")
-                    : `your ${selectedContentTypes[0]}`}
-                  . This may take a few moments.
+                <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
+                  Please wait while our AI processes your material and creates
+                  your customized study aids. This may take a few moments.
                 </p>
               </motion.div>
 
+              {/* Processing animation and progress bar */}
               <motion.div
                 variants={itemVariants}
-                className="flex flex-col items-center justify-center py-12"
+                className="flex flex-col items-center gap-6"
               >
-                <div className="relative size-32 mb-8">
+                <div className="relative size-24">
                   <motion.div
-                    className="absolute inset-0 rounded-full border-4 border-primary/30"
-                    animate={{ rotate: 360 }}
+                    className="absolute inset-0 rounded-full bg-primary/10 flex items-center justify-center"
+                    animate={{ scale: [1, 1.1, 1] }}
                     transition={{
-                      duration: 8,
+                      duration: 2,
                       repeat: Number.POSITIVE_INFINITY,
-                      ease: "linear",
+                      ease: "easeInOut",
                     }}
-                  />
-                  <motion.div
-                    className="absolute inset-4 rounded-full border-4 border-t-primary border-r-transparent border-b-transparent border-l-transparent"
-                    animate={{ rotate: -360 }}
-                    transition={{
-                      duration: 4,
-                      repeat: Number.POSITIVE_INFINITY,
-                      ease: "linear",
-                    }}
-                  />
-                  <motion.div
-                    className="absolute inset-8 rounded-full border-4 border-t-transparent border-r-primary border-b-transparent border-l-transparent"
-                    animate={{ rotate: 360 }}
-                    transition={{
-                      duration: 3,
-                      repeat: Number.POSITIVE_INFINITY,
-                      ease: "linear",
-                    }}
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Sparkles className="size-10 text-primary" />
-                  </div>
+                  >
+                    <Zap className="size-10 text-primary animate-pulse" />
+                  </motion.div>
                 </div>
-
-                <div className="space-y-6 max-w-md text-center">
-                  <h3 className="text-xl font-medium">AI Processing</h3>
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span>Analyzing content...</span>
-                      <span>{progressV}%</span>
-                    </div>
-                    <Progress value={progressV} className="h-2" />
-                  </div>
-
-                  <div className="flex flex-col gap-4 mt-8">
-                    <div className="flex items-center gap-3">
-                      <Check className="size-5 text-green-500" />
-                      <span>Extracting key concepts</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Check className="size-5 text-green-500" />
-                      <span>Identifying important terms</span>
-                    </div>
-                    {selectedContentTypes.map((type, index) => (
-                      <div key={type} className="flex items-center gap-3">
-                        {index === 0 ? (
-                          <motion.div
-                            animate={{ rotate: 360 }}
-                            transition={{
-                              duration: 2,
-                              repeat: Number.POSITIVE_INFINITY,
-                              ease: "linear",
-                            }}
-                            className="size-5 text-primary"
-                          >
-                            <Zap className="size-5" />
-                          </motion.div>
-                        ) : (
-                          <div className="size-5 text-muted-foreground" />
-                        )}
-                        <span
-                          className={index > 0 ? "text-muted-foreground" : ""}
-                        >
-                          Generating{" "}
-                          {type.charAt(0).toUpperCase() + type.slice(1)}
-                          {index === 0 && "..."}
-                        </span>
-                      </div>
-                    ))}
-                    <div className="flex items-center gap-3 text-muted-foreground">
-                      <div className="size-5" />
-                      <span>Finalizing output</span>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-
-              <motion.div
-                variants={itemVariants}
-                className="flex justify-center"
-              >
-                <Button variant="outline" className="rounded-full" disabled>
-                  <Clock className="mr-2 size-4" />
-                  Processing...
-                </Button>
+                <Progress value={progressV} className="w-full max-w-sm" />
+                <p className="text-sm text-muted-foreground">
+                  Processing: {progressV.toFixed(0)}%
+                </p>
+                <p className="text-sm text-muted-foreground flex items-center">
+                  <Clock className="size-4 mr-2" />
+                  Estimated time: 1-2 minutes
+                </p>
               </motion.div>
             </motion.div>
           )}

@@ -2,6 +2,13 @@
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 
+/**
+ * WorksSection component renders a section describing how the platform works in three simple steps.
+ * It uses framer-motion for animations and Tailwind CSS for styling.
+ *
+ * @component
+ * @returns {JSX.Element} The rendered works section with animated steps.
+ */
 const WorksSection = () => {
   return (
     <section className="w-full py-20 md:py-32 bg-black/50 relative overflow-hidden">

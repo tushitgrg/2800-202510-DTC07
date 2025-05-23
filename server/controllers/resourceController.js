@@ -1,8 +1,8 @@
-const { processFile } = require("../utils/fileHandler");
-const { getGeminiOutput } = require("../utils/geminiClient");
-const addQuizEntry = require("../utils/addQuizEntry");
-const addFlashcardEntry = require("../utils/addFlashcardEntry");
-const addSummaryEntry = require("../utils/addSummaryEntry");
+const {
+  processUploadedContent,
+  createResourceShell,
+  handleGeminiTasks,
+} = require("./resourceUtils");
 
 const User = require("../models/userModel");
 const Progress = require("../models/progressModel");
@@ -10,9 +10,16 @@ const Resource = require("../models/resourceModel");
 const Quiz = require("../models/quizModel");
 const Flashcard = require("../models/flashcardModel");
 const Summary = require("../models/summaryModel");
-const { getTranscriptAsFilePart } = require("../utils/GetYoutubeTranscript");
 const { isValidObjectId } = require("mongoose");
 
+/**
+ * Fetches a resource by its ID and populates its associated content.
+ *
+ * @async
+ * @function fetchResource
+ * @param {string} resourceID - The ID of the resource to fetch
+ * @returns {Promise<Object|null>} Resolves to the resource object with populated content or null if not found
+ */
 const fetchResource = async (resourceID) => {
   const resource = await Resource.findById(resourceID);
   if (!resource) return null;
@@ -29,6 +36,16 @@ const fetchResource = async (resourceID) => {
   };
 };
 
+/**
+ * Retrieves detailed information about a user's resources.
+ * Feeds the dashboard with resource metadata and progress.
+ *
+ * @async
+ * @function getResourceInfo
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Promise<void>}
+ */
 const getResourceInfo = async function (req, res) {
   const userId = req.user._id;
   try {
@@ -44,6 +61,7 @@ const getResourceInfo = async function (req, res) {
         if (!resource) return null;
         const info = {};
         info.id = resourceID;
+        info.originalResourceId = resource.originalResourceId || null;
         info.title = resource.title;
         info.createdAt = resource.createdAt;
         info.tags = resource.tags || [];
@@ -52,7 +70,6 @@ const getResourceInfo = async function (req, res) {
         info.isPublic = resource.isPublic;
         const author = await User.findById(resource.author);
         info.school = author.school;
-        console.log(info.school);
 
         return info;
       }),
@@ -64,7 +81,16 @@ const getResourceInfo = async function (req, res) {
   }
 };
 
-// GET request handler for all resources under the current user
+/**
+ * Handles GET request for all resources owned by the user.
+ * Uses fetchResource to retrieve full resource content.
+ *
+ * @async
+ * @function getResources
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Promise<void>}
+ */
 const getResources = async function (req, res) {
   const userId = req.user._id;
   try {
@@ -80,7 +106,16 @@ const getResources = async function (req, res) {
   }
 };
 
-//GET request handler by resource ID
+/**
+ * Handles GET request for a single resource by ID.
+ * Returns detailed content and progress metadata.
+ *
+ * @async
+ * @function getResourceById
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Promise<void>}
+ */
 const getResourceById = async function (req, res) {
   const resourceId = req.params.id;
 
@@ -90,6 +125,10 @@ const getResourceById = async function (req, res) {
     if (!resource) {
       return res.status(404).json({ error: "Resource not found" });
     }
+    const originalResource = await Resource.findById(
+      resource.originalResourceId,
+    );
+    console.log("aaaaa", originalResource);
     const { quizID, flashcardID, summaryID, title, createdAt, author } =
       resource;
     const progress = await Progress.findOne({ resourceId: resourceId }).select(
@@ -101,7 +140,9 @@ const getResourceById = async function (req, res) {
     response.progress = progress || {};
     response.isOwner = author.equals(req.user._id);
     console.log(req.user._id);
-    response.isLiked = resource.likes?.includes(req.user._id);
+    if (originalResource) {
+      response.isLiked = originalResource.likes?.includes(req.user._id);
+    } else response.isLiked = resource.likes?.includes(req.user._id);
     response.isPublic = resource.isPublic;
     if (quizID) {
       const quiz = await Quiz.findById(quizID);
@@ -115,101 +156,69 @@ const getResourceById = async function (req, res) {
       const summary = await Summary.findById(summaryID);
       response.summary = summary;
     }
-    res.status(200).json(response);
+    return res.status(200).json(response);
   } catch (error) {
     console.error("Internal server error: ", error);
-    res.status(500).json({ error: "Failed to retrieve resource" });
+    return res.status(500).json({ error: "Failed to retrieve resource" });
   }
 };
 
-//POST request handler for creating a resource
+/**
+ * Creates a new resource for the user and optionally generates quiz, flashcard, and summary content using AI.
+ * @async
+ * @function addResource
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Promise<void>}
+ */
 const addResource = async function (req, res) {
   const userId = req.user._id;
   const user = await User.findById(userId);
 
-  const { title, quizPrompt, flashcardPrompt, summaryPrompt, youtubeUrl } =
-    req.body;
-  if (!req.file) {
-    if (!youtubeUrl)
-      return res.status(500).json({ error: "No file or youtube URL uploaded" });
-    file = await getTranscriptAsFilePart(youtubeUrl);
-  } else {
-    file = processFile(req.file);
-  }
-
-  if (!file) {
-    return res.status(500).json({ error: "Failed to process file" });
-  }
-  const newResource = await Resource.create({
-    title: title || "Untitled Resource",
-    quizID: null,
-    flashcardID: null,
-    summaryID: null,
-    author: userId,
-    school: user.school || null,
-  });
-
   try {
-    const tasks = [];
+    const file = await processUploadedContent(req);
 
-    if (quizPrompt) {
-      const quizTask = (async () => {
-        const quiz = await getGeminiOutput(file, quizPrompt);
-        const quizId = await addQuizEntry(quiz);
-        await Resource.findByIdAndUpdate(newResource._id, { quizID: quizId });
-      })();
-      tasks.push(quizTask);
-    }
+    const newResource = await createResourceShell(
+      userId,
+      req.body.title,
+      user.school,
+    );
 
-    if (flashcardPrompt) {
-      const flashcardTask = (async () => {
-        const flashcard = await getGeminiOutput(file, flashcardPrompt);
-        const flashcardId = await addFlashcardEntry(flashcard);
-        await Resource.findByIdAndUpdate(newResource._id, {
-          flashcardID: flashcardId,
-        });
-      })();
-      tasks.push(flashcardTask);
-    }
+    await handleGeminiTasks(file, req.body, newResource._id);
 
-    if (summaryPrompt) {
-      const summaryTask = (async () => {
-        const summary = await getGeminiOutput(file, summaryPrompt);
-        const summaryId = await addSummaryEntry(summary);
-        await Resource.findByIdAndUpdate(newResource._id, {
-          summaryID: summaryId,
-        });
-      })();
-      tasks.push(summaryTask);
-    }
+    user.resources.push(newResource._id);
+    await user.save();
 
-    await Promise.all(tasks);
+    await Progress.create({
+      userId,
+      resourceId: newResource._id,
+    });
+
+    return res.status(201).json({
+      msg: `Successfully created resource with id:${newResource._id}`,
+      resourceID: newResource._id,
+    });
   } catch (err) {
-    console.error("Failed to create resource data:", err);
-    if (newResource._id) {
-      await Resource.deleteOne({
-        _id: newResource._id,
-      });
+    console.error("Resource creation failed:", err);
+    if (newResource?._id) {
+      await Resource.deleteOne({ _id: newResource._id });
     }
 
-    return res
-      .status(500)
-      .json({ error: "Failed to create one or more parts of the resource." });
+    return res.status(500).json({
+      error: "Failed to create resource",
+    });
   }
-
-  user.resources.push(newResource._id);
-  await user.save();
-  await Progress.create({
-    userId: userId,
-    resourceId: newResource._id,
-  });
-
-  return res.status(201).json({
-    msg: `Successfully created resource with id:${newResource._id}`,
-    resourceID: newResource._id,
-  });
 };
 
+/**
+ * Deletes a resource by ID if the user is authorized.
+ *
+ * @async
+ * @function deleteResource
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Promise<void>}
+ */
 const deleteResource = async function (req, res) {
   const resourceId = req.params.id;
   if (!resourceId) {
@@ -240,6 +249,42 @@ const deleteResource = async function (req, res) {
   }
 };
 
+/**
+ * Updates the likes array and likesCount field of a resource document.
+ *
+ * Adds or removes a user ID from the resource's likes array using $addToSet or $pull,
+ * then updates the likesCount field to reflect the current number of likes.
+ *
+ * @async
+ * @function updateLikes
+ * @param {string} resourceId - The ID of the resource to update.
+ * @param {string} userId - The ID of the user liking or unliking the resource.
+ * @param {boolean} add - If true, adds the user to the likes array; if false, removes them.
+ * @returns {Promise<void>} Resolves when the update is complete.
+ */
+async function updateLikes(resourceId, userId, add) {
+  const action = add
+    ? { $addToSet: { likes: userId } }
+    : { $pull: { likes: userId } };
+
+  const updated = await Resource.findByIdAndUpdate(resourceId, action, {
+    new: true,
+  });
+
+  await Resource.findByIdAndUpdate(resourceId, {
+    $set: { likesCount: updated.likes.length },
+  });
+}
+
+/**
+ * Updates a resource's metadata and like status.
+ *
+ * @async
+ * @function updateResourceInfo
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Promise<void>}
+ */
 const updateResourceInfo = async function (req, res) {
   const resourceId = req.params.id;
 
@@ -257,21 +302,17 @@ const updateResourceInfo = async function (req, res) {
     return res.status(400).json({ error: "Resource ID is required" });
   }
   try {
-    console.log(
-      "Hello this is emanuel: ",
-      isPublic,
-      updatedFields.isPublic,
-      true,
-    );
-    if (isLiked === true) {
-      await Resource.findByIdAndUpdate(resourceId, {
-        $addToSet: { likes: req.user._id },
-      });
-    } else if (isLiked === false) {
-      console.log("IS it coming from here?");
-      await Resource.findByIdAndUpdate(resourceId, {
-        $pull: { likes: req.user._id },
-      });
+    if (isLiked === true || isLiked === false) {
+      const currentResource = await Resource.findById(resourceId);
+      await updateLikes(resourceId, req.user._id, isLiked === true);
+
+      if (currentResource.originalResourceId) {
+        await updateLikes(
+          currentResource.originalResourceId,
+          req.user._id,
+          isLiked === true,
+        );
+      }
     }
     const updatedResource = await Resource.findByIdAndUpdate(
       resourceId,
@@ -290,6 +331,16 @@ const updateResourceInfo = async function (req, res) {
   }
 };
 
+/**
+ * Retrieves a paginated list of public resources with optional
+ * filters (course, school, text search) and sorting.
+ *
+ * @async
+ * @function getPublicResources
+ * @param {Object} req - Express request object (with query params)
+ * @param {Object} res - Express response object
+ * @returns {Promise<void>}
+ */
 const getPublicResources = async function (req, res) {
   try {
     let { course, school, q, sort, page } = req.query;
@@ -319,6 +370,14 @@ const getPublicResources = async function (req, res) {
     if (sort) {
       const [field, order] = sort.split(":");
       sortOption[field] = order === "desc" ? -1 : 1;
+      const sortOrder = order === "desc" ? -1 : 1;
+
+      if (field === "likes") {
+        // Special handling to sort by number of likes (length of likes array)
+        sortOption = { likesCount: sortOrder };
+      } else {
+        sortOption[field] = sortOrder;
+      }
     }
 
     const totalCount = await Resource.countDocuments(filters);
@@ -337,7 +396,7 @@ const getPublicResources = async function (req, res) {
       course: resource.course,
       createdAt: resource.createdAt,
       shareCount: resource.shareCount || 0,
-      likes: resource.likes?.length || 0,
+      likes: resource.likesCount || 0,
     }));
 
     // Obtain all unique schools/courses from matching full set

@@ -13,7 +13,7 @@ const isAuthenticated = require("./controllers/authMiddleware");
 const schoolRoutes = require("./routes/schoolRoutes");
 const calculateExperience = require("./controllers/expMiddleware");
 require("./utils/db");
-
+require("./utils/KeepAlive");
 const app = express();
 app.use(
   cors({
@@ -70,7 +70,6 @@ app.get("/dashboard", (req, res) => {
 app.use("/resources", resourceRoutes);
 app.use("/api/user", userRoutes);
 app.use("/progress", progressRoutes);
-// app.use("/flashcard", flashcardRoutes);
 
 if (process.env.VERCEL !== "1") {
   app.listen(3001, () => {

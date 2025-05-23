@@ -1,5 +1,17 @@
 const Progress = require("../models/progressModel");
 
+/**
+ * Middleware to calculate total experience (XP) for a user
+ * based on resources, shares, streaks, and progress.
+ * Attaches XP to req.user and req.experience.
+ *
+ * @async
+ * @function calculateExperience
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware
+ * @returns {Promise<void>}
+ */
 const calculateExperience = async (req, res, next) => {
   let resourceXP = 20;
   let shareXP = 10;
@@ -24,8 +36,32 @@ const calculateExperience = async (req, res, next) => {
     streakXP * user.achievements.streak +
     progressXP;
   req.experience = totalXP;
+  req.user.achievements.streak = getLongestStreak(
+    allProgress.map((prog) => prog.updatedAt),
+  );
   req.user = { ...req.user.toObject(), experience: totalXP };
   return next();
 };
+
+function getLongestStreak(dates) {
+  let longest = 0;
+  let current = 1;
+
+  for (let i = 1; i < dates.length; i++) {
+    const prev = new Date(dates[i - 1]);
+    const curr = new Date(dates[i]);
+
+    const diffInDays = (curr - prev) / (1000 * 60 * 60 * 24);
+
+    if (diffInDays === 1) {
+      current++;
+    } else {
+      longest = Math.max(longest, current);
+      current = 1;
+    }
+  }
+
+  return Math.max(longest, current); // Catch last streak
+}
 
 module.exports = calculateExperience;

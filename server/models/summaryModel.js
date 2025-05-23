@@ -1,6 +1,14 @@
 // import mongoose from 'mongoose';
 const mongoose = require("mongoose");
 
+/**
+ * Mongoose schema for storing a text-based summary.
+ *
+ * @typedef {Object} Summary
+ * @property {string} content - The summary content
+ * @property {Date} createdAt - Timestamp of creation
+ * @property {Date} updatedAt - Timestamp of last update
+ */
 const summarySchema = new mongoose.Schema(
   {
     content: {
@@ -12,5 +20,4 @@ const summarySchema = new mongoose.Schema(
 );
 
 const summaryModel = mongoose.model("summary", summarySchema);
-// export default summaryModel
 module.exports = summaryModel;

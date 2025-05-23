@@ -1,5 +1,6 @@
 "use client";
 
+// CODE NOT USED FOR THIS TERM. For future use.
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 

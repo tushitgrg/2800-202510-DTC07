@@ -1,5 +1,5 @@
 "use client";
-
+// Component Imported from Shadcn (ui.shadcn.com)
 import * as CollapsiblePrimitive from "@radix-ui/react-collapsible";
 
 function Collapsible({ ...props }) {

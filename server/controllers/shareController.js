@@ -1,5 +1,16 @@
 const Resource = require("../models/resourceModel");
 const User = require("../models/userModel");
+
+/**
+ * Adds a shared resource to the current user's collection.
+ * Creates a duplicate entry pointing to the original resource.
+ *
+ * @async
+ * @function addResourceById
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Promise<void>}
+ */
 const addResourceById = async function (req, res) {
   if (req.hasResource) {
     return res.status(409).json({ msg: "User already has this resource" });
@@ -36,6 +47,16 @@ const addResourceById = async function (req, res) {
     });
   }
 };
+
+/**
+ * Updates the school and course info for a given resource.
+ *
+ * @async
+ * @function updateResourceSchoolInfo
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Promise<void>}
+ */
 const updateResourceSchoolInfo = async function (req, res) {
   const resourceId = req.params.id;
   const { newCourse, newSchool } = req.body;

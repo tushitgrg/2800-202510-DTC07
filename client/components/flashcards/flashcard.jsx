@@ -10,14 +10,22 @@ import { updateResourceProgress } from "@/lib/progress";
 import { useParams } from "next/navigation";
 import BadgeEarnedModal from "../badge/BadgeModel";
 
+/**
+ * Interactive flashcards component with flip animation and progress tracking
+ * Shows cards one at a time with front/back sides and allows users to mark their knowledge of the content
+ *
+ * @param {Object} props - Component props
+ * @param {Array} props.cards - Array of flashcard objects with front and back properties
+ * @param {Object} props.progress - Current progress data for this resource
+ * @returns {JSX.Element} The flashcards UI
+ */
 export default function Flashcards({ cards, progress }) {
   // Progress tracking
   const params = useParams();
   const resourceId = params.id;
 
-  // State for randomized cards
+  // State management
   const [randomizedCards, setRandomizedCards] = useState([]);
-
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [correctAnswers, setCorrectAnswers] = useState([]);
@@ -27,7 +35,9 @@ export default function Flashcards({ cards, progress }) {
   const cardsToUse = randomizedCards.length > 0 ? randomizedCards : cards;
   const currentCard = cardsToUse[currentIndex];
 
-  // Shuffle cards on component mount
+  /**
+   * Shuffle cards on component mount
+   */
   useEffect(() => {
     if (!cards || cards.length === 0) return;
 
@@ -36,11 +46,13 @@ export default function Flashcards({ cards, progress }) {
 
     setRandomizedCards(shuffledCards);
 
-    // CorrectAnswers array based on shuffled cards
+    // Initialize correctAnswers array based on shuffled cards
     setCorrectAnswers(Array(shuffledCards.length).fill(false));
   }, [cards]);
 
-  // Navigation
+  /**
+   * Move to the next card or show results if at the end
+   */
   const nextCard = () => {
     if (currentIndex < cards.length - 1) {
       setCurrentIndex(currentIndex + 1);
@@ -53,7 +65,7 @@ export default function Flashcards({ cards, progress }) {
       const correctCount = correctAnswers.filter(Boolean).length;
       const scorePercentage = Math.round((correctCount / cards.length) * 100);
 
-      // Send progress to backend
+      // Send progress to backend if it's better than existing progress
       if (
         !progress ||
         !progress.flashcardScore ||
@@ -70,6 +82,9 @@ export default function Flashcards({ cards, progress }) {
     }
   };
 
+  /**
+   * Move to the previous card
+   */
   const prevCard = () => {
     if (currentIndex > 0) {
       setCurrentIndex(currentIndex - 1);
@@ -77,14 +92,24 @@ export default function Flashcards({ cards, progress }) {
     }
   };
 
+  /**
+   * Toggle the card flip state
+   */
   const flipCard = () => setIsFlipped(!isFlipped);
 
+  /**
+   * Toggle whether the current card is marked as correct
+   * @param {Event} e - Change event
+   */
   const toggleCorrect = (e) => {
     const newCorrectAnswers = [...correctAnswers];
     newCorrectAnswers[currentIndex] = !newCorrectAnswers[currentIndex];
     setCorrectAnswers(newCorrectAnswers);
   };
 
+  /**
+   * Reset all states to restart the flashcards
+   */
   const restartFlashcards = () => {
     setCurrentIndex(0);
     setIsFlipped(false);
@@ -92,7 +117,7 @@ export default function Flashcards({ cards, progress }) {
     setShowResults(false);
   };
 
-  // Results view
+  // Results view when all cards have been reviewed
   if (showResults) {
     const correctCount = correctAnswers.filter(Boolean).length;
     const scorePercentage = Math.round(
@@ -101,8 +126,10 @@ export default function Flashcards({ cards, progress }) {
 
     return (
       <div className="w-full max-w-md">
+        {/* Show achievement badges based on score */}
         {scorePercentage > 70 && <BadgeEarnedModal success={true} />}
         {scorePercentage < 30 && <BadgeEarnedModal success={false} />}
+
         <Card className="w-full">
           <div className="p-6">
             <h2 className="text-2xl font-bold text-center mb-4">
@@ -121,6 +148,7 @@ export default function Flashcards({ cards, progress }) {
     );
   }
 
+  // Main flashcard view
   return (
     <div className="relative w-full max-w-md">
       <FlashcardItem
@@ -134,6 +162,7 @@ export default function Flashcards({ cards, progress }) {
         onToggleCorrect={toggleCorrect}
       />
 
+      {/* Navigation buttons */}
       <div className="w-full flex justify-between mt-12">
         <Button
           onClick={prevCard}
@@ -152,7 +181,20 @@ export default function Flashcards({ cards, progress }) {
   );
 }
 
-// Flashcard item component
+/**
+ * Individual flashcard item with flip animation and responsive text sizing
+ *
+ * @param {Object} props - Component props
+ * @param {string} props.front - Content for the front of the card
+ * @param {string} props.back - Content for the back of the card
+ * @param {boolean} props.flipped - Whether the card is flipped to show the back
+ * @param {Function} props.onFlip - Handler for flipping the card
+ * @param {number} props.index - Current card index
+ * @param {number} props.total - Total number of cards
+ * @param {boolean} props.isCorrect - Whether the card is marked as correct
+ * @param {Function} props.onToggleCorrect - Handler for toggling correct state
+ * @returns {JSX.Element} The flashcard item UI
+ */
 function FlashcardItem({
   front,
   back,
@@ -163,19 +205,26 @@ function FlashcardItem({
   isCorrect,
   onToggleCorrect,
 }) {
-  // Text sizing state
+  // Adaptive text sizing state
   const [frontSize, setFrontSize] = useState("text-lg");
   const [backSize, setBackSize] = useState("text-lg");
 
-  // Refs for measurement
+  // Refs for content and container measurement
   const frontRef = useRef(null);
   const backRef = useRef(null);
   const frontCardRef = useRef(null);
   const backCardRef = useRef(null);
 
-  // Adjust text size when content changes
+  /**
+   * Adjust text size based on content length and container size
+   */
   useEffect(() => {
-    // Helper function to determine appropriate text size
+    /**
+     * Calculate appropriate text size class based on content and container ratio
+     * @param {number} contentHeight - Height of the content
+     * @param {number} cardHeight - Height of the container
+     * @returns {string} Tailwind text size class
+     */
     function getTextSize(contentHeight, cardHeight) {
       const ratio = cardHeight / contentHeight;
       if (ratio < 0.5) return "text-xs";
@@ -184,7 +233,9 @@ function FlashcardItem({
       return "text-lg";
     }
 
-    // Measure and set front card text size
+    /**
+     * Measure and adjust front card text size
+     */
     function adjustFrontSize() {
       if (!frontRef.current || !frontCardRef.current) return;
 
@@ -196,7 +247,9 @@ function FlashcardItem({
       }
     }
 
-    // Measure and set back card text size
+    /**
+     * Measure and adjust back card text size
+     */
     function adjustBackSize() {
       if (!backRef.current || !backCardRef.current) return;
 

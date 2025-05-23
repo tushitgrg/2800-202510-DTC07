@@ -1,6 +1,15 @@
 const Progress = require("../models/progressModel");
 
-// Update progress for a specific resource
+/**
+ * Updates a user's progress for a specific resource.
+ * Creates a new progress entry if none exists.
+ *
+ * @async
+ * @function updateProgress
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Promise<void>}
+ */
 const updateProgress = async (req, res) => {
   try {
     const userId = req.user._id;

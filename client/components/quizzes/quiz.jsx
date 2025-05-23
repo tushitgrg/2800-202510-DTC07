@@ -16,11 +16,23 @@ import {
 } from "@/components/ui/alert-dialog";
 import { updateResourceProgress } from "@/lib/progress";
 import { useParams } from "next/navigation";
-
 import BadgeEarnedModal from "../badge/BadgeModel";
+
+/**
+ * Interactive quiz component with randomized questions and progress tracking
+ * Shows questions one at a time with multiple choice answers and provides feedback
+ *
+ * @param {Object} props - Component props
+ * @param {Array} props.questions - Array of question objects with question, options, and answer properties
+ * @param {Function} props.onComplete - Callback function called when quiz is completed
+ * @param {Object} props.progress - Current progress data for this resource
+ * @returns {JSX.Element} The quiz UI
+ */
 export default function Quiz({ questions, onComplete, progress }) {
-  // Loading
+  // Loading state
   const [loading, setLoading] = useState(true);
+
+  // Remove initial loading flicker
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
@@ -29,36 +41,41 @@ export default function Quiz({ questions, onComplete, progress }) {
     return () => clearTimeout(timer);
   }, []);
 
-  // State management
+  // Quiz state management
   const [currentIndex, setCurrentIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState([]);
-
-  // Randomization
   const [randomizedQuestions, setRandomizedQuestions] = useState([]);
+  const [showResults, setShowResults] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+
+  // Timer state
+  const [elapsedTime, setElapsedTime] = useState(0);
+  const [timerRunning, setTimerRunning] = useState(true);
+
+  /**
+   * Initialize user answers when randomized questions are ready
+   */
   useEffect(() => {
     if (randomizedQuestions.length > 0) {
       setUserAnswers(Array(randomizedQuestions.length).fill(null));
     }
   }, [randomizedQuestions]);
 
-  const [showResults, setShowResults] = useState(false);
-  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-
-  // Timer
-  const [elapsedTime, setElapsedTime] = useState(0);
-  const [timerRunning, setTimerRunning] = useState(true);
-
-  // Randomize questions and options
+  /**
+   * Randomize questions and their options on component mount
+   */
   useEffect(() => {
     if (!questions || questions.length === 0) return;
+
     // Shuffle the questions
     const shuffledQuestions = [...questions].sort(() => Math.random() - 0.5);
-    // Shuffle the options
+
+    // Shuffle the options for each question
     const questionsWithShuffledOptions = shuffledQuestions.map((question) => {
-      // correct answer
+      // Store correct answer
       const correctAnswer = question.answer;
 
-      // not shuffling True/false questions
+      // Don't shuffle True/False questions
       const isTrueFalseQuestion =
         question.options.length === 2 &&
         question.options.every(
@@ -66,10 +83,10 @@ export default function Quiz({ questions, onComplete, progress }) {
             option.toLowerCase() === "true" || option.toLowerCase() === "false",
         );
 
-      // Shuffle the options
-      const shuffledOptions = [...question.options].sort(
-        () => Math.random() - 0.5,
-      );
+      // Shuffle options for non-true/false questions
+      const shuffledOptions = isTrueFalseQuestion
+        ? [...question.options]
+        : [...question.options].sort(() => Math.random() - 0.5);
 
       return {
         ...question,
@@ -81,14 +98,9 @@ export default function Quiz({ questions, onComplete, progress }) {
     setRandomizedQuestions(questionsWithShuffledOptions);
   }, [questions]);
 
-  // Initialize userAnswers based on randomized questions
-  useEffect(() => {
-    if (randomizedQuestions.length > 0) {
-      setUserAnswers(Array(randomizedQuestions.length).fill(null));
-    }
-  }, [randomizedQuestions]);
-
-  // Start timer
+  /**
+   * Initialize timer when component mounts
+   */
   useEffect(() => {
     let timer;
     if (timerRunning) {
@@ -100,26 +112,33 @@ export default function Quiz({ questions, onComplete, progress }) {
     return () => clearInterval(timer);
   }, [timerRunning]);
 
-  // Format time function
+  // Progress tracking
+  const params = useParams();
+  const resourceId = params.id;
+
+  // Use randomized questions or fall back to original questions
+  const questionsToUse =
+    randomizedQuestions.length > 0 ? randomizedQuestions : questions;
+
+  // Get current question and user's answer
+  const current = questionsToUse[currentIndex];
+  const currentAnswer = userAnswers[currentIndex];
+
+  /**
+   * Format seconds into MM:SS display
+   * @param {number} seconds - Time in seconds
+   * @returns {string} Formatted time string
+   */
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
   };
 
-  // Use randomizedQuestions instead of questions
-  const questionsToUse =
-    randomizedQuestions.length > 0 ? randomizedQuestions : questions;
-
-  // Get current question and answer
-  const current = questionsToUse[currentIndex];
-  const currentAnswer = userAnswers[currentIndex];
-
-  // Progress tracking
-  const params = useParams();
-  const resourceId = params.id;
-
-  // Handle answer selection
+  /**
+   * Handle answer selection for current question
+   * @param {string} choice - Selected answer option
+   */
   const handleSelect = (choice) => {
     if (currentAnswer !== null) return; // Prevent changing answer after selection
     const newAnswers = [...userAnswers];
@@ -127,7 +146,9 @@ export default function Quiz({ questions, onComplete, progress }) {
     setUserAnswers(newAnswers);
   };
 
-  // Handle navigation
+  /**
+   * Navigate to next question or show completion dialog
+   */
   const handleNext = () => {
     if (currentIndex < questions.length - 1) {
       setCurrentIndex(currentIndex + 1);
@@ -141,13 +162,18 @@ export default function Quiz({ questions, onComplete, progress }) {
     }
   };
 
+  /**
+   * Navigate to previous question
+   */
   const handleBack = () => {
     if (currentIndex > 0) {
       setCurrentIndex(currentIndex - 1);
     }
   };
 
-  // Submit quiz and calculate score
+  /**
+   * Submit quiz and calculate final score
+   */
   const submitQuiz = () => {
     // Stop the timer
     setTimerRunning(false);
@@ -183,30 +209,40 @@ export default function Quiz({ questions, onComplete, progress }) {
     );
   };
 
-  // Calculate score
+  /**
+   * Calculate quiz score based on correct answers
+   * @returns {number} Number of correct answers
+   */
   const calculateScore = () => {
     return userAnswers.reduce((score, answer, i) => {
       return score + (answer === questionsToUse[i].answer ? 1 : 0);
     }, 0);
   };
 
-  // Get button style based on answer
+  /**
+   * Get button style based on answer correctness
+   * @param {string} choice - Answer option
+   * @returns {Object} CSS style object
+   */
   const getButtonStyle = (choice) => {
     if (currentAnswer === null) return {};
 
     if (choice === currentAnswer && choice === current.answer) {
-      return { backgroundColor: "#0fa372", color: "white" };
+      return { backgroundColor: "#0fa372", color: "white" }; // Correct answer
     }
     if (choice === currentAnswer && choice !== current.answer) {
-      return { backgroundColor: "#d45959", color: "white" };
+      return { backgroundColor: "#d45959", color: "white" }; // Wrong answer
     }
     if (choice !== currentAnswer && choice === current.answer) {
-      return { backgroundColor: "#0fa372", color: "white" };
+      return { backgroundColor: "#0fa372", color: "white" }; // Show correct answer
     }
     return {};
   };
 
-  // Get feedback message
+  /**
+   * Get feedback message based on answer correctness
+   * @returns {JSX.Element|null} Feedback message or null if no answer selected
+   */
   const getFeedback = () => {
     if (currentAnswer === null) return null;
 
@@ -221,7 +257,9 @@ export default function Quiz({ questions, onComplete, progress }) {
     );
   };
 
-  // Restart quiz
+  /**
+   * Reset quiz to initial state
+   */
   const handleRestart = () => {
     setUserAnswers(Array(questions.length).fill(null));
     setCurrentIndex(0);
@@ -230,7 +268,10 @@ export default function Quiz({ questions, onComplete, progress }) {
     setTimerRunning(true);
   };
 
-  // Timer component
+  /**
+   * Timer display component
+   * @returns {JSX.Element} Timer UI
+   */
   const Timer = () => (
     <div className="flex items-center justify-center gap-1 text-sm text-gray-500 mb-2">
       <Clock className="h-4 w-4" />
@@ -251,8 +292,11 @@ export default function Quiz({ questions, onComplete, progress }) {
       <div className="w-full max-w-md">
         {/* Keep the timer visible on results page */}
         <Timer />
+
+        {/* Show achievement badges based on score */}
         {scorePercentage > 70 && <BadgeEarnedModal success={true} />}
         {scorePercentage < 30 && <BadgeEarnedModal success={false} />}
+
         <Card className="w-full">
           <CardContent className="p-6">
             <h2 className="text-2xl font-bold text-center mb-4">
@@ -292,7 +336,7 @@ export default function Quiz({ questions, onComplete, progress }) {
         </CardContent>
       </Card>
 
-      {/* Feedback */}
+      {/* Feedback for current answer */}
       {getFeedback()}
 
       {/* Answer choices */}
@@ -315,7 +359,7 @@ export default function Quiz({ questions, onComplete, progress }) {
         ))}
       </div>
 
-      {/* Navigation */}
+      {/* Navigation buttons */}
       <div className="w-full flex justify-between mt-4">
         <Button
           onClick={handleBack}
@@ -331,7 +375,7 @@ export default function Quiz({ questions, onComplete, progress }) {
         </Button>
       </div>
 
-      {/* Confirmation dialog */}
+      {/* Confirmation dialog for unanswered questions */}
       <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
